@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#FBFAF7">
+<title>MAYND — Pour tous, partout, tout le temps</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>/* @inject:styles */</style>
+</head>
+<body>
+<div class="app-frame" id="app">
+  <div class="stage" id="stage">
+
+    <!-- ACCUEIL -->
+    <section class="screen" id="tab-accueil">
+      <div class="topbar">
+        <div class="brand" id="brandmark-slot"></div>
+        <button class="avatar-btn" id="avatar-accueil" aria-label="Profil" onclick="openProfile()">N</button>
+      </div>
+      <div class="scroll"><div class="pad">
+        <div class="greet-row">
+          <div class="greet-hi" id="greet-hi">Bonjour</div>
+          <div class="greet-date" id="greet-date"></div>
+        </div>
+
+        <div class="section-head"><h2>Ce que tu fais en ce moment</h2><span class="link" onclick="showTab('objectifs')">Tout voir</span></div>
+        <div id="home-goals"></div>
+
+        <div class="section-head"><h2 data-i="advanceNow">Avancer maintenant</h2></div>
+        <button class="mia-cta" onclick="openMia()">
+          <span class="mia-orb" id="mia-orb-cta"></span>
+          <span>
+            <span class="t1" data-i="talkMia">Parler à MIA</span>
+            <span class="t2" data-i="miaSub">Ton co-pilote, là quand tu veux</span>
+          </span>
+          <span class="arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></span>
+        </button>
+        <div class="section-head"><h2>Aller vers</h2></div>
+        <div class="jrow" id="jrow"></div>
+
+        <div class="section-head"><h2 data-i="yourAgents">Tes accompagnants</h2><span class="link" data-i="seeAll" onclick="openDrawer()">Tout voir</span></div>
+        <div class="agent-strip" id="agent-strip"></div>
+
+        <div class="reassure">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span data-i="reassure">Un espace à toi, confidentiel. Tes échanges restent sur cet appareil.</span>
+        </div>
+        <div class="slogan" id="slogan"></div>
+        <div class="build-tag" id="build-tag">Version 20/07 08:55</div>
+      </div></div>
+    </section>
+
+    <!-- CHAT (MIA + agents reunis) -->
+    <section class="screen" id="tab-chat">
+      <div class="chat-screen">
+        <div class="chat-top">
+          <button class="iconbtn" aria-label="Historique" onclick="openDrawer()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M3 12h18"/><path d="M3 18h18"/></svg></button>
+          <div class="chat-head-id">
+            <span class="chat-ava" id="chat-ava"></span>
+            <div class="chat-head-txt"><div class="nm" id="chat-name"></div><div class="st" id="chat-status"></div></div>
+          </div>
+          <button class="iconbtn parts-btn" id="chat-parts" aria-label="Accompagnants" onclick="openParts()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="3.2"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="cnt" id="parts-cnt" style="display:none">1</span></button>
+          <button class="iconbtn" id="chat-studio" aria-label="Programmer" onclick="openStudioCurrent()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+        </div>
+        <div class="messages" id="messages"></div>
+        <div class="composer">
+          <div class="field"><textarea id="chat-input" rows="1" placeholder="Écris…" oninput="autoGrow(this);toggleSend()" onkeydown="onKey(event)"></textarea></div>
+          <button class="send-btn" id="send-btn" aria-label="Envoyer" disabled onclick="send()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- OBJECTIFS -->
+    <section class="screen" id="tab-objectifs">
+      <div class="topbar">
+        <div class="brand"><span class="wordmark" data-i="goals">Objectifs</span></div>
+        <button class="avatar-btn" aria-label="Profil" onclick="openProfile()">N</button>
+      </div>
+      <div class="scroll"><div class="pad" id="obj-pad"></div></div>
+    </section>
+
+    <!-- MOOD plein ecran -->
+    <div id="mood-screen">
+      <div class="ms-top"><button class="ms-skip" data-i="skip" onclick="skipMoodScreen()">Passer</button></div>
+      <div class="ms-mid">
+        <div class="ms-q" id="ms-q">Comment tu te sens ?</div>
+        <div class="ms-date" id="ms-date"></div>
+        <div class="ms-emoji-wrap" id="ms-wrap"><div class="ms-track" id="ms-track"></div></div>
+        <div class="ms-arrows" id="ms-arrows"><button class="ms-arrow" id="ms-prev" aria-label="Précédent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button><div class="ms-dots" id="ms-dots"></div><button class="ms-arrow" id="ms-next" aria-label="Suivant"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button></div>
+        <div class="ms-comment" id="ms-comment" style="display:none">
+          <div class="mc-hint"><span class="mc-ava" id="ms-mc-ava"></span><span data-i="miaReads">MIA lit ce que tu écris et te répond.</span></div>
+          <textarea id="ms-note" rows="2" placeholder="En quelques mots, si tu veux…" oninput="autoGrow(this)"></textarea>
+        </div>
+      </div>
+      <div class="ms-bottom" id="ms-bottom"></div>
+    </div>
+
+  </div><!-- /stage -->
+
+  <nav class="bottomnav" id="bottomnav">
+    <button class="nav-item active" data-tab="accueil" onclick="showTab('accueil')">
+      <span class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9.5 21v-6h5v6"/></svg></span>
+      <span class="nav-lb" data-i="home">Accueil</span>
+    </button>
+    <button class="nav-item" data-tab="chat" onclick="showTab('chat')">
+      <span class="nav-ico" id="nav-chat-ico"></span>
+      <span class="nav-lb" data-i="chat">Chat</span>
+    </button>
+    <button class="nav-item" data-tab="objectifs" onclick="showTab('objectifs')">
+      <span class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/></svg></span>
+      <span class="nav-lb" data-i="goals">Objectifs</span>
+    </button>
+  </nav>
+
+  <div class="toast" id="toast"></div>
+
+  <!-- DRAWER historique -->
+  <div class="drawer-back" id="drawer-back" onclick="closeDrawer()"></div>
+  <aside class="drawer" id="drawer">
+    <div class="drawer-head"><h2 data-i="conversations">Discussions</h2><button class="sheet-close" aria-label="Fermer" onclick="closeDrawer()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div class="drawer-body" id="drawer-body"></div>
+  </aside>
+
+  <!-- PROFIL -->
+  <div class="backdrop" id="profile-backdrop" onclick="closeProfile()"></div>
+  <aside class="sheet" id="profile-sheet" role="dialog" aria-label="Profil">
+    <div class="sheet-grip"></div>
+    <div class="sheet-head"><div><h2 data-i="profile">Profil</h2></div><button class="sheet-close" aria-label="Fermer" onclick="closeProfile()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div class="sheet-body" id="profile-body"></div>
+  </aside>
+
+  <!-- LANGUES -->
+  <div class="backdrop" id="lang-backdrop" onclick="closeLang()"></div>
+  <aside class="sheet" id="lang-sheet" role="dialog" aria-label="Langue">
+    <div class="sheet-grip"></div>
+    <div class="sheet-head"><div><h2 data-i="language">Langue</h2></div><button class="sheet-close" aria-label="Fermer" onclick="closeLang()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div class="sheet-body" id="lang-body"></div>
+  </aside>
+
+  <!-- PARTICIPANTS -->
+  <div class="backdrop" id="parts-backdrop" onclick="closeParts()"></div>
+  <aside class="sheet" id="parts-sheet" role="dialog" aria-label="Accompagnants">
+    <div class="sheet-grip"></div>
+    <div class="sheet-head"><div><h2 data-i="participants">Participants</h2><div class="sub" id="parts-sub"></div></div><button class="sheet-close" aria-label="Fermer" onclick="closeParts()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div class="sheet-body" id="parts-body"></div>
+  </aside>
+
+  <!-- FORMULES -->
+  <div class="backdrop" id="formules-backdrop" onclick="closeFormules()"></div>
+  <aside class="sheet" id="formules-sheet" role="dialog" aria-label="Formules">
+    <div class="sheet-grip"></div>
+    <div class="sheet-head"><div><h2 data-i="choosePlan">Choisis ta formule</h2><div class="sub" data-i="planSub">Tout est compris, sans engagement.</div></div><button class="sheet-close" aria-label="Fermer" onclick="closeFormules()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div class="sheet-body" id="formules-body"></div>
+  </aside>
+  <!-- ══════════ PAYWALL (option payante) ══════════ -->
+  <div class="backdrop" id="paywall-backdrop" onclick="closeSheet('paywall-backdrop','paywall-sheet')"></div>
+  <aside class="sheet" id="paywall-sheet" role="dialog" aria-label="Formule requise">
+    <div class="sheet-grip"></div>
+    <div class="pw-body">
+      <div class="pw-lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+      <div class="pw-badge" id="pw-badge">MAYND+</div>
+      <h2 class="pw-title" id="pw-title"></h2>
+      <p class="pw-sub" id="pw-sub"></p>
+      <div class="pw-feats" id="pw-feats"></div>
+      <div class="pw-price" id="pw-price"></div>
+      <button class="btn full" id="pw-cta" onclick="pwGo()">Passer à MAYND+</button>
+      <button class="btn ghost full" onclick="pwFormules()" style="margin-top:9px">Voir toutes les formules</button>
+      <button class="pw-later" onclick="closeSheet('paywall-backdrop','paywall-sheet')">Plus tard</button>
+    </div>
+  </aside>
+
+
+  <!-- STUDIO -->
+  <div class="backdrop" id="studio-backdrop" onclick="closeStudio()"></div>
+  <aside class="sheet" id="studio-sheet" role="dialog" aria-label="Studio">
+    <div class="sheet-grip"></div>
+    <div class="sheet-head" id="studio-head"><div><h2 data-i="studio">Studio des accompagnants</h2><div class="sub" data-i="studioSub">Programme et affine chaque accompagnant.</div></div><button class="sheet-close" aria-label="Fermer" onclick="closeStudio()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div class="sheet-body" id="studio-body"></div>
+  </aside>
+
+  <!-- AJOUTER OBJECTIF -->
+  <div class="backdrop" id="obj-backdrop" onclick="closeObjSheet()"></div>
+  <aside class="sheet" id="obj-sheet" role="dialog" aria-label="Nouvel objectif">
+    <div class="sheet-grip"></div>
+    <div class="sheet-head"><div><h2 id="obj-sheet-title">Nouvel objectif</h2></div><button class="sheet-close" aria-label="Fermer" onclick="closeObjSheet()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div class="sheet-body" id="obj-sheet-body"></div>
+  </aside>
+
+  <!-- ESPACE DE SUIVI (supervision) -->
+  <div class="backdrop" id="pro-backdrop" onclick="closePro()"></div>
+  <aside class="sheet" id="pro-sheet" role="dialog" aria-label="Espace de suivi">
+    <div class="sheet-grip"></div>
+    <div class="sheet-head"><div><h2>Ton espace de suivi</h2></div><button class="sheet-close" aria-label="Fermer" onclick="closePro()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div class="sheet-body" id="pro-sheet-body"></div>
+  </aside>
+
+  <!-- EXPORT / IMPORT -->
+  <div class="backdrop" id="io-backdrop" onclick="closeIO()"></div>
+  <aside class="sheet" id="io-sheet" role="dialog" aria-label="Réglages">
+    <div class="sheet-grip"></div>
+    <div class="sheet-head"><div><h2 id="io-title">Réglages</h2><div class="sub" id="io-sub"></div></div><button class="sheet-close" aria-label="Fermer" onclick="closeIO()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div class="sheet-body">
+      <textarea class="ta" id="io-ta" style="min-height:230px" spellcheck="false"></textarea>
+      <div class="studio-actions"><button class="btn full" id="io-action">Fermer</button></div>
+      <div class="studio-hint" id="io-hint"></div>
+    </div>
+  </aside>
+  <!-- ══════════ ONBOARDING ══════════ -->
+  <div id="onboarding">
+
+    <div class="ob-screen on" id="ob-welcome">
+      <div class="ob-head"><div style="width:38px"></div><div></div><div style="width:38px"></div></div>
+      <div class="ob-welcome-illu"><span class="bw ob-brain"></span></div>
+      <h1 class="ob-h1" style="text-align:center">Bienvenue dans MAYND</h1>
+      <p class="ob-sub" style="text-align:center">Pour tous, partout, tout le temps.</p>
+      <div class="ob-bottom">
+        <button class="btn full" onclick="obShow('ob-signup')">Créer mon compte</button>
+        <div style="height:10px"></div>
+        <button class="btn ghost full" onclick="obShow('ob-login')">J'ai déjà un compte</button>
+      </div>
+    </div>
+
+    <div class="ob-screen" id="ob-signup">
+      <div class="ob-head"><button class="ob-back" onclick="obShow('ob-welcome')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button><div class="ob-step">Étape 1 / 4</div><div style="width:38px"></div></div>
+      <h1 class="ob-h1">Créons ton compte</h1>
+      <p class="ob-sub">Le premier pas. Le plus important.</p>
+      <div class="ob-field"><label class="ob-label">Adresse email</label><input class="ob-input" type="email" id="ob-email" placeholder="ton@email.com"></div>
+      <div class="ob-field"><label class="ob-label">Mot de passe</label><div class="ob-pwd"><input class="ob-input" type="password" id="ob-pwd" placeholder="Au moins 8 caractères"><button class="eye" onclick="obTogglePwd()" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>
+      <div class="ob-cgu" id="ob-cgu" onclick="obToggleCgu()"><div class="box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div><div class="tx">J'accepte les <a>Conditions générales</a> et la <a>Politique de confidentialité</a> de MAYND.</div></div>
+      <div class="ob-bottom">
+        <button class="btn full" onclick="obSignupNext()">Continuer</button>
+        <div class="ob-or">OU</div>
+        <button class="ob-social" onclick="obShow('ob-verify-choice')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>Continuer avec Apple</button>
+        <button class="ob-social" onclick="obShow('ob-verify-choice')"><svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09A6.6 6.6 0 0 1 5.49 12c0-.73.13-1.43.35-2.09V7.07H2.18A11 11 0 0 0 1 12c0 1.78.43 3.45 1.18 4.93z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84C6.71 7.31 9.14 5.38 12 5.38z"/></svg>Continuer avec Google</button>
+      </div>
+    </div>
+
+    <div class="ob-screen" id="ob-verify-choice">
+      <div class="ob-head"><button class="ob-back" onclick="obShow('ob-signup')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button><div class="ob-step">Étape 2 / 4</div><div style="width:38px"></div></div>
+      <h1 class="ob-h1">Sécurisons ton compte</h1>
+      <p class="ob-sub">Comment veux-tu recevoir ton code de vérification ?</p>
+      <button class="ob-method" onclick="obShow('ob-verify-code')"><span class="mi" style="background:var(--violet)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="3"/><line x1="12" y1="18" x2="12" y2="18"/></svg></span><span class="ptx"><span class="mt">Par SMS</span><span class="ms">Code envoyé sur ton téléphone</span></span><span class="ma"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></span></button>
+      <button class="ob-method" onclick="obShow('ob-verify-code')"><span class="mi" style="background:var(--warn)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span><span class="ptx"><span class="mt">Par email</span><span class="ms">Code envoyé sur ton adresse email</span></span><span class="ma"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></span></button>
+    </div>
+
+    <div class="ob-screen" id="ob-verify-code">
+      <div class="ob-head"><button class="ob-back" onclick="obShow('ob-verify-choice')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button><div class="ob-step">Étape 2 / 4</div><div style="width:38px"></div></div>
+      <h1 class="ob-h1">Saisis ton code</h1>
+      <p class="ob-sub">Un code à 6 chiffres vient de t'être envoyé. Entre-le ci-dessous.</p>
+      <div class="ob-otp" id="ob-otp"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"></div>
+      <div class="ob-resend">Pas reçu ? <a>Renvoyer le code</a></div>
+      <div class="ob-bottom"><button class="btn full" onclick="obShow('ob-access')">Vérifier</button></div>
+    </div>
+
+    <div class="ob-screen" id="ob-access">
+      <div class="ob-head"><div style="width:38px"></div><div class="ob-step">Étape 3 / 4</div><div style="width:38px"></div></div>
+      <h1 class="ob-h1">Accès rapide</h1>
+      <p class="ob-sub">Choisis comment te connecter. Ton accès doit rester simple, et sûr.</p>
+      <button class="ob-method" onclick="obShow('ob-faceid')"><span class="mi" style="background:var(--violet)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M9 9h.01M15 9h.01M9 15c.5.6 1.5 1 3 1s2.5-.4 3-1"/></svg></span><span class="ptx"><span class="mt">Face ID</span><span class="ms">Ultra rapide. Reconnaissance faciale.</span></span><span class="ma"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></span></button>
+      <button class="ob-method" onclick="obShow('ob-faceid')"><span class="mi" style="background:var(--ok)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 11c0-2 1-3 0-5"/><path d="M8 7c1-2 5-2 7 1"/><path d="M7 12c0-3 0-7 5-7s5 4 5 8"/><path d="M9 14c0 3 0 5-1 6"/><path d="M12 13v4"/><path d="M15 13c0 4-1 6-2 7"/></svg></span><span class="ptx"><span class="mt">Empreinte digitale</span><span class="ms">Pose ton doigt sur le capteur.</span></span><span class="ma"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></span></button>
+      <button class="ob-method" onclick="obShow('ob-pin-create')"><span class="mi" style="background:var(--gold)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span><span class="ptx"><span class="mt">Code PIN</span><span class="ms">4 chiffres. Simple et fiable.</span></span><span class="ma"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></span></button>
+    </div>
+
+    <div class="ob-screen" id="ob-faceid">
+      <div class="ob-head"><button class="ob-back" onclick="obShow('ob-access')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button><div class="ob-step">Étape 3 / 4</div><div style="width:38px"></div></div>
+      <h1 class="ob-h1" style="text-align:center">Active Face ID</h1>
+      <p class="ob-sub" style="text-align:center">Regarde simplement ton écran pour finaliser.</p>
+      <div class="ob-faceid"><div class="circ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="9" cy="10" r="0.8" fill="currentColor"/><circle cx="15" cy="10" r="0.8" fill="currentColor"/><path d="M9 15c.5.6 1.5 1 3 1s2.5-.4 3-1"/></svg></div></div>
+      <div class="ob-bottom"><button class="btn full" onclick="obShow('ob-trust')">Activer Face ID</button></div>
+    </div>
+
+    <div class="ob-screen" id="ob-pin-create">
+      <div class="ob-head"><button class="ob-back" onclick="obShow('ob-access')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button><div class="ob-step">Étape 3 / 4</div><div style="width:38px"></div></div>
+      <h1 class="ob-h1" style="text-align:center;font-size:23px">Crée ton code PIN</h1>
+      <p class="ob-sub" style="text-align:center">4 chiffres pour sécuriser ton accès.</p>
+      <div class="ob-pin-dots" id="ob-pin-create-dots"><div class="pd"></div><div class="pd"></div><div class="pd"></div><div class="pd"></div></div>
+      <div class="ob-keypad">
+        <button class="ob-key" onclick="obPin('create',1)">1</button><button class="ob-key" onclick="obPin('create',2)">2</button><button class="ob-key" onclick="obPin('create',3)">3</button>
+        <button class="ob-key" onclick="obPin('create',4)">4</button><button class="ob-key" onclick="obPin('create',5)">5</button><button class="ob-key" onclick="obPin('create',6)">6</button>
+        <button class="ob-key" onclick="obPin('create',7)">7</button><button class="ob-key" onclick="obPin('create',8)">8</button><button class="ob-key" onclick="obPin('create',9)">9</button>
+        <button class="ob-key empty"></button><button class="ob-key" onclick="obPin('create',0)">0</button><button class="ob-key back" onclick="obPinBack('create')">⌫</button>
+      </div>
+    </div>
+
+    <div class="ob-screen" id="ob-pin-confirm">
+      <div class="ob-head"><button class="ob-back" onclick="obShow('ob-pin-create')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button><div class="ob-step">Étape 3 / 4</div><div style="width:38px"></div></div>
+      <h1 class="ob-h1" style="text-align:center;font-size:23px">Confirme ton code</h1>
+      <p class="ob-sub" style="text-align:center">Saisis le même code une seconde fois.</p>
+      <div class="ob-pin-dots" id="ob-pin-confirm-dots"><div class="pd"></div><div class="pd"></div><div class="pd"></div><div class="pd"></div></div>
+      <div class="ob-keypad">
+        <button class="ob-key" onclick="obPin('confirm',1)">1</button><button class="ob-key" onclick="obPin('confirm',2)">2</button><button class="ob-key" onclick="obPin('confirm',3)">3</button>
+        <button class="ob-key" onclick="obPin('confirm',4)">4</button><button class="ob-key" onclick="obPin('confirm',5)">5</button><button class="ob-key" onclick="obPin('confirm',6)">6</button>
+        <button class="ob-key" onclick="obPin('confirm',7)">7</button><button class="ob-key" onclick="obPin('confirm',8)">8</button><button class="ob-key" onclick="obPin('confirm',9)">9</button>
+        <button class="ob-key empty"></button><button class="ob-key" onclick="obPin('confirm',0)">0</button><button class="ob-key back" onclick="obPinBack('confirm')">⌫</button>
+      </div>
+    </div>
+
+    <div class="ob-screen" id="ob-trust">
+      <div class="ob-head"><div style="width:38px"></div><div class="ob-step">Étape 4 / 4</div><div style="width:38px"></div></div>
+      <div class="ob-trust-illu"><div class="sh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6z"/><path d="M9 12l2 2 4-4"/></svg></div></div>
+      <h1 class="ob-h1" style="text-align:center;font-size:23px">Plus besoin de te reconnecter</h1>
+      <p class="ob-sub" style="text-align:center">Active cette option pour ne plus saisir ton mot de passe à chaque fois.</p>
+      <div class="ob-toggle-row" onclick="obToggleTrust(this)"><div class="tt"><div class="tn">Se souvenir de cet appareil</div><div class="td">Connexion rapide pendant 30 jours</div></div><span class="tgl on"><span class="knob"></span></span></div>
+      <div class="ob-bottom"><button class="btn full" onclick="obShow('ob-firstname')">Continuer</button></div>
+    </div>
+
+    <div class="ob-screen" id="ob-firstname">
+      <div class="ob-head"><button class="ob-back" onclick="obShow('ob-trust')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button><div></div><div style="width:38px"></div></div>
+      <div class="ob-hi"><span class="e">👋</span></div>
+      <h1 class="ob-h1" style="text-align:center;font-size:25px">Comment tu t'appelles ?</h1>
+      <p class="ob-sub" style="text-align:center">Le prénom suffit. C'est juste pour qu'on se parle plus naturellement.</p>
+      <div class="ob-field" style="margin-top:10px"><input class="ob-input" type="text" id="ob-firstname-input" placeholder="Ton prénom" oninput="obValidateName()" style="text-align:center"></div>
+      <div class="yw-label">Ton année de naissance</div>
+      <div class="yw-wrap"><div class="yw-frame"></div><div class="year-wheel" id="year-wheel"></div></div>
+      <div class="ob-bottom"><button class="btn full" id="ob-fn-btn" onclick="obSaveFirstname()" disabled>Continuer</button></div>
+    </div>
+
+    <div class="ob-screen" id="ob-account-success">
+      <div class="ob-success">
+        <div class="circ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <h1 class="ob-h1" style="text-align:center" id="ob-success-title">Ton compte est prêt</h1>
+        <p class="ob-sub" style="text-align:center">Ton espace MAYND est prêt. Tu peux explorer dès maintenant en version gratuite.</p>
+      </div>
+      <div class="ob-bottom"><button class="btn full" onclick="obShow('ob-quiz-invite')">Accéder à MAYND</button></div>
+    </div>
+
+    <div class="ob-screen" id="ob-plan">
+      <div class="ob-head"><div style="width:38px"></div><div></div><div style="width:38px"></div></div>
+      <h1 class="ob-h1">Choisis ta formule</h1>
+      <p class="ob-sub">Commence gratuitement, ou débloque tout MAYND. Sans engagement.</p>
+      <div id="ob-plan-list" style="margin-top:6px"></div>
+    </div>
+
+    <div class="ob-screen" id="ob-payment">
+      <div class="ob-head"><button class="ob-back" onclick="payCancel()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button><div style="font-family:Poppins;font-weight:700;font-size:16px">Paiement</div><button class="ob-skip" onclick="payCancel()">Annuler</button></div>
+      <div class="pay-recap">
+        <div class="pr-top"><div class="pr-name" id="pay-name">MAYND+</div><div class="pr-price"><b id="pay-price">69&nbsp;€</b> <span>/ mois</span></div></div>
+        <div class="pr-tag" id="pay-tag">Tout MAYND, et le multi-accompagnants.</div>
+        <div class="pr-feats" id="pay-feats"></div>
+      </div>
+      <div class="pay-seclabel">Méthode de paiement</div>
+      <div class="pay-tabs">
+        <button class="pay-tab active" data-m="card" onclick="payTab('card')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg><span>Carte</span></button>
+        <button class="pay-tab" data-m="apple" onclick="payTab('apple')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg><span>Apple&nbsp;Pay</span></button>
+        <button class="pay-tab" data-m="google" onclick="payTab('google')"><svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09A6.6 6.6 0 0 1 5.49 12c0-.73.13-1.43.35-2.09V7.07H2.18A11 11 0 0 0 1 12c0 1.78.43 3.45 1.18 4.93z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84C6.71 7.31 9.14 5.38 12 5.38z"/></svg><span>Google&nbsp;Pay</span></button>
+        <button class="pay-tab" data-m="paypal" onclick="payTab('paypal')"><svg viewBox="0 0 24 24" fill="#003087"><path d="M7.08 21.34H2.47a.64.64 0 0 1-.63-.74L4.94.9C5.03.38 5.47 0 6 0h7.46c2.57 0 4.58.54 5.69 1.81 1.01 1.15 1.3 2.42 1.01 4.29-.02.14-.05.29-.08.44-.98 5.05-4.35 6.8-8.65 6.8h-2.19c-.52 0-.97.38-1.05.9z"/></svg><span>PayPal</span></button>
+      </div>
+      <div class="pay-form" id="pay-form-card">
+        <div class="pay-ig"><label class="pl">Numéro de carte</label><div class="pay-num"><input class="pay-input" id="pay-card-num" inputmode="numeric" maxlength="19" placeholder="1234 1234 1234 1234" oninput="payFmtNum(this)"><span class="brands"><svg viewBox="0 0 28 18" width="26" height="17"><rect width="28" height="18" rx="3" fill="#1A1F71"/><text x="14" y="13" text-anchor="middle" fill="#fff" font-size="9" font-weight="900" font-family="Arial">VISA</text></svg><svg viewBox="0 0 28 18" width="26" height="17"><rect width="28" height="18" rx="3" fill="#fff" stroke="#e3e3e3"/><circle cx="11" cy="9" r="5" fill="#EB001B"/><circle cx="17" cy="9" r="5" fill="#F79E1B"/></svg></span></div></div>
+        <div class="pay-row"><div class="pay-ig"><label class="pl">Expiration</label><input class="pay-input" id="pay-card-exp" inputmode="numeric" maxlength="5" placeholder="MM/AA" oninput="payFmtExp(this)"></div><div class="pay-ig"><label class="pl">CVC</label><input class="pay-input" id="pay-card-cvc" inputmode="numeric" maxlength="4" placeholder="123"></div></div>
+        <div class="pay-ig"><label class="pl">Nom sur la carte</label><input class="pay-input" id="pay-card-name" placeholder="Prénom Nom"></div>
+      </div>
+      <div class="pay-form" id="pay-form-apple" style="display:none"><div class="pay-alt"><span class="ai" style="background:#000"><svg viewBox="0 0 24 24" fill="#fff" width="22" height="22"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg></span><span class="at">Tu confirmeras le paiement avec Face ID ou Touch ID au clic sur « Payer ».</span></div></div>
+      <div class="pay-form" id="pay-form-google" style="display:none"><div class="pay-alt"><span class="ai" style="background:#fff;border:1px solid #e8e8e8"><svg viewBox="0 0 24 24" width="22" height="22"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09A6.6 6.6 0 0 1 5.49 12c0-.73.13-1.43.35-2.09V7.07H2.18A11 11 0 0 0 1 12c0 1.78.43 3.45 1.18 4.93z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84C6.71 7.31 9.14 5.38 12 5.38z"/></svg></span><span class="at">Tu seras redirigé vers Google Pay pour confirmer en toute sécurité.</span></div></div>
+      <div class="pay-form" id="pay-form-paypal" style="display:none"><div class="pay-alt"><span class="ai" style="background:#fff;border:1px solid #e8e8e8"><svg viewBox="0 0 24 24" fill="#003087" width="22" height="22"><path d="M7.08 21.34H2.47a.64.64 0 0 1-.63-.74L4.94.9C5.03.38 5.47 0 6 0h7.46c2.57 0 4.58.54 5.69 1.81 1.01 1.15 1.3 2.42 1.01 4.29-.02.14-.05.29-.08.44-.98 5.05-4.35 6.8-8.65 6.8h-2.19c-.52 0-.97.38-1.05.9z"/></svg></span><span class="at">Tu seras redirigé vers PayPal pour finaliser ton paiement.</span></div></div>
+      <div class="pay-seclabel" style="margin-top:20px">Adresse de facturation <button class="pay-help" onclick="paySamu()" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></button></div>
+      <div class="pay-form">
+        <div class="pay-ig"><label class="pl">Adresse</label><input class="pay-input" id="pay-addr" placeholder="Numéro et nom de rue"></div>
+        <div class="pay-row"><div class="pay-ig" style="flex:0 0 40%"><label class="pl">Code postal</label><input class="pay-input" id="pay-zip" inputmode="numeric" maxlength="5" placeholder="75001"></div><div class="pay-ig"><label class="pl">Ville</label><input class="pay-input" id="pay-city" placeholder="Paris"></div></div>
+        <div class="pay-ig"><label class="pl">Pays</label><select class="pay-input pay-select" id="pay-country"><option>France</option><option>Belgique</option><option>Suisse</option><option>Luxembourg</option><option>Monaco</option><option>Canada</option><option>Autre</option></select></div>
+      </div>
+      <button class="btn full pay-cta" onclick="obPay()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span id="pay-cta-label">Payer 69 €</span></button>
+      <div class="pay-trust">
+        <div class="tr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span>Paiement 100% sécurisé via Stripe</span></div>
+        <div class="tn">Renouvellement automatique mensuel. Annulable à tout moment, sans frais.</div>
+      </div>
+    </div>
+
+    <div class="ob-screen" id="ob-pay-success">
+      <div class="ob-success">
+        <div class="circ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <h1 class="ob-h1" style="text-align:center" id="ob-pay-done-title">Paiement confirmé</h1>
+        <p class="ob-sub" style="text-align:center">Bienvenue dans MAYND. Ton accompagnement t'attend.</p>
+      </div>
+      <div class="ob-bottom"><button class="btn full" onclick="obShow('ob-quiz-invite')">Continuer</button></div>
+    </div>
+
+    <div class="ob-screen" id="ob-quiz-invite">
+      <div class="ob-head"><div style="width:38px"></div><div></div><div style="width:38px"></div></div>
+      <div class="ob-trust-illu"><div class="sh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 12 0v1"/><path d="M19 8v6M22 11h-6"/></svg></div></div>
+      <h1 class="ob-h1" style="text-align:center;font-size:25px">Qui es-tu&nbsp;?</h1>
+      <p class="ob-sub" style="text-align:center">Quelques questions pour personnaliser ton accompagnement. C'est vivement conseillé : sans ça, l'accompagnement reste générique.</p>
+      <div class="ob-bottom">
+        <button class="btn full" onclick="enterApp(true)">Répondre — 5 min</button>
+        <div style="height:10px"></div>
+        <button class="btn ghost full" onclick="enterApp(false)">Plus tard</button>
+      </div>
+    </div>
+
+    <div class="ob-screen" id="ob-login">
+      <div class="ob-head"><button class="ob-back" onclick="obShow('ob-welcome')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button><div></div><div style="width:38px"></div></div>
+      <h1 class="ob-h1">Bon retour</h1>
+      <p class="ob-sub">Connecte-toi à ton compte MAYND.</p>
+      <div class="ob-field"><label class="ob-label">Adresse email</label><input class="ob-input" type="email" placeholder="ton@email.com"></div>
+      <div class="ob-field"><label class="ob-label">Mot de passe</label><div class="ob-pwd"><input class="ob-input" type="password" placeholder="••••••••"></div></div>
+      <div class="ob-bottom"><button class="btn full" onclick="enterApp(false)">Se connecter</button></div>
+    </div>
+
+  </div>
+
+  <!-- ══════════ RAPPEL QUESTIONNAIRE ══════════ -->
+  <div class="qz-back" id="qz-back" onclick="qzLater()"></div>
+  <div class="qz-card" id="qz-card">
+    <div class="qz-illu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 12 0v1"/><path d="M19 8v6M22 11h-6"/></svg></div>
+    <h2>Qui es-tu&nbsp;?</h2>
+    <p>Ton accompagnement n'est pas encore personnalisé. Réponds à quelques questions pour qu'il colle vraiment à toi. Sans ça, il reste générique — ce n'est pas conseillé.</p>
+    <button class="btn full qz-cta" onclick="qzNow()">Répondre maintenant</button>
+    <button class="btn ghost full" onclick="qzLater()">Plus tard</button>
+  </div>
+
+  <!-- ══════════ QUESTIONNAIRE POST-PAIEMENT ══════════ -->
+  <div id="quiz"><div id="quiz-inner"></div></div>
+  <!-- ══════════ ORIENTATION (trouver son cap) ══════════ -->
+  <div id="orient"><div id="or-inner"></div></div>
+
+  <!-- PRÉSENTATION DES ACCOMPAGNANTS -->
+  <div id="deck">
+    <button class="deck-x" onclick="closeDeck()" aria-label="Fermer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    <div class="deck-track" id="deck-track" onscroll="deckSync()"></div>
+    <div class="deck-nav">
+      <button class="deck-arrow" onclick="deckPrev()" aria-label="Précédent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+      <div class="deck-dots" id="deck-dots"></div>
+      <button class="deck-arrow" onclick="deckNext()" aria-label="Suivant"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button>
+    </div>
+  </div>
+
+
+
+</div>
+<script>/* @inject:scripts */</script>
+</body>
+</html>

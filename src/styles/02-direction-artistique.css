@@ -1,0 +1,63 @@
+/* ═══════════════ DIRECTION ARTISTIQUE — teintes pleines, zéro dégradé ═══════════════ */
+:root{
+  --paper:#FFFFFF; --paper-2:#F5F0FF; --card:#FFFFFF;
+  --ink:#000000; --ink-2:#26242E; --mist:#6B6878;
+  --line:rgba(151,74,240,.14); --line-2:rgba(151,74,240,.08);
+  --violet:#974AF0; --violet-deep:#6F2FC0; --violet-soft:#F3ECFF; --violet-tint:#E7DAFF;
+  --orange:#FE6601; --orange-soft:#FFF1E8; --orange-tint:#FFE1CC;
+  --blue:#224CF2; --blue-soft:#ECF1FF; --blue-tint:#D8E2FF;
+  --tint-accueil:#F4EFFF; --tint-chat:#EDF3FF; --tint-obj:#FFF3EC;
+  --r:28px; --r-sm:18px; --r-pill:999px;
+  --sh-sm:0 1px 3px rgba(111,47,192,.05), 0 6px 16px rgba(111,47,192,.07);
+  --sh:0 2px 6px rgba(111,47,192,.05), 0 14px 34px rgba(111,47,192,.11);
+  --sh-lg:0 26px 70px rgba(111,47,192,.22);
+  --e:cubic-bezier(.22,1,.36,1);
+  --fast:.16s; --med:.34s;
+}
+body{background:#E9E3F5}
+/* ─── une teinte par onglet ─── */
+#tab-accueil{background:var(--tint-accueil)}
+#tab-chat{background:var(--tint-chat)}
+#tab-objectifs{background:var(--tint-obj)}
+#onboarding{background:var(--tint-accueil)}
+.ob-screen{background:transparent}
+/* ─── profondeur : ombres teintées marque ─── */
+.block,.suivi-card,.wheel-card,.obj-hero,.formula,.ob-plan,.pf-card,.week-card,.cap-card,.track-lock,.qz2r-res,.mia-cta,.ob-input,.pay-input,.composer .field{box-shadow:var(--sh)}
+.objective,.quest,.chal,.agx-row,.conv-item,.qz2-opt,.ob-method,.ob-social,.badge{box-shadow:var(--sh-sm)}
+.sheet{box-shadow:var(--sh-lg)}
+.nav{box-shadow:0 -6px 30px rgba(111,47,192,.09)}
+.agx-row,.conv-item{background:var(--card);border:1px solid var(--line-2)}
+.quest,.chal,.objective{border:1px solid var(--line-2)}
+/* ─── accents orange et bleu ─── */
+.streak-pill{background:var(--orange-soft);color:var(--orange)}
+.pf-card .pf-lbl{color:var(--blue)}
+.pf-card{border-color:var(--blue-tint)}
+.week-card .wk-btn{background:var(--violet-soft);color:var(--violet-deep)}
+.section-head h2{letter-spacing:-.02em}
+.agx-sec{color:var(--violet-deep)}
+.quest.done{background:var(--violet-soft);border-color:transparent}
+/* ─── typographie ─── */
+.ob-h1,.pf-name,.cap-txt,.wk-name{letter-spacing:-.025em}
+.obj-greet{letter-spacing:-.03em}
+/* ═══════════════ MICRO-INTERACTIONS ═══════════════ */
+@keyframes mFade{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes mPop{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+@keyframes mBreathe{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+button,.btn,.agx-open,.conv-item,.quest,.chal,.objective,.qz2-opt,.ob-key,.pf-card,.week-card,.row-btn,.plan-row,.lang-row,.modelopt,.ob-plan,.formula{transition:transform var(--fast) var(--e),box-shadow var(--fast) var(--e),background var(--fast) ease}
+button:active,.btn:active,.agx-open:active,.conv-item:active,.quest:active,.chal:active,.objective:active,.qz2-opt:active,.ob-key:active,.pf-card:active,.week-card:active,.row-btn:active,.plan-row:active,.lang-row:active,.modelopt:active,.ob-plan:active,.formula:active{transform:scale(.97)}
+.btn:active{transform:scale(.96)}
+.nav-item.active .nav-ico{animation:mPop .34s var(--e)}
+.cap-card,.wheel-card,.obj-hero{transition:transform var(--med) var(--e),box-shadow var(--med) var(--e)}
+.mia-cta:active{transform:scale(.98)}
+/* ─── révélation au défilement ─── */
+.rv{opacity:0;transform:translateY(18px)}
+.rv.in{opacity:1;transform:none;transition:opacity .55s var(--e),transform .55s var(--e)}
+/* ─── respect du réglage système ─── */
+@media (prefers-reduced-motion: reduce){
+  .rv{opacity:1;transform:none}
+  *{animation-duration:.01ms !important;transition-duration:.01ms !important}
+}
+.snd-row{display:flex;align-items:center;justify-content:space-between;width:100%}
+.snd-row .rt{flex:1;min-width:0}
+
+

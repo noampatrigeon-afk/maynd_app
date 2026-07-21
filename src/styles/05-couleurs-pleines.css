@@ -1,0 +1,44 @@
+/* ═══════ cartes pleine couleur (accueil) ═══════ */
+.jrow{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;-ms-overflow-style:none;scrollbar-width:none;margin:0 -20px;padding:2px 20px 8px}
+.jrow::-webkit-scrollbar{display:none}
+.jcard{position:relative;flex:0 0 152px;height:186px;border-radius:24px;background:var(--jc);overflow:hidden;scroll-snap-align:start;display:block;text-align:left;box-shadow:0 10px 26px -10px var(--jc)}
+.jcard::before{content:"";position:absolute;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.16);right:-46px;top:-34px}
+.jcard::after{content:"";position:absolute;width:120px;height:120px;border-radius:50%;background:rgba(0,0,0,.10);left:-40px;bottom:-34px}
+.jcard-lb{position:absolute;top:12px;left:12px;z-index:2;background:#fff;border-radius:9px;padding:5px 9px;font-family:'Poppins',sans-serif;font-weight:700;font-size:9.5px;letter-spacing:.04em;text-transform:uppercase;color:#000}
+.jcard-t{position:absolute;left:14px;bottom:56px;right:14px;z-index:2;font-family:'Poppins',sans-serif;font-weight:800;font-size:19px;line-height:1.15;letter-spacing:-.02em;color:#fff}
+.jcard-go{position:absolute;right:12px;bottom:12px;z-index:2;width:36px;height:36px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;color:#000}
+.jcard-go svg{width:17px;height:17px}
+/* ═══════ questionnaires : fond plein saturé ═══════ */
+#quiz.tinted,#orient.tinted{color:#fff}
+#quiz.tinted .qz2-q,#orient.tinted .qz2-q{color:#fff}
+#quiz.tinted .qz2-hint,#orient.tinted .qz2-hint{color:rgba(255,255,255,.82)}
+#quiz.tinted .qz2-step,#orient.tinted .qz2-step{color:#fff}
+#quiz.tinted .qz2-prog,#orient.tinted .qz2-prog{background:rgba(255,255,255,.28)}
+#quiz.tinted .qz2-prog i,#orient.tinted .qz2-prog i{background:#fff}
+#quiz.tinted .qz2-close,#orient.tinted .qz2-close,#quiz.tinted .qz2-back,#orient.tinted .qz2-back{background:rgba(255,255,255,.22);color:#fff}
+#quiz.tinted .qz2-opt,#orient.tinted .qz2-opt{background:#fff;border-color:transparent;color:#000;box-shadow:0 6px 18px rgba(0,0,0,.10)}
+#quiz.tinted .qz2-opt .rd,#orient.tinted .qz2-opt .rd{border-color:rgba(0,0,0,.2)}
+#quiz.tinted .qz2-opt.sel,#orient.tinted .qz2-opt.sel{background:#000;color:#fff;border-color:#000}
+#quiz.tinted .qz2-opt.sel .rd,#orient.tinted .qz2-opt.sel .rd{background:#fff;border-color:#fff}
+#quiz.tinted .qz2-opt.sel .rd::after,#orient.tinted .qz2-opt.sel .rd::after{background:#000}
+#quiz.tinted .qz2-ta,#orient.tinted .qz2-ta{background:#fff;border-color:transparent;color:#000}
+#quiz.tinted .btn,#orient.tinted .btn{background:#000;color:#fff}
+#quiz.tinted .btn.ghost,#orient.tinted .btn.ghost{background:transparent;border:1.5px solid rgba(255,255,255,.45);color:#fff}
+/* ═══════ inscription : écrans pleine couleur ═══════ */
+#onboarding.sat .ob-h1,#onboarding.sat .ob-sub,#onboarding.sat .ob-back{color:#fff}
+#onboarding.sat .ob-sub{color:rgba(255,255,255,.85)}
+#onboarding.sat .btn{background:#000;color:#fff}
+#onboarding.sat .btn.ghost{background:transparent;border:1.5px solid rgba(255,255,255,.45);color:#fff}
+/* ═══════ objectifs : blocs pleins ═══════ */
+.cap-card{background:var(--violet)}
+.cap-card.meta{background:var(--violet-deep)}
+.obj-hero{background:var(--violet-deep)}
+.pf-card{background:var(--blue);border-color:transparent}
+.pf-card .pf-lbl{color:rgba(255,255,255,.75)}
+.pf-card .pf-name{color:#fff}
+.pf-card .pf-empty{color:rgba(255,255,255,.85)}
+.pf-card.empty{background:var(--blue);border-style:solid}
+.pf-card .btn.light{background:#fff;color:var(--blue)}
+.pro-ava{background:var(--violet)}
+
+

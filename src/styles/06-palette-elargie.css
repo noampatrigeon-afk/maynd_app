@@ -1,0 +1,61 @@
+/* ═══════ palette élargie : vert et jaune ═══════ */
+:root{
+  --green:#00A862; --green-soft:#DDF4EA;
+  --yellow:#FFC400; --yellow-soft:#FFF3CE; --yellow-ink:#7A5A00;
+  --ok:#00A862;
+}
+/* ═══════ accueil : plus d'air ═══════ */
+#tab-accueil .pad{padding:10px 20px 34px}
+#tab-accueil .section-head{margin:32px 2px 14px}
+#tab-accueil .greet-row{margin-bottom:20px}
+#tab-accueil .greet-hi{font-size:29px;letter-spacing:-.03em;line-height:1.15}
+#tab-accueil .mia-cta{padding:20px 18px;border-radius:26px;margin-bottom:4px}
+#tab-accueil .mia-cta .t1{font-size:17px}
+#tab-accueil .jrow{margin-top:2px}
+#tab-accueil .agent-strip{margin-top:2px}
+#tab-accueil .reassure{margin-top:26px}
+#tab-accueil .suivi-card{border-radius:24px;padding:16px}
+/* ═══════ cartes : fond plein + forme d'accent colorée ═══════ */
+.jcard{flex:0 0 156px;height:194px}
+.jcard::before{content:"";position:absolute;width:154px;height:154px;border-radius:50%;background:var(--ja,rgba(255,255,255,.18));right:-44px;top:-38px}
+.jcard::after{content:"";position:absolute;width:118px;height:118px;border-radius:50%;background:rgba(0,0,0,.09);left:-38px;bottom:-30px}
+.jcard.dark .jcard-t{color:#000}
+.jcard.dark .jcard-go{background:#000;color:#fff}
+/* ═══════ écrans d'inscription en couleur claire (jaune) ═══════ */
+#onboarding.sat.dark .ob-h1,#onboarding.sat.dark .ob-sub,#onboarding.sat.dark .ob-back{color:#000}
+#onboarding.sat.dark .ob-sub{color:rgba(0,0,0,.7)}
+#onboarding.sat.dark .btn{background:#000;color:#fff}
+#onboarding.sat.dark .btn.ghost{border-color:rgba(0,0,0,.35);color:#000}
+/* ═══════ questionnaire sur fond clair ═══════ */
+#quiz.tinted.dark .qz2-q,#orient.tinted.dark .qz2-q,#quiz.tinted.dark .qz2-step,#orient.tinted.dark .qz2-step{color:#000}
+#quiz.tinted.dark .qz2-hint,#orient.tinted.dark .qz2-hint{color:rgba(0,0,0,.7)}
+#quiz.tinted.dark .qz2-prog,#orient.tinted.dark .qz2-prog{background:rgba(0,0,0,.18)}
+#quiz.tinted.dark .qz2-prog i,#orient.tinted.dark .qz2-prog i{background:#000}
+#quiz.tinted.dark .qz2-close,#orient.tinted.dark .qz2-close,#quiz.tinted.dark .qz2-back,#orient.tinted.dark .qz2-back{background:rgba(0,0,0,.12);color:#000}
+/* ═══════ paiement et formules colorés ═══════ */
+.ob-plan.on{border-color:var(--violet);background:var(--violet-soft)}
+.ob-plan.plus.on{border-color:var(--orange);background:var(--orange-soft)}
+.formula{border:2px solid transparent}
+.formula.on{border-color:var(--violet);background:var(--violet-soft)}
+.formula.plus.on{border-color:var(--orange);background:var(--orange-soft)}
+.pay-tab.on{background:var(--violet);color:#fff;border-color:var(--violet)}
+.pw-plan.on{border-color:var(--violet)}
+/* ═══════ vert et jaune répartis dans l'app ═══════ */
+.quest.done .qc{background:var(--green)}
+.quest.done{background:var(--green-soft);border-color:transparent}
+.chal.done{background:var(--green-soft)}
+.chal.done .chal-c{background:var(--green);border-color:var(--green)}
+.chal-badge{color:var(--green)}
+.streak-pill{background:var(--yellow-soft);color:var(--yellow-ink)}
+.pro-st.signed{color:#fff;background:var(--green)}
+.pro-st.prep{color:#000;background:var(--yellow)}
+.pro-sign svg{color:var(--green)}
+.week-card .wk-lbl{color:var(--wk)}
+.obadge{background:var(--green-soft);color:var(--green)}
+.key-status.ok .d{background:var(--green)}
+.agx-sec.plus{color:var(--orange)}
+.agx-row.plus{background:var(--yellow-soft);border-color:rgba(255,196,0,.55)}
+.agx-badge{color:var(--yellow-ink);border-color:var(--yellow)}
+.agx-lock{color:var(--yellow-ink);background:var(--yellow-soft)}
+
+

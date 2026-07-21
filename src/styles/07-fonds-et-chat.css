@@ -1,0 +1,42 @@
+/* ═══════ fonds d'onglets : blanc pur, la couleur vient des blocs ═══════ */
+#tab-accueil{background:#FFFFFF}
+#tab-objectifs{background:#FFFFFF}
+#tab-chat{transition:background .4s var(--e)}
+/* ═══════ chat : fond de la couleur de l'accompagnant ═══════ */
+#tab-chat .topbar,#tab-chat .chat-title,#tab-chat .chat-sub,#tab-chat .topbar svg{color:#fff}
+#tab-chat.light-agent .topbar,#tab-chat.light-agent .chat-title,#tab-chat.light-agent .chat-sub,#tab-chat.light-agent .topbar svg{color:#000}
+#tab-chat .bubble.assistant{background:#fff;color:#000;box-shadow:0 4px 16px rgba(0,0,0,.10)}
+#tab-chat .bubble.user{background:#000;color:#fff}
+#tab-chat .composer .field{background:#fff;border-color:transparent;box-shadow:0 6px 20px rgba(0,0,0,.12)}
+#tab-chat .typing{background:#fff}
+#tab-chat .part-count,#tab-chat .chat-parts{background:rgba(255,255,255,.22);color:#fff}
+#tab-chat.light-agent .part-count,#tab-chat.light-agent .chat-parts{background:rgba(0,0,0,.14);color:#000}
+/* ═══════ inscription : blanc pur sur les écrans de saisie ═══════ */
+#onboarding{background:#FFFFFF}
+#onboarding:not(.sat) .ob-input,#onboarding:not(.sat) .ob-key,#onboarding:not(.sat) .ob-method,
+#onboarding:not(.sat) .ob-social,#onboarding:not(.sat) .ob-otpinput,#onboarding:not(.sat) .pay-input{
+  background:#fff;border:1.5px solid rgba(0,0,0,.10)}
+#onboarding:not(.sat) .ob-step{background:var(--violet-soft);color:var(--violet-deep)}
+#onboarding.sat .ob-step{background:rgba(255,255,255,.25);color:#fff}
+#onboarding.sat.dark .ob-step{background:rgba(0,0,0,.12);color:#000}
+#onboarding.sat .ob-back{background:rgba(255,255,255,.22);color:#fff}
+#onboarding.sat.dark .ob-back{background:rgba(0,0,0,.12);color:#000}
+#onboarding.sat .ob-input,#onboarding.sat .ob-key,#onboarding.sat .ob-method,#onboarding.sat .ob-social{background:#fff;color:#000;border-color:transparent}
+/* ═══════ accompagnants : couleur pleine, une par agent ═══════ */
+.agx-ava,.conv-ava,.chip-ava,.wk-ava,.pro-dot,.cma-a,.pa{color:#fff}
+.agx-row .agx-ava{box-shadow:0 4px 12px -3px currentColor}
+.agx-ava[style*="FFC400"],.conv-ava[style*="FFC400"],.wk-ava[style*="FFC400"],.pro-dot[style*="FFC400"]{color:#000}
+/* ═══════ objectifs : blocs qui claquent sur blanc ═══════ */
+.cap-card{background:var(--violet);color:#fff}
+.pf-card{background:var(--blue)}
+.obj-hero{background:var(--violet-deep)}
+.wheel-card{background:#fff;border:1px solid var(--line)}
+.pro-card{background:#fff;border:1px solid var(--line)}
+.track-lock{background:#fff}
+.section-head h2::before{width:6px;height:18px}
+/* ═══════ accueil sur blanc ═══════ */
+#tab-accueil .reassure{background:var(--violet-soft);color:var(--violet-deep)}
+#tab-accueil .suivi-card{background:#fff;border:1px solid var(--line)}
+
+.build-tag{font-family:'DM Sans',sans-serif;font-size:10.5px;color:rgba(0,0,0,.26);text-align:center;margin-top:10px;letter-spacing:.03em}
+

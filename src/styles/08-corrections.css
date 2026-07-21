@@ -1,0 +1,59 @@
+/* ═══════ écran 1 : contenu centré, cerveau au milieu ═══════ */
+#ob-welcome{display:flex;flex-direction:column}
+#ob-welcome .ob-welcome-illu{margin-top:auto;margin-bottom:22px}
+#ob-welcome .ob-welcome-illu .bw{width:128px}
+#ob-welcome .ob-sub{margin-bottom:auto;font-size:15px;line-height:1.6}
+#ob-welcome .ob-h1{font-size:30px;letter-spacing:-.03em}
+/* ═══════ questionnaires : réponses en teinte claire, jamais en blanc ═══════ */
+#quiz.tinted .qz2-opt,#orient.tinted .qz2-opt{background:var(--qopt,#fff);box-shadow:none;border:1.5px solid rgba(0,0,0,.06)}
+#quiz.tinted .qz2-ta,#orient.tinted .qz2-ta{background:var(--qopt,#fff)}
+#quiz.tinted .qz2-opt.sel,#orient.tinted .qz2-opt.sel{background:#000;color:#fff;border-color:#000}
+#quiz.tinted .btn,#orient.tinted .btn{background:#000;color:#fff}
+#quiz.tinted.dark .qz2-opt,#orient.tinted.dark .qz2-opt{border-color:rgba(0,0,0,.10)}
+/* ═══════ récapitulatif de paiement : texte lisible ═══════ */
+.pay-recap .pr-tag{background:rgba(255,255,255,.16);color:#FFFFFF;border-radius:99px;padding:5px 12px;display:inline-block;font-weight:600;font-size:12.5px;margin-top:7px}
+.pay-recap{background:var(--ink);color:#FFFFFF}
+.pay-recap .pr-name,.pay-recap .pr-price{color:#FFFFFF}
+/* ═══════ supervision : avatar humain ═══════ */
+.pro-ava{background:var(--violet);overflow:hidden}
+.pro-ava svg{width:46px;height:46px}
+
+
+/* ═══════ avatar de supervision : rond, centré, propre ═══════ */
+.pro-ava{background:var(--violet);border-radius:50%;overflow:hidden;width:48px;height:48px;padding:0}
+.pro-ava svg{width:100%;height:100%;display:block}
+/* ═══════ plus aucun rectangle blanc ═══════ */
+.agx-row{background:var(--agt,#F6F1FF);border:1px solid rgba(0,0,0,.05)}
+.conv-item{background:#F6F1FF;border:1px solid rgba(0,0,0,.05)}
+.suivi-card,.wheel-card,.pro-card,.block,.formula,.objective,.quest,.chal,.track-lock,.qz2r-res{background:#F8F4FF}
+.pf-card.empty{background:var(--blue)}
+.badge{background:#F8F4FF}
+/* champs et cartes de l'inscription : teinte de l'écran, jamais de blanc */
+#onboarding .ob-input,#onboarding .ob-key,#onboarding .ob-method,#onboarding .ob-social,
+#onboarding .ob-otpinput,#onboarding .pay-input,#onboarding .ob-plan,#onboarding .ob-toggle-row,
+#onboarding .pay-tab,#onboarding .pay-alt,#onboarding .ob-cgu .box{background:var(--obt,#F6F1FF);border-color:transparent;color:#000}
+#onboarding.sat .ob-input,#onboarding.sat .ob-key,#onboarding.sat .ob-method,#onboarding.sat .ob-social{background:var(--obt,#fff);color:#000;border-color:transparent}
+#onboarding .pay-recap{background:var(--ink)}
+#onboarding .ob-plan.on{background:var(--violet-soft)}
+#onboarding .ob-plan.plus.on{background:var(--orange-soft)}
+/* ═══════ chat : bulles dans la teinte de l'accompagnant ═══════ */
+#tab-chat .bubble.assistant{background:var(--chat-tint,#F6F1FF);color:#000;box-shadow:0 4px 16px rgba(0,0,0,.10)}
+#tab-chat .bubble.user{background:#000;color:#fff}
+#tab-chat .composer .field{background:var(--chat-tint,#F6F1FF);border-color:transparent}
+#tab-chat .typing{background:var(--chat-tint,#F6F1FF)}
+#tab-chat .conv-item{background:var(--chat-tint,#F6F1FF)}
+/* bulles hors chat coloré */
+.bubble.assistant{background:#F6F1FF}
+
+
+/* la lettre des avatars est blanche partout, plus aucune exception */
+.agx-ava,.conv-ava,.chip-ava,.wk-ava,.pro-dot,.cma-a,.pa{color:#fff}
+.agx-ava[style*="FFC400"],.conv-ava[style*="FFC400"],.wk-ava[style*="FFC400"],.pro-dot[style*="FFC400"]{color:#fff}
+/* supervision en gratuit : bloc centré */
+.pro-card.pro-lock{text-align:center;padding:24px 20px}
+.pro-ava.big{width:64px;height:64px;margin:0 auto 14px;display:flex}
+.pro-lock-t{font-family:'Poppins',sans-serif;font-weight:700;font-size:16.5px;color:var(--ink);line-height:1.25}
+.pro-lock-s{font-family:'DM Sans',sans-serif;font-size:12.5px;color:var(--violet-deep);font-weight:600;margin-top:5px}
+.pro-card.pro-lock .pro-note{margin:12px auto 18px;max-width:290px;text-align:center}
+
+

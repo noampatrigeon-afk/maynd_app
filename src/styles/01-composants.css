@@ -1,0 +1,52 @@
+/* ═══════ composant agents unifié (accueil + tiroir + participants) ═══════ */
+.agx-sec{font-family:'Poppins',sans-serif;font-weight:600;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mist);padding:16px 4px 8px}
+.agx-sec.plus{color:var(--gold)}
+.agx-sec.plus::after{content:"5 exclusifs";float:right;font-weight:500;text-transform:none;letter-spacing:0;color:var(--mist);font-size:10.5px;padding-top:1px}
+.agx-row{display:flex;align-items:center;gap:6px;border-radius:15px;position:relative;margin-bottom:2px}
+.agx-row.plus{background:rgba(217,165,46,.06);border:1px solid rgba(217,165,46,.28)}
+.agx-open{flex:1;display:flex;align-items:center;gap:12px;background:none;border:none;text-align:left;min-width:0;cursor:pointer;padding:10px 4px 10px 10px}
+.agx-ava{width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Poppins',sans-serif;font-weight:700;font-size:17px;flex-shrink:0}
+.agx-ava.mia{background:var(--ink)}.agx-ava.mia svg{width:26px;height:26px}
+.agx-tx{min-width:0;flex:1;display:flex;flex-direction:column}
+.agx-nm{font-family:'Poppins',sans-serif;font-weight:700;font-size:14.5px;color:var(--ink);display:flex;align-items:center;gap:7px;line-height:1.25}
+.agx-dm{font-family:'DM Sans',sans-serif;font-size:12px;color:var(--mist);margin-top:3px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.agx-badge{flex-shrink:0;font-family:'Poppins',sans-serif;font-size:9px;font-weight:700;letter-spacing:.03em;color:var(--gold);border:1px solid var(--gold);border-radius:99px;padding:2px 6px;line-height:1.2}
+.agx-star{width:38px;height:38px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:none;border:none;color:var(--line);cursor:pointer;border-radius:10px}
+.agx-star svg{width:19px;height:19px}
+.agx-star.on{color:var(--gold)}
+.agx-lock{flex-shrink:0;font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:700;color:var(--gold);background:rgba(217,165,46,.14);border-radius:99px;padding:4px 9px;margin-right:8px}
+.agx-tgl{flex-shrink:0;width:44px;height:26px;border-radius:99px;background:var(--line);position:relative;cursor:pointer;transition:background var(--fast);margin-right:8px}
+.agx-tgl.on{background:var(--violet)}
+.agx-knob{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left var(--fast);box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.agx-tgl.on .agx-knob{left:21px}
+.agx-all{width:100%;margin-top:8px;background:var(--paper-2);border:none;color:var(--violet-deep);font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;padding:11px;border-radius:12px;cursor:pointer}
+/* ═══════ objectifs : héros cap + profil + semaine ═══════ */
+.cap-hero{margin-top:14px}
+.pf-week-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+.pf-card{flex:1 1 170px;min-width:0;background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:18px}
+.pf-card.empty{border-style:dashed}
+.pf-lbl{font-family:'Poppins',sans-serif;font-weight:600;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mist);margin-bottom:12px}
+.pf-bar{display:flex;gap:4px;margin-bottom:12px}
+.pf-bar span{height:8px;flex:1;border-radius:99px}
+.pf-name{font-family:'Poppins',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.01em;color:var(--ink);line-height:1.15}
+.pf-empty{font-family:'DM Sans',sans-serif;font-size:13px;color:var(--mist);line-height:1.5;margin-bottom:14px}
+/* ═══════ défis & jalons ═══════ */
+.chal{display:flex;align-items:center;gap:12px;background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:14px 16px;margin-bottom:9px}
+.chal.done{background:var(--violet-soft);border-color:transparent}
+.chal-c{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;color:transparent;flex-shrink:0}
+.chal.done .chal-c{background:var(--violet);border-color:var(--violet);color:#fff}
+.chal-c svg{width:14px;height:14px}
+.chal-t{flex:1;font-family:'Poppins',sans-serif;font-weight:600;font-size:14px;color:var(--ink)}
+.chal-btn{background:var(--violet);border:none;color:#fff;font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;padding:8px 16px;border-radius:99px;cursor:pointer}
+.chal-badge{font-family:'DM Sans',sans-serif;font-weight:700;font-size:12px;color:var(--violet-deep);display:flex;align-items:center;gap:5px}
+/* ═══════ roulette année de naissance (façon 777) ═══════ */
+.yw-label{font-family:'Poppins',sans-serif;font-weight:600;font-size:12.5px;color:var(--mist);text-align:center;margin:18px 0 8px}
+.year-wheel{position:relative;height:132px;overflow-y:scroll;scroll-snap-type:y mandatory;-ms-overflow-style:none;scrollbar-width:none;-webkit-mask-image:linear-gradient(180deg,transparent,#000 28%,#000 72%,transparent);mask-image:linear-gradient(180deg,transparent,#000 28%,#000 72%,transparent)}
+.year-wheel::-webkit-scrollbar{display:none}
+.year-wheel .yw-pad{height:44px}
+.yw-item{height:44px;display:flex;align-items:center;justify-content:center;scroll-snap-align:center;font-family:'Poppins',sans-serif;font-weight:700;font-size:26px;color:var(--mist);cursor:pointer;transition:color .15s,transform .15s;font-variant-numeric:tabular-nums}
+.yw-item.on{color:var(--violet-deep);transform:scale(1.12)}
+.yw-frame{position:absolute;top:44px;left:50%;transform:translateX(-50%);width:120px;height:44px;border-top:2px solid var(--violet);border-bottom:2px solid var(--violet);pointer-events:none;border-radius:4px}
+.yw-wrap{position:relative;background:var(--paper-2);border-radius:18px;padding:0 10px}
+
+

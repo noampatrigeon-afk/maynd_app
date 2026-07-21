@@ -1,0 +1,98 @@
+/* ═══════ présentation des accompagnants ═══════ */
+#deck{position:absolute;inset:0;z-index:92;display:none;background:var(--violet);transition:background .35s var(--e)}
+#deck.show{display:block}
+.deck-track{position:absolute;inset:0;display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;-ms-overflow-style:none;scrollbar-width:none}
+.deck-track::-webkit-scrollbar{display:none}
+.deck-page{flex:0 0 100%;height:100%;scroll-snap-align:center;overflow-y:auto;-ms-overflow-style:none;scrollbar-width:none}
+.deck-page::-webkit-scrollbar{display:none}
+.deck-inner{padding:56px 24px 118px;min-height:100%}
+.deck-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px}
+.deck-ava{width:76px;height:76px;border-radius:24px;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Poppins',sans-serif;font-weight:800;font-size:32px}
+.deck-ava.mia svg{width:42px;height:42px;color:#fff}
+.deck-star{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.2);border:none;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.7);cursor:pointer}
+.deck-star svg{width:20px;height:20px}
+.deck-star.on{color:#fff;background:rgba(255,255,255,.32)}
+.deck-name{font-family:'Poppins',sans-serif;font-weight:800;font-size:34px;letter-spacing:-.03em;color:#fff;line-height:1.1}
+.deck-dom{font-family:'DM Sans',sans-serif;font-size:14.5px;color:rgba(255,255,255,.82);margin-top:5px}
+.deck-acc{display:inline-block;margin-top:12px;font-family:'Poppins',sans-serif;font-weight:700;font-size:10px;letter-spacing:.05em;text-transform:uppercase;background:rgba(255,255,255,.22);color:#fff;border-radius:99px;padding:5px 11px}
+.deck-acc.plus{background:#fff;color:var(--dc)}
+.deck-tag{font-family:'DM Sans',sans-serif;font-size:15.5px;line-height:1.55;color:#fff;margin-top:18px}
+.deck-sec{font-family:'Poppins',sans-serif;font-weight:700;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.72);margin:24px 0 10px}
+.deck-list{list-style:none;padding:0;margin:0}
+.deck-list li{position:relative;padding-left:22px;font-family:'DM Sans',sans-serif;font-size:14.5px;line-height:1.5;color:#fff;margin-bottom:10px}
+.deck-list li::before{content:"";position:absolute;left:0;top:8px;width:9px;height:9px;border-radius:3px;background:rgba(255,255,255,.55)}
+.deck-list.dot li::before{border-radius:50%;width:7px;height:7px;left:1px;top:9px}
+.deck-cta{width:100%;margin-top:26px;background:#fff;color:var(--dc);border:none;border-radius:99px;padding:15px;font-family:'Poppins',sans-serif;font-weight:700;font-size:15px;cursor:pointer}
+.deck-x{position:absolute;top:16px;right:18px;z-index:4;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.22);border:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.deck-x svg{width:19px;height:19px}
+.deck-nav{position:absolute;bottom:26px;left:0;right:0;z-index:4;display:flex;align-items:center;justify-content:center;gap:14px}
+.deck-arrow{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.22);border:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.deck-arrow svg{width:19px;height:19px}
+.deck-dots{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:210px}
+.deck-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.4);cursor:pointer;transition:all var(--fast)}
+.deck-dot.on{background:#fff;width:20px;border-radius:99px}
+/* ═══════ objectifs visibles sur l'accueil ═══════ */
+.hg-cap{background:var(--violet);border-radius:22px;padding:18px;margin-bottom:12px}
+.hg-cap.meta{background:var(--violet-deep)}
+.hg-cap.empty{background:var(--paper-2);border:1.5px dashed var(--line)}
+.hg-lbl{font-family:'Poppins',sans-serif;font-weight:700;font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.7);margin-bottom:8px}
+.hg-cap.empty .hg-lbl{color:var(--mist)}
+.hg-txt{font-family:'Poppins',sans-serif;font-weight:700;font-size:18px;line-height:1.32;color:#fff;letter-spacing:-.01em}
+.hg-cap.empty .hg-txt{color:var(--mist)}
+.hg-go{margin-top:14px;background:var(--violet);border:none;color:#fff;font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;padding:9px 16px;border-radius:99px;cursor:pointer}
+.hg-obj{background:#F8F4FF;border:1px solid rgba(0,0,0,.05);border-radius:20px;padding:15px 16px;margin-bottom:10px}
+.hg-obj.done{background:#DDF4EA;border-color:transparent}
+.hg-oh{display:flex;align-items:center;gap:10px;margin-bottom:11px}
+.hg-ava{width:26px;height:26px;border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Poppins',sans-serif;font-weight:700;font-size:12px;flex-shrink:0}
+.hg-on{font-family:'Poppins',sans-serif;font-weight:600;font-size:14px;color:var(--ink);line-height:1.3}
+.hg-bar{height:7px;border-radius:99px;background:rgba(0,0,0,.07);overflow:hidden}
+.hg-bar i{display:block;height:100%;border-radius:99px}
+.hg-of{display:flex;align-items:center;justify-content:space-between;margin-top:11px;font-family:'DM Sans',sans-serif;font-size:12.5px;color:var(--mist)}
+.hg-step{border:none;color:#fff;font-family:'DM Sans',sans-serif;font-weight:600;font-size:12.5px;padding:7px 14px;border-radius:99px;cursor:pointer}
+.hg-done{font-family:'DM Sans',sans-serif;font-weight:700;font-size:12.5px;color:var(--green)}
+.hg-empty{font-family:'DM Sans',sans-serif;font-size:13.5px;color:var(--mist);line-height:1.55;padding:2px 2px 14px}
+.hg-all{width:100%;background:var(--paper-2);border:none;color:var(--violet-deep);font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;padding:12px;border-radius:14px;cursor:pointer}
+
+
+/* ═══════ titres d'onglet : plus grands, bonne police ═══════ */
+.wordmark{font-family:'Poppins',sans-serif;font-weight:800;font-size:24px;letter-spacing:-.02em;color:var(--ink)}
+.topbar{padding:16px 20px 10px}
+/* ═══════ accueil : plus de logo ni de nom ═══════ */
+#tab-accueil #brandmark-slot{display:none}
+/* ═══════ écran du prénom en noir ═══════ */
+#onboarding.noir .ob-input,#onboarding.noir .ob-key,#onboarding.noir .ob-method,#onboarding.noir .ob-social{background:#1C1C24;color:#fff;border-color:rgba(255,255,255,.12)}
+#onboarding.noir .ob-input::placeholder{color:rgba(255,255,255,.4)}
+#onboarding.noir .yw-wrap{background:#1C1C24}
+#onboarding.noir .yw-item{color:rgba(255,255,255,.45)}
+#onboarding.noir .yw-item.on{color:#fff}
+#onboarding.noir .yw-frame{border-color:#fff}
+#onboarding.noir .yw-label{color:rgba(255,255,255,.7)}
+#onboarding.noir .btn{background:#fff;color:#000}
+#onboarding.noir .btn.ghost{background:transparent;border-color:rgba(255,255,255,.4);color:#fff}
+/* ═══════ validation : plus de vert sur vert ═══════ */
+#onboarding.sat .ob-success .circ{background:rgba(255,255,255,.22);color:#fff}
+#onboarding.sat.dark .ob-success .circ{background:rgba(0,0,0,.14);color:#000}
+/* ═══════ bouton de présentation ═══════ */
+.deck-btn{width:100%;display:flex;align-items:center;gap:11px;background:var(--violet);border:none;color:#fff;font-family:'Poppins',sans-serif;font-weight:600;font-size:14px;padding:14px 16px;border-radius:16px;cursor:pointer;margin-bottom:4px;text-align:left}
+.deck-btn svg{width:19px;height:19px;flex-shrink:0}
+.deck-btn span{flex:1}
+.deck-btn .dk-go{width:16px;height:16px;opacity:.75}
+
+
+/* lettre noire uniquement sur le jaune */
+.agx-ava[style*="FFC400"],.conv-ava[style*="FFC400"],.wk-ava[style*="FFC400"],
+.pro-dot[style*="FFC400"],.hg-ava[style*="FFC400"],.chip-ava[style*="FFC400"]{color:#000}
+/* fiche de présentation sur fond clair */
+.deck-page.light .deck-name,.deck-page.light .deck-tag,.deck-page.light .deck-list li{color:#000}
+.deck-page.light .deck-dom{color:rgba(0,0,0,.65)}
+.deck-page.light .deck-sec{color:rgba(0,0,0,.55)}
+.deck-page.light .deck-acc{background:rgba(0,0,0,.14);color:#000}
+.deck-page.light .deck-ava{background:rgba(0,0,0,.14);color:#000}
+.deck-page.light .deck-star{background:rgba(0,0,0,.12);color:rgba(0,0,0,.5)}
+.deck-page.light .deck-star.on{background:rgba(0,0,0,.2);color:#000}
+.deck-page.light .deck-list li::before{background:rgba(0,0,0,.4)}
+.deck-page.light .deck-cta{background:#000;color:#FFC400}
+#deck.light .deck-x,#deck.light .deck-arrow{background:rgba(0,0,0,.14);color:#000}
+#deck.light .deck-dot{background:rgba(0,0,0,.3)}
+#deck.light .deck-dot.on{background:#000}
+

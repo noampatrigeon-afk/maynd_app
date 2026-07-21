@@ -1,0 +1,41 @@
+/* ═══════ questionnaires colorés ═══════ */
+#quiz,#orient{transition:background .35s var(--e)}
+.qz2-back{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.75);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--ink)}
+.qz2-back svg{width:18px;height:18px}
+.qz2-close{background:rgba(255,255,255,.75)}
+.qz2-prog{background:rgba(255,255,255,.7)}
+.qz2-ico{width:56px;height:56px;margin:18px 0 4px}
+.qz2-ico svg{width:56px;height:56px}
+.qz2-opt{background:#fff;border:1.5px solid rgba(0,0,0,.06);box-shadow:0 4px 14px rgba(0,0,0,.05)}
+.qz2-opt .rd{width:22px;height:22px;border-radius:50%;border:2px solid rgba(0,0,0,.15);flex-shrink:0;position:relative;transition:all var(--fast)}
+.qz2-opt .rd.sq{border-radius:7px}
+.qz2-opt.sel{border-color:var(--qc,#974AF0);background:var(--qs,#E4D3FF)}
+.qz2-opt.sel .rd{border-color:var(--qc,#974AF0);background:var(--qc,#974AF0)}
+.qz2-opt.sel .rd::after{content:"";position:absolute;left:5px;top:5px;width:8px;height:8px;border-radius:50%;background:#fff}
+.qz2-opt.sel .rd.sq::after{border-radius:2px}
+.qz2-ta{background:#fff;border:1.5px solid rgba(0,0,0,.07)}
+/* ═══════ parcours d'inscription coloré ═══════ */
+#onboarding{transition:background .4s var(--e)}
+.ob-input,.ob-otpinput,.ob-method,.ob-social,.ob-key,.pay-input,.pay-tab{background:#fff;border-color:rgba(0,0,0,.07)}
+.ob-key:active{background:var(--violet-soft)}
+.ob-plan{background:#fff;border:2px solid rgba(0,0,0,.07)}
+.ob-plan.on{border-color:var(--violet);background:var(--violet-soft)}
+.ob-plan.plus.on{border-color:var(--orange);background:var(--orange-soft)}
+.ob-toggle-row{background:#fff}
+/* ═══════ accueil et sections colorés ═══════ */
+.section-head h2{display:flex;align-items:center;gap:9px}
+.section-head h2::before{content:"";width:5px;height:17px;border-radius:99px;background:var(--sc,var(--violet));flex-shrink:0}
+.mia-cta{background:var(--violet);border:none}
+.mia-cta .t1{color:#fff}
+.mia-cta .t2{color:rgba(255,255,255,.85)}
+.mia-cta .arrow{color:#fff}
+.suivi-card{background:#fff;border:1px solid var(--line)}
+.reassure{background:var(--blue-soft);border-radius:var(--r-sm);padding:13px 15px;color:var(--ink-2)}
+.obj-hero{background:var(--ink)}
+.quest.done .qc{background:var(--ok)}
+.badge .bi{border-radius:14px}
+/* ═══════ paiement coloré ═══════ */
+.pay-tab.on{background:var(--violet);color:#fff;border-color:var(--violet)}
+/* règle .pr-tag retirée : elle rendait le texte du paiement illisible */
+
+
