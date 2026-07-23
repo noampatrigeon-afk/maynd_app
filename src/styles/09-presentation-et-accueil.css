@@ -109,4 +109,9 @@
 /* ═══════ écran « accès rapide » : les trois choix centrés ═══════ */
 #ob-access .ob-method:first-of-type{margin-top:auto}
 #ob-access .ob-method:last-of-type{margin-bottom:auto}
+/* ═══════ écran « saisis ton code » : rose MAYND, écritures blanches, bouton rose foncé ═══════ */
+#onboarding.sat #ob-verify-code .btn{background:#A61E4D;color:#fff}
+#onboarding.sat #ob-verify-code .ob-otp input{background:var(--obt,#FFE0EC);color:#000;border-color:transparent}
+#onboarding.sat #ob-verify-code .ob-resend{color:#fff}
+#onboarding.sat #ob-verify-code .ob-resend a{color:#fff;text-decoration:underline}
 
