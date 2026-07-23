@@ -100,4 +100,7 @@
 #onboarding.sat #ob-signup .ob-label{color:#fff}
 #onboarding.sat #ob-signup .ob-cgu .tx{color:#fff}
 #onboarding.sat #ob-signup .ob-cgu .tx a{color:#fff}
+/* ═══════ écran « sécurisons ton compte » : les deux choix centrés ═══════ */
+#ob-verify-choice .ob-method:first-of-type{margin-top:auto}
+#ob-verify-choice .ob-method:last-of-type{margin-bottom:auto}
 
