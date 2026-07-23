@@ -39,11 +39,9 @@ ok(bleus<=5,'les bleus ne dominent plus : '+bleus+' accompagnants');
 const faibles=[...uniq].filter(c=>cw(c)<2.9 && c!=='#FFC400');
 ok(faibles.length<=1,'lettre blanche lisible sauf sur le jaune'+(faibles.length?' ('+faibles.join(' ')+')':''));
 
-console.log('\n=== 2. INSCRIPTION : aucun vert, prénom en noir ===');
-const sat=w.eval("Object.keys(OB_SAT).map(function(k){return OB_SAT[k]})");
-const soft=w.eval("Object.keys(OB_SOFT).map(function(k){return OB_SOFT[k]})");
-ok(!sat.includes('#00A862'),'plus de vert plein dans l\'inscription');
-ok(!soft.some(c=>/^#D8F2E4$/i.test(c)),'plus de vert pastel dans l\'inscription');
+console.log('\n=== 2. INSCRIPTION : vert MAYND à l\'étape 3, prénom en noir ===');
+ok(w.eval("OB_SAT['ob-access']")==='#00A862','étape 3 (accès rapide) en vert MAYND');
+ok(w.eval("OB_SOFT['ob-faceid']")==='#D8F2E4' && w.eval("OB_SOFT['ob-pin-create']")==='#D8F2E4' && w.eval("OB_SOFT['ob-pin-confirm']")==='#D8F2E4','étape 3 : écrans de saisie assortis en vert clair');
 ok(w.eval("OB_SAT['ob-firstname']")==='#000000','écran du prénom en noir');
 ok(w.eval("OB_SAT['ob-account-success']")==='#974AF0','validation en violet, plus de vert sur vert');
 w.obShow('ob-firstname'); await wait(30);
@@ -62,7 +60,8 @@ for(const id of obIds){
   if(/216, 242, 228|0, 168, 98/.test(bg)) verts.push(id);
   if(/255, 255, 255/.test(bg) || !bg) blancs.push(id);
 }
-ok(verts.length===0,'aucun écran vert sur les '+obIds.length+' écrans');
+const expectedVerts=['ob-access','ob-faceid','ob-pin-create','ob-pin-confirm'];
+ok(verts.length===expectedVerts.length && expectedVerts.every(id=>verts.includes(id)),'étape 3 (accès rapide) en vert, aucun autre écran : '+verts.join(', '));
 ok(blancs.length===0,'aucun écran blanc');
 
 console.log('\n=== 3. TITRES D\'ONGLET ===');

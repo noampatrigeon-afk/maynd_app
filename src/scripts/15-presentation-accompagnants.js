@@ -138,18 +138,18 @@ var LIGHT_AGENTS=[];
 (function(){ try{ ALL.forEach(function(a){ if(AGENT_COLORS[a.id]) a.color=AGENT_COLORS[a.id]; }); }catch(e){} })();
 /* ═══════════════ INSCRIPTION — aucun vert, écran du prénom en blanc ═══════════════ */
 var OB_SAT={
-  'ob-welcome':'#974AF0', 'ob-signup':'#FE6601', 'ob-verify-choice':'#224CF2', 'ob-access':'#6F2FC0',
+  'ob-welcome':'#974AF0', 'ob-signup':'#FE6601', 'ob-verify-choice':'#224CF2', 'ob-access':'#00A862',
   'ob-trust':'#0C96C7', 'ob-firstname':'#FFFFFF', 'ob-account-success':'#974AF0',
   'ob-quiz-invite':'#6F2FC0', 'ob-plan':'#FE6601', 'ob-pay-success':'#FFC400'
 };
 var OB_DARK={'ob-pay-success':true, 'ob-firstname':true};
 var OB_TINTS={'#974AF0':'#EDE1FF','#224CF2':'#DFE8FF','#0C96C7':'#DDF0F8','#6F2FC0':'#E6D9FF',
               '#FE6601':'#FFE6D2','#FFC400':'#FFEBCB','#E8467F':'#FFE0EC','#000000':'#1C1C24',
-              '#FFFFFF':'#F6F1FF'};
+              '#FFFFFF':'#F6F1FF','#00A862':'#D8F2E4'};
 var OB_SOFT={
   'ob-signup':'#EDE1FF','ob-email':'#DFE8FF','ob-pwd':'#DFE8FF','ob-cgu':'#EDE1FF',
-  'ob-verify-code':'#DFE8FF','ob-otp':'#DFE8FF','ob-faceid':'#E6D9FF',
-  'ob-pin-create':'#EDE1FF','ob-pin-confirm':'#E6D9FF','ob-payment':'#FFE6D2','ob-login':'#DFE8FF'
+  'ob-verify-code':'#DFE8FF','ob-otp':'#DFE8FF','ob-faceid':'#D8F2E4',
+  'ob-pin-create':'#D8F2E4','ob-pin-confirm':'#D8F2E4','ob-payment':'#FFE6D2','ob-login':'#DFE8FF'
 };
 (function(){
   var f=window.obShow;
