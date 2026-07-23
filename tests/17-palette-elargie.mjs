@@ -50,7 +50,7 @@ ok(html.includes('#tab-accueil .greet-hi{font-size:29px'),'salutation agrandie')
 ok(html.includes('#tab-accueil .mia-cta{padding:20px 18px'),'carte MIA plus généreuse');
 
 console.log('\n=== 5. couleur dans inscription et paiement ===');
-ok(w.eval("Object.keys(OB_SAT).length")===9,'9 écrans d\'inscription en couleur pleine');
+ok(w.eval("Object.keys(OB_SAT).length")===10,'10 écrans d\'inscription en couleur pleine');
 const obc=w.eval("Object.keys(OB_SAT).map(function(k){return OB_SAT[k]}).join(',')");
 ok(obc.includes('#000000') && obc.includes('#FFC400') && obc.includes('#FE6601'),'noir, jaune et orange dans l\'inscription');
 w.obShow('ob-account-success'); await wait(20);
@@ -58,7 +58,7 @@ ok(w.$('onboarding').classList.contains('sat') && /151, 74, 240/.test(w.$('onboa
 w.obShow('ob-pay-success'); await wait(20);
 ok(w.$('onboarding').classList.contains('dark'),'paiement réussi en jaune, texte noir');
 w.obShow('ob-signup'); await wait(20);
-ok(!w.$('onboarding').classList.contains('sat') && !w.$('onboarding').classList.contains('dark'),'écrans de saisie remis au clair');
+ok(w.$('onboarding').classList.contains('sat') && !w.$('onboarding').classList.contains('dark'),'création de compte en orange MAYND, texte blanc');
 ok(html.includes('.formula.plus.on{border-color:var(--orange)'),'formules colorées');
 ok(html.includes('.ob-plan.plus.on{border-color:var(--orange)'),'plans de paiement colorés');
 

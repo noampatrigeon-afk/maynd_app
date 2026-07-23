@@ -95,4 +95,6 @@
 #deck.light .deck-x,#deck.light .deck-arrow{background:rgba(0,0,0,.14);color:#000}
 #deck.light .deck-dot{background:rgba(0,0,0,.3)}
 #deck.light .deck-dot.on{background:#000}
+/* ═══════ écran « créons ton compte » : orange MAYND, bouton orange foncé ═══════ */
+#onboarding.sat #ob-signup .btn{background:#C94F00;color:#fff}
 

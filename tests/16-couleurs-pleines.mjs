@@ -60,14 +60,13 @@ ok(!w.$('quiz').classList.contains('tinted') && /255, 255, 255|#FFFFFF/i.test(w.
 w.qzClose();
 
 console.log('\n=== 6. inscription colorée ===');
-ok(w.eval("Object.keys(OB_SAT).length")===9,'9 écrans d\'inscription en couleur pleine');
+ok(w.eval("Object.keys(OB_SAT).length")===10,'10 écrans d\'inscription en couleur pleine');
 ok(w.eval("OB_SAT['ob-welcome']")==='#974AF0','accueil d\'inscription en violet MAYND');
 w.obShow('ob-welcome'); await wait(20);
 const ob=w.$('onboarding');
 ok(ob.classList.contains('sat'),'classe couleur pleine appliquée');
 w.obShow('ob-signup'); await wait(20);
-ok(!ob.classList.contains('sat'),'écrans de saisie repassent en fond clair');
-ok(!/rgb\(255, 255, 255\)/.test(ob.style.background),'et passent sur une teinte claire');
+ok(ob.classList.contains('sat') && w.eval("OB_SAT['ob-signup']")==='#FE6601','création de compte en orange MAYND');
 
 console.log('\n=== 7. non-régression ===');
 w.enterApp(false); await wait(20); w.eval("state.tier='plus'");
