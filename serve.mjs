@@ -11,7 +11,7 @@ const TYPES = { '.html':'text/html; charset=utf-8', '.css':'text/css', '.js':'te
 
 http.createServer((req, res) => {
   let p = decodeURIComponent(req.url.split('?')[0]);
-  if (p === '/') p = '/dist/maynd.html';
+  if (p === '/') p = '/dist/index.html';
   const file = path.join(root, p);
   if (!file.startsWith(root) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) {
     res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });

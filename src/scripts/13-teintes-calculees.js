@@ -45,7 +45,9 @@ function objqFinish(){
   if(inner==='harsh' && secondary!=='felix') secondary='felix';
   var third=objqAns.likes ? (LIKE_AGENT[objqAns.likes]||null) : null;
   state.cap=CAP2[family][D.key]; state.capMeta=false;
-  addObjective(name, steps, primary);
+  state.objectives=(state.objectives||[]).filter(function(o){ return !o.fromCap; });
+  var capObj=addObjective(name, steps, primary);
+  capObj.fromCap=true;
   if(!Array.isArray(state.favorites)) state.favorites=[];
   [primary, secondary, third].forEach(function(id){ if(id && byId(id) && state.favorites.indexOf(id)<0) state.favorites.push(id); });
   if(!state.focus||!state.focus.agent) state.focus={agent:primary};

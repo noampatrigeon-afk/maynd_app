@@ -30,7 +30,7 @@ function renderBadges(){
 }
 function renderObjectives(){
   ensureQuestDay();
-  var h='<div class="obj-greet">'+t('objGreet')+'</div><div class="obj-greet-sub">'+t('objGreetSub')+'</div>';
+  var h='<div class="greet-row"><div class="greet-hi">'+t('objGreet')+'</div></div><div class="obj-greet-sub">'+t('objGreetSub')+'</div>';
   h+='<div class="cap-hero">'+renderCapCard()+'</div>';
   h+='<div class="pf-week-row">'+renderProfileCard()+renderWeekCard()+'</div>';
   h+=renderProBlock();

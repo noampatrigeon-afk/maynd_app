@@ -4,7 +4,7 @@ Prototype complet de l'application MAYND : développement personnel et performan
 en trois couches (MIA, quinze accompagnants, supervision par un professionnel référent certifié).
 
 Écrit en HTML, CSS et JavaScript natif. **Aucun framework, aucune dépendance à l'exécution.**
-Le livrable est un fichier unique et autonome : `dist/maynd.html`.
+Le livrable est un fichier unique et autonome : `dist/index.html`.
 
 ---
 
@@ -12,12 +12,12 @@ Le livrable est un fichier unique et autonome : `dist/maynd.html`.
 
 ```bash
 npm install      # uniquement jsdom, pour les tests
-npm run build    # assemble src/ -> dist/maynd.html
+npm run build    # assemble src/ -> dist/index.html
 npm start        # assemble puis sert sur http://localhost:5173
 npm test         # assemble puis lance les 15 suites (594 vérifications)
 ```
 
-Sans Node, `dist/maynd.html` s'ouvre directement dans un navigateur.
+Sans Node, `dist/index.html` s'ouvre directement dans un navigateur.
 
 ---
 
@@ -28,9 +28,9 @@ src/
   index.html                     squelette : balisage, écrans, feuilles
   styles/     10 fichiers        assemblés dans l'ordre alphabétique
   scripts/    17 fichiers        assemblés dans l'ordre alphabétique
-build.mjs                        concatène src/ dans dist/maynd.html
+build.mjs                        concatène src/ dans dist/index.html
 serve.mjs                        serveur local
-dist/maynd.html                  livrable autonome (généré, versionné)
+dist/index.html                  livrable autonome (généré, versionné)
 tests/                           15 suites jsdom + lanceur
 docs/                            architecture et dette technique
 ```
@@ -72,7 +72,7 @@ la limite de messages et le multi-accompagnants.
 
 ## Tests
 
-Quinze suites jsdom, 594 vérifications, exécutées sur `dist/maynd.html`.
+Quinze suites jsdom, 594 vérifications, exécutées sur `dist/index.html`.
 Chaque suite rejoue un parcours complet par de vrais clics : inscription écran par écran,
 questionnaires, trois onglets, toutes les feuilles, puis balayage de tous les éléments cliquables.
 

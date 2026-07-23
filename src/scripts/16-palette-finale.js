@@ -48,4 +48,29 @@ var LIGHT_AGENTS=['felix'];
 })();
 
 
-if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init();
+/* ═══════════════ DEV — reprise du dernier écran après un rechargement (Go Live) ═══════════════ */
+(function(){
+  var KEY='mayndLastScreen';
+  var f=window.obShow;
+  if(typeof f==='function'){
+    window.obShow=function(id){ try{ sessionStorage.setItem(KEY, id); }catch(e){} return f.apply(this, arguments); };
+  }
+  var g=window.showTab;
+  if(typeof g==='function'){
+    window.showTab=function(name){ try{ sessionStorage.setItem(KEY, 'tab:'+name); }catch(e){} return g.apply(this, arguments); };
+  }
+})();
+function bootWithResume(){
+  init();
+  try{
+    var last=sessionStorage.getItem('mayndLastScreen');
+    if(!last) return;
+    if(last.indexOf('tab:')===0){
+      var tab=last.slice(4);
+      if(state.onboarded && tab!=='accueil') showTab(tab);
+    } else if(!state.onboarded && document.getElementById(last)){
+      obShow(last);
+    }
+  }catch(e){}
+}
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',bootWithResume); else bootWithResume();

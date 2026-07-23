@@ -41,6 +41,9 @@ button{cursor:pointer;border:none;background:none;color:inherit}
 .brandmark .brain-svg .bf{animation:none}
 .avatar-btn{width:38px;height:38px;border-radius:50%;background:var(--ink);color:var(--paper);font-family:'Poppins',sans-serif;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;transition:transform var(--fast);box-shadow:0 2px 10px rgba(15,15,20,.18)}
 .avatar-btn:active{transform:scale(.92)}
+/* le libellé de la marque est masqué sur accueil/objectifs (voir 09-presentation-et-accueil.css) :
+   un seul enfant flex visible ferait dériver l'avatar vers la gauche malgré space-between */
+#tab-accueil .avatar-btn,#tab-objectifs .avatar-btn{margin-left:auto}
 
 .scroll{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
 .scroll::-webkit-scrollbar{width:0;display:none}
@@ -985,10 +988,10 @@ button:active,.btn:active,.agx-open:active,.conv-item:active,.quest:active,.chal
   --ok:#00A862;
 }
 /* ═══════ accueil : plus d'air ═══════ */
-#tab-accueil .pad{padding:10px 20px 34px}
+#tab-accueil .pad,#tab-objectifs .pad{padding:10px 20px 34px}
 #tab-accueil .section-head{margin:32px 2px 14px}
-#tab-accueil .greet-row{margin-bottom:20px}
-#tab-accueil .greet-hi{font-size:29px;letter-spacing:-.03em;line-height:1.15}
+#tab-accueil .greet-row,#tab-objectifs .greet-row{margin-bottom:20px}
+#tab-accueil .greet-hi,#tab-objectifs .greet-hi{font-size:29px;letter-spacing:-.03em;line-height:1.15}
 #tab-accueil .mia-cta{padding:20px 18px;border-radius:26px;margin-bottom:4px}
 #tab-accueil .mia-cta .t1{font-size:17px}
 #tab-accueil .jrow{margin-top:2px}
@@ -1306,7 +1309,7 @@ button:active,.btn:active,.agx-open:active,.conv-item:active,.quest:active,.chal
     <!-- OBJECTIFS -->
     <section class="screen" id="tab-objectifs">
       <div class="topbar">
-        <div class="brand"><span class="wordmark" data-i="goals">Objectifs</span></div>
+        <div class="brand"></div>
         <button class="avatar-btn" aria-label="Profil" onclick="openProfile()">N</button>
       </div>
       <div class="scroll"><div class="pad" id="obj-pad"></div></div>
@@ -1978,16 +1981,23 @@ let state = {
   onboarded:false, paid:false, questionnaireDone:false, freeDay:'', freeCount:0, wheel:null, focus:null, profile:null, why:'', whyEntry:'', vigilance:false, crisisFlagged:false, sound:true, pro:{name:''}, favorites:[], cap:'', capMeta:false, birthYear:'', challenges:{profile:false,objective:false}, objAnswers:null, questDay:'', quests:{mood:false,chat:false,goal:false}
 };
 function loadState(){
-  try{ localStorage.removeItem(KEY); }catch(e){} delete MEM[KEY]; /* démo : on ignore tout état précédent */
+  const saved=safeParse(dbGet(KEY), null);
+  if(saved && typeof saved==='object') Object.assign(state, saved);
   if(!Array.isArray(state.threads)) state.threads=[];
   if(!Array.isArray(state.moods)) state.moods=[];
   if(!Array.isArray(state.objectives)) state.objectives=[];
+  else {
+    const bestByName={};
+    state.objectives.forEach(o=>{ const cur=bestByName[o.name]; if(!cur||o.progress>cur.progress) bestByName[o.name]=o; });
+    const keepIds={}; Object.keys(bestByName).forEach(k=>keepIds[bestByName[k].id]=true);
+    state.objectives=state.objectives.filter(o=>keepIds[o.id]);
+  }
   if(!state.prompts||typeof state.prompts!=='object') state.prompts={};
   if(!I18N[state.lang]) state.lang='fr';
   if(state.threads.length===0){ const th=mkThread(['mia']); state.threads.push(th); state.current=th.id; }
   if(!state.current||!state.threads.find(t=>t.id===state.current)) state.current=state.threads[0].id;
 }
-function persist(){ /* démo : aucune sauvegarde, tout repart de zéro à chaque lancement */ }
+function persist(){ try{ dbSet(KEY, JSON.stringify(state)); }catch(e){} }
 
 /* ===== dates ===== */
 function todayKey(d){ d=d||new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
@@ -3444,7 +3454,7 @@ function renderBadges(){
 }
 function renderObjectives(){
   ensureQuestDay();
-  var h='<div class="obj-greet">'+t('objGreet')+'</div><div class="obj-greet-sub">'+t('objGreetSub')+'</div>';
+  var h='<div class="greet-row"><div class="greet-hi">'+t('objGreet')+'</div></div><div class="obj-greet-sub">'+t('objGreetSub')+'</div>';
   h+='<div class="cap-hero">'+renderCapCard()+'</div>';
   h+='<div class="pf-week-row">'+renderProfileCard()+renderWeekCard()+'</div>';
   h+=renderProBlock();
@@ -4475,7 +4485,9 @@ function objqFinish(){
   if(inner==='harsh' && secondary!=='felix') secondary='felix';
   var third=objqAns.likes ? (LIKE_AGENT[objqAns.likes]||null) : null;
   state.cap=CAP2[family][D.key]; state.capMeta=false;
-  addObjective(name, steps, primary);
+  state.objectives=(state.objectives||[]).filter(function(o){ return !o.fromCap; });
+  var capObj=addObjective(name, steps, primary);
+  capObj.fromCap=true;
   if(!Array.isArray(state.favorites)) state.favorites=[];
   [primary, secondary, third].forEach(function(id){ if(id && byId(id) && state.favorites.indexOf(id)<0) state.favorites.push(id); });
   if(!state.focus||!state.focus.agent) state.focus={agent:primary};
@@ -4883,15 +4895,16 @@ var AGENT_COLORS={
 };
 var LIGHT_AGENTS=[];
 (function(){ try{ ALL.forEach(function(a){ if(AGENT_COLORS[a.id]) a.color=AGENT_COLORS[a.id]; }); }catch(e){} })();
-/* ═══════════════ INSCRIPTION — aucun vert, écran du prénom en noir ═══════════════ */
+/* ═══════════════ INSCRIPTION — aucun vert, écran du prénom en blanc ═══════════════ */
 var OB_SAT={
   'ob-welcome':'#974AF0', 'ob-verify-choice':'#224CF2', 'ob-access':'#6F2FC0',
-  'ob-trust':'#0C96C7', 'ob-firstname':'#000000', 'ob-account-success':'#974AF0',
+  'ob-trust':'#0C96C7', 'ob-firstname':'#FFFFFF', 'ob-account-success':'#974AF0',
   'ob-quiz-invite':'#6F2FC0', 'ob-plan':'#FE6601', 'ob-pay-success':'#FFC400'
 };
-var OB_DARK={'ob-pay-success':true};
+var OB_DARK={'ob-pay-success':true, 'ob-firstname':true};
 var OB_TINTS={'#974AF0':'#EDE1FF','#224CF2':'#DFE8FF','#0C96C7':'#DDF0F8','#6F2FC0':'#E6D9FF',
-              '#FE6601':'#FFE6D2','#FFC400':'#FFEBCB','#E8467F':'#FFE0EC','#000000':'#1C1C24'};
+              '#FE6601':'#FFE6D2','#FFC400':'#FFEBCB','#E8467F':'#FFE0EC','#000000':'#1C1C24',
+              '#FFFFFF':'#F6F1FF'};
 var OB_SOFT={
   'ob-signup':'#EDE1FF','ob-email':'#DFE8FF','ob-pwd':'#DFE8FF','ob-cgu':'#EDE1FF',
   'ob-verify-code':'#DFE8FF','ob-otp':'#DFE8FF','ob-faceid':'#E6D9FF',
@@ -4989,7 +5002,32 @@ var LIGHT_AGENTS=['felix'];
 })();
 
 
-if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init); else init();
+/* ═══════════════ DEV — reprise du dernier écran après un rechargement (Go Live) ═══════════════ */
+(function(){
+  var KEY='mayndLastScreen';
+  var f=window.obShow;
+  if(typeof f==='function'){
+    window.obShow=function(id){ try{ sessionStorage.setItem(KEY, id); }catch(e){} return f.apply(this, arguments); };
+  }
+  var g=window.showTab;
+  if(typeof g==='function'){
+    window.showTab=function(name){ try{ sessionStorage.setItem(KEY, 'tab:'+name); }catch(e){} return g.apply(this, arguments); };
+  }
+})();
+function bootWithResume(){
+  init();
+  try{
+    var last=sessionStorage.getItem('mayndLastScreen');
+    if(!last) return;
+    if(last.indexOf('tab:')===0){
+      var tab=last.slice(4);
+      if(state.onboarded && tab!=='accueil') showTab(tab);
+    } else if(!state.onboarded && document.getElementById(last)){
+      obShow(last);
+    }
+  }catch(e){}
+}
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',bootWithResume); else bootWithResume();
 </script>
 </body>
 </html>

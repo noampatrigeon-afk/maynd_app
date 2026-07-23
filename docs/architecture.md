@@ -6,7 +6,7 @@ Application d'une seule page, en JavaScript natif, sans framework et sans étape
 Toutes les vues coexistent dans le balisage et sont montrées ou masquées par opacité, jamais par
 `display:none`, pour que les animations et la mesure de position restent possibles.
 
-Le livrable est **un seul fichier** : `dist/maynd.html`. Styles et scripts y sont intégrés.
+Le livrable est **un seul fichier** : `dist/index.html`. Styles et scripts y sont intégrés.
 Le découpage de `src/` sert au travail en éditeur ; l'assemblage reproduit le fichier au
 caractère près.
 

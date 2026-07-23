@@ -316,16 +316,23 @@ let state = {
   onboarded:false, paid:false, questionnaireDone:false, freeDay:'', freeCount:0, wheel:null, focus:null, profile:null, why:'', whyEntry:'', vigilance:false, crisisFlagged:false, sound:true, pro:{name:''}, favorites:[], cap:'', capMeta:false, birthYear:'', challenges:{profile:false,objective:false}, objAnswers:null, questDay:'', quests:{mood:false,chat:false,goal:false}
 };
 function loadState(){
-  try{ localStorage.removeItem(KEY); }catch(e){} delete MEM[KEY]; /* démo : on ignore tout état précédent */
+  const saved=safeParse(dbGet(KEY), null);
+  if(saved && typeof saved==='object') Object.assign(state, saved);
   if(!Array.isArray(state.threads)) state.threads=[];
   if(!Array.isArray(state.moods)) state.moods=[];
   if(!Array.isArray(state.objectives)) state.objectives=[];
+  else {
+    const bestByName={};
+    state.objectives.forEach(o=>{ const cur=bestByName[o.name]; if(!cur||o.progress>cur.progress) bestByName[o.name]=o; });
+    const keepIds={}; Object.keys(bestByName).forEach(k=>keepIds[bestByName[k].id]=true);
+    state.objectives=state.objectives.filter(o=>keepIds[o.id]);
+  }
   if(!state.prompts||typeof state.prompts!=='object') state.prompts={};
   if(!I18N[state.lang]) state.lang='fr';
   if(state.threads.length===0){ const th=mkThread(['mia']); state.threads.push(th); state.current=th.id; }
   if(!state.current||!state.threads.find(t=>t.id===state.current)) state.current=state.threads[0].id;
 }
-function persist(){ /* démo : aucune sauvegarde, tout repart de zéro à chaque lancement */ }
+function persist(){ try{ dbSet(KEY, JSON.stringify(state)); }catch(e){} }
 
 /* ===== dates ===== */
 function todayKey(d){ d=d||new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }

@@ -1,5 +1,5 @@
 import { JSDOM } from 'jsdom'; import fs from 'fs';
-const html=fs.readFileSync(new URL('../dist/maynd.html', import.meta.url),'utf8');
+const html=fs.readFileSync(new URL('../dist/index.html', import.meta.url),'utf8');
 let pass=0, fail=0; const fails=[];
 const ok=(c,n)=>{ if(c) pass++; else { fail++; fails.push(n); console.log('  ✗ '+n); } };
 function boot(){

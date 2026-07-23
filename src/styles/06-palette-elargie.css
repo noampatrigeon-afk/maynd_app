@@ -5,10 +5,10 @@
   --ok:#00A862;
 }
 /* ═══════ accueil : plus d'air ═══════ */
-#tab-accueil .pad{padding:10px 20px 34px}
+#tab-accueil .pad,#tab-objectifs .pad{padding:10px 20px 34px}
 #tab-accueil .section-head{margin:32px 2px 14px}
-#tab-accueil .greet-row{margin-bottom:20px}
-#tab-accueil .greet-hi{font-size:29px;letter-spacing:-.03em;line-height:1.15}
+#tab-accueil .greet-row,#tab-objectifs .greet-row{margin-bottom:20px}
+#tab-accueil .greet-hi,#tab-objectifs .greet-hi{font-size:29px;letter-spacing:-.03em;line-height:1.15}
 #tab-accueil .mia-cta{padding:20px 18px;border-radius:26px;margin-bottom:4px}
 #tab-accueil .mia-cta .t1{font-size:17px}
 #tab-accueil .jrow{margin-top:2px}

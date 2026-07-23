@@ -2,7 +2,7 @@
 /**
  * MAYND — assemblage
  * Concatène src/styles/*.css et src/scripts/*.js dans src/index.html
- * et écrit le fichier autonome dist/maynd.html.
+ * et écrit le fichier autonome dist/index.html.
  *
  * L'ordre alphabétique des fichiers EST l'ordre d'exécution. Il est
  * significatif : plusieurs fonctions sont redéfinies par les couches
@@ -29,5 +29,5 @@ html = html.replace('/* @inject:styles */', () => styles)
            .replace('/* @inject:scripts */', () => scripts);
 
 fs.mkdirSync(path.join(root, 'dist'), { recursive: true });
-fs.writeFileSync(path.join(root, 'dist/maynd.html'), html);
-console.log(`dist/maynd.html écrit — ${html.split('\n').length} lignes, ${(html.length/1024).toFixed(0)} Ko`);
+fs.writeFileSync(path.join(root, 'dist/index.html'), html);
+console.log(`dist/index.html écrit — ${html.split('\n').length} lignes, ${(html.length/1024).toFixed(0)} Ko`);
