@@ -445,11 +445,11 @@ p{line-height:1.55}
 .ob-otp input:focus{border-color:var(--violet)}
 .ob-resend{text-align:center;font-size:13px;color:var(--mist)}.ob-resend a{color:var(--violet-deep);font-weight:600}
 .ob-faceid{display:flex;flex-direction:column;align-items:center;gap:16px;margin:34px 0}
-.ob-faceid .circ{width:140px;height:140px;border-radius:36px;background:var(--violet-soft);display:flex;align-items:center;justify-content:center}
-.ob-faceid .circ svg{width:72px;height:72px;color:var(--violet-deep)}
+.ob-faceid .circ{width:140px;height:140px;border-radius:36px;background:#00A862;display:flex;align-items:center;justify-content:center}
+.ob-faceid .circ svg{width:72px;height:72px;color:#fff}
 .ob-pin-dots{display:flex;gap:16px;justify-content:center;margin:26px 0 20px}
 .ob-pin-dots .pd{width:15px;height:15px;border-radius:50%;border:2px solid var(--line);transition:all var(--fast)}
-.ob-pin-dots .pd.f{background:var(--violet);border-color:var(--violet)}
+.ob-pin-dots .pd.f{background:#00A862;border-color:#00A862}
 .ob-keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;max-width:300px;margin:0 auto;width:100%}
 .ob-key{height:60px;border-radius:18px;background:var(--card);border:1px solid var(--line);font-family:'Poppins',sans-serif;font-weight:600;font-size:23px;color:var(--ink);transition:transform var(--fast),background var(--fast)}
 .ob-key:active{transform:scale(.94);background:var(--paper-2)}
