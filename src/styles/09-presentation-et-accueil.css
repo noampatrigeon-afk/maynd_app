@@ -110,6 +110,9 @@
 #ob-access .ob-method:first-of-type{margin-top:auto}
 #ob-access .ob-method:last-of-type{margin-bottom:auto}
 #ob-access .ob-method{transform:translateY(-8vh)}
+#onboarding.sat #ob-access .ob-method{background:#00A862;color:#fff}
+#onboarding.sat #ob-access .ob-method .ms{color:rgba(255,255,255,.85)}
+#onboarding.sat #ob-access .ob-method .ma{color:#fff}
 /* ═══════ écran « saisis ton code » : rose MAYND, écritures blanches, bouton rose foncé, code centré ═══════ */
 #onboarding.sat #ob-verify-code .btn{background:#A61E4D;color:#fff}
 #onboarding.sat #ob-verify-code .ob-otp input{background:var(--obt,#FFE0EC);color:#000;border-color:transparent}
