@@ -139,6 +139,7 @@ var LIGHT_AGENTS=[];
 /* ═══════════════ INSCRIPTION — aucun vert, écran du prénom en blanc ═══════════════ */
 var OB_SAT={
   'ob-welcome':'#974AF0', 'ob-signup':'#FE6601', 'ob-verify-choice':'#224CF2', 'ob-verify-code':'#E8467F', 'ob-access':'#00A862',
+  'ob-faceid':'#00A862', 'ob-pin-create':'#00A862', 'ob-pin-confirm':'#00A862',
   'ob-trust':'#0C96C7', 'ob-firstname':'#FFFFFF', 'ob-account-success':'#974AF0',
   'ob-quiz-invite':'#6F2FC0', 'ob-plan':'#FE6601', 'ob-pay-success':'#FFC400'
 };

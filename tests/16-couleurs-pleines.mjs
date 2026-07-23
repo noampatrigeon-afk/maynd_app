@@ -60,7 +60,7 @@ ok(!w.$('quiz').classList.contains('tinted') && /255, 255, 255|#FFFFFF/i.test(w.
 w.qzClose();
 
 console.log('\n=== 6. inscription colorée ===');
-ok(w.eval("Object.keys(OB_SAT).length")===11,'11 écrans d\'inscription en couleur pleine');
+ok(w.eval("Object.keys(OB_SAT).length")===14,'14 écrans d\'inscription en couleur pleine');
 ok(w.eval("OB_SAT['ob-welcome']")==='#974AF0','accueil d\'inscription en violet MAYND');
 w.obShow('ob-welcome'); await wait(20);
 const ob=w.$('onboarding');

@@ -56,7 +56,7 @@ for(const id of obIds){
   if(/255, 255, 255/.test(bg) || !bg) blancs.push(id);
 }
 ok(blancs.length===0,'aucun écran blanc'+(blancs.length?' ('+blancs.join(', ')+')':''));
-ok(w.eval("Object.keys(OB_SAT).length")===11,'11 écrans en couleur pleine');
+ok(w.eval("Object.keys(OB_SAT).length")===14,'14 écrans en couleur pleine');
 const obc=w.eval("Object.keys(OB_SAT).map(function(k){return OB_SAT[k]})");
 ok(new Set(obc).size>=5,new Set(obc).size+' couleurs différentes dans l\'inscription');
 
