@@ -1256,6 +1256,7 @@ button:active,.btn:active,.agx-open:active,.conv-item:active,.quest:active,.chal
 #ob-access .ob-method:last-of-type{margin-bottom:auto}
 #ob-access .ob-method{transform:translateY(-8vh)}
 #onboarding.sat .ob-pin-dots .pd{border-color:rgba(255,255,255,.55)}
+#onboarding.sat #ob-faceid .btn,#onboarding.sat #ob-fingerprint .btn{background:#fff;color:#045C3C}
 /* ═══════ écran « saisis ton code » : rose MAYND, écritures blanches, bouton rose foncé, code centré ═══════ */
 #onboarding.sat #ob-verify-code .btn{background:#A61E4D;color:#fff}
 #onboarding.sat #ob-verify-code .ob-otp input{background:var(--obt,#FFE0EC);color:#000;border-color:transparent}
@@ -1520,7 +1521,7 @@ button:active,.btn:active,.agx-open:active,.conv-item:active,.quest:active,.chal
       <h1 class="ob-h1">Accès rapide</h1>
       <p class="ob-sub">Choisis comment te connecter. Ton accès doit rester simple, et sûr.</p>
       <button class="ob-method" onclick="obShow('ob-faceid')"><span class="mi" style="background:#045C3C"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M9 9h.01M15 9h.01M9 15c.5.6 1.5 1 3 1s2.5-.4 3-1"/></svg></span><span class="ptx"><span class="mt">Face ID</span><span class="ms">Ultra rapide. Reconnaissance faciale.</span></span><span class="ma"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></span></button>
-      <button class="ob-method" onclick="obShow('ob-faceid')"><span class="mi" style="background:#0F7A5C"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 11c0-2 1-3 0-5"/><path d="M8 7c1-2 5-2 7 1"/><path d="M7 12c0-3 0-7 5-7s5 4 5 8"/><path d="M9 14c0 3 0 5-1 6"/><path d="M12 13v4"/><path d="M15 13c0 4-1 6-2 7"/></svg></span><span class="ptx"><span class="mt">Empreinte digitale</span><span class="ms">Pose ton doigt sur le capteur.</span></span><span class="ma"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></span></button>
+      <button class="ob-method" onclick="obShow('ob-fingerprint')"><span class="mi" style="background:#0F7A5C"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 11c0-2 1-3 0-5"/><path d="M8 7c1-2 5-2 7 1"/><path d="M7 12c0-3 0-7 5-7s5 4 5 8"/><path d="M9 14c0 3 0 5-1 6"/><path d="M12 13v4"/><path d="M15 13c0 4-1 6-2 7"/></svg></span><span class="ptx"><span class="mt">Empreinte digitale</span><span class="ms">Pose ton doigt sur le capteur.</span></span><span class="ma"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></span></button>
       <button class="ob-method" onclick="obShow('ob-pin-create')"><span class="mi" style="background:#0C8F5C"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span><span class="ptx"><span class="mt">Code PIN</span><span class="ms">4 chiffres. Simple et fiable.</span></span><span class="ma"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></span></button>
     </div>
 
@@ -1530,6 +1531,14 @@ button:active,.btn:active,.agx-open:active,.conv-item:active,.quest:active,.chal
       <p class="ob-sub" style="text-align:center">Regarde simplement ton écran pour finaliser.</p>
       <div class="ob-faceid"><div class="circ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="9" cy="10" r="0.8" fill="currentColor"/><circle cx="15" cy="10" r="0.8" fill="currentColor"/><path d="M9 15c.5.6 1.5 1 3 1s2.5-.4 3-1"/></svg></div></div>
       <div class="ob-bottom"><button class="btn full" onclick="obShow('ob-trust')">Activer Face ID</button></div>
+    </div>
+
+    <div class="ob-screen" id="ob-fingerprint">
+      <div class="ob-head"><button class="ob-back" onclick="obShow('ob-access')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button><div class="ob-step">Étape 3 / 4</div><div style="width:38px"></div></div>
+      <h1 class="ob-h1" style="text-align:center">Active l'empreinte</h1>
+      <p class="ob-sub" style="text-align:center">Pose ton doigt sur le capteur pour finaliser.</p>
+      <div class="ob-faceid"><div class="circ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 11c0-2 1-3 0-5"/><path d="M8 7c1-2 5-2 7 1"/><path d="M7 12c0-3 0-7 5-7s5 4 5 8"/><path d="M9 14c0 3 0 5-1 6"/><path d="M12 13v4"/><path d="M15 13c0 4-1 6-2 7"/></svg></div></div>
+      <div class="ob-bottom"><button class="btn full" onclick="obShow('ob-trust')">Activer l'empreinte</button></div>
     </div>
 
     <div class="ob-screen" id="ob-pin-create">
@@ -4925,7 +4934,7 @@ var LIGHT_AGENTS=[];
 /* ═══════════════ INSCRIPTION — aucun vert, écran du prénom en blanc ═══════════════ */
 var OB_SAT={
   'ob-welcome':'#974AF0', 'ob-signup':'#FE6601', 'ob-verify-choice':'#224CF2', 'ob-verify-code':'#E8467F', 'ob-access':'#00A862',
-  'ob-faceid':'#00A862', 'ob-pin-create':'#00A862', 'ob-pin-confirm':'#00A862',
+  'ob-faceid':'#00A862', 'ob-fingerprint':'#00A862', 'ob-pin-create':'#00A862', 'ob-pin-confirm':'#00A862',
   'ob-trust':'#0C96C7', 'ob-firstname':'#FFFFFF', 'ob-account-success':'#974AF0',
   'ob-quiz-invite':'#6F2FC0', 'ob-plan':'#FE6601', 'ob-pay-success':'#FFC400'
 };

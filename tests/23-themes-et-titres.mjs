@@ -60,7 +60,7 @@ for(const id of obIds){
   if(/216, 242, 228|0, 168, 98/.test(bg)) verts.push(id);
   if(/255, 255, 255/.test(bg) || !bg) blancs.push(id);
 }
-const expectedVerts=['ob-access','ob-faceid','ob-pin-create','ob-pin-confirm'];
+const expectedVerts=['ob-access','ob-faceid','ob-fingerprint','ob-pin-create','ob-pin-confirm'];
 ok(verts.length===expectedVerts.length && expectedVerts.every(id=>verts.includes(id)),'étape 3 (accès rapide) en vert, aucun autre écran : '+verts.join(', '));
 ok(blancs.length===0,'aucun écran blanc');
 
