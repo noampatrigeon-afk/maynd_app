@@ -1247,7 +1247,7 @@ button:active,.btn:active,.agx-open:active,.conv-item:active,.quest:active,.chal
 #onboarding.sat #ob-signup .ob-cgu .tx a{color:#fff}
 /* ═══════ écran « sécurisons ton compte » : deux carrés SMS / e-mail ═══════ */
 .ob-choice-row{display:flex;gap:16px;justify-content:center;margin-top:auto;margin-bottom:auto;transform:translateY(-8vh)}
-.ob-choice-sq{flex:1;max-width:150px;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;border:none;border-radius:26px;color:#fff;box-shadow:var(--sh-sm);transition:transform var(--fast)}
+.ob-choice-sq{flex:1;max-width:150px;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;border:none;border-radius:26px;background:#fff;color:#224CF2;box-shadow:var(--sh-sm);transition:transform var(--fast)}
 .ob-choice-sq:active{transform:scale(.96)}
 .ob-choice-sq svg{width:34px;height:34px}
 .ob-choice-sq span{font-family:'Poppins',sans-serif;font-weight:700;font-size:14px;letter-spacing:.02em}
@@ -1487,8 +1487,8 @@ button:active,.btn:active,.agx-open:active,.conv-item:active,.quest:active,.chal
       <h1 class="ob-h1">Sécurisons ton compte</h1>
       <p class="ob-sub">Comment veux-tu recevoir ton code de vérification ?</p>
       <div class="ob-choice-row">
-        <button class="ob-choice-sq" onclick="obShow('ob-verify-code')" style="background:#E8467F"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="3"/><line x1="12" y1="18" x2="12" y2="18"/></svg><span>SMS</span></button>
-        <button class="ob-choice-sq" onclick="obShow('ob-verify-code')" style="background:#00A862"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><span>E-MAIL</span></button>
+        <button class="ob-choice-sq" onclick="obShow('ob-verify-code')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="3"/><line x1="12" y1="18" x2="12" y2="18"/></svg><span>SMS</span></button>
+        <button class="ob-choice-sq" onclick="obShow('ob-verify-code')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><span>E-MAIL</span></button>
       </div>
     </div>
 
