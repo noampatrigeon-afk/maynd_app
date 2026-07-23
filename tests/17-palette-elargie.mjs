@@ -52,7 +52,7 @@ ok(html.includes('#tab-accueil .mia-cta{padding:20px 18px'),'carte MIA plus gén
 console.log('\n=== 5. couleur dans inscription et paiement ===');
 ok(w.eval("Object.keys(OB_SAT).length")===15,'15 écrans d\'inscription en couleur pleine');
 const obc=w.eval("Object.keys(OB_SAT).map(function(k){return OB_SAT[k]}).join(',')");
-ok(obc.includes('#000000') && obc.includes('#FFC400') && obc.includes('#FE6601'),'noir, jaune et orange dans l\'inscription');
+ok(obc.includes('#FFFFFF') && obc.includes('#FFC400') && obc.includes('#FE6601'),'blanc, jaune et orange dans l\'inscription');
 w.obShow('ob-account-success'); await wait(20);
 ok(w.$('onboarding').classList.contains('sat') && /151, 74, 240/.test(w.$('onboarding').style.background),'création de compte en violet MAYND');
 w.obShow('ob-pay-success'); await wait(20);

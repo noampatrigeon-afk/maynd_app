@@ -76,9 +76,9 @@ ok(w.eval("byId('mia').color")==='#974AF0','MIA garde le violet MAYND');
 ok(new Set(acols).size>=8,'palette variée : '+new Set(acols).size+' couleurs');
 
 console.log('\n=== 4. LE ROSE DANS L\'INSCRIPTION ===');
-ok(w.eval("OB_SAT['ob-firstname']")==='#000000','écran prénom en noir');
+ok(w.eval("OB_SAT['ob-firstname']")==='#FFFFFF','écran prénom en blanc');
 w.obShow('ob-firstname'); await wait(30);
-ok(/rgb\(0, 0, 0\)|#000000/i.test(w.$('onboarding').style.background),'noir appliqué');
+ok(/rgb\(255, 255, 255\)|#FFFFFF/i.test(w.$('onboarding').style.background),'blanc appliqué');
 w.startObjQuiz(); await wait(30);
 w.objqPick(0); await wait(280); w.objqPick(0); await wait(280);
 ok(/232, 70, 127/.test(w.$('orient').style.background),'rose dans le questionnaire');

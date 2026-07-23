@@ -112,6 +112,8 @@
 #ob-access .ob-method{transform:translateY(-8vh)}
 #onboarding.sat .ob-pin-dots .pd{border-color:rgba(255,255,255,.55)}
 #onboarding.sat #ob-faceid .btn,#onboarding.sat #ob-fingerprint .btn{background:#fff;color:#045C3C}
+/* ═══════ écran « plus besoin de te reconnecter » : bouton bleu ciel foncé ═══════ */
+#onboarding.sat #ob-trust .btn{background:#075E7D;color:#fff}
 /* ═══════ écran « saisis ton code » : rose MAYND, écritures blanches, bouton rose foncé, code centré ═══════ */
 #onboarding.sat #ob-verify-code .btn{background:#A61E4D;color:#fff}
 #onboarding.sat #ob-verify-code .ob-otp input{background:var(--obt,#FFE0EC);color:#000;border-color:transparent}
