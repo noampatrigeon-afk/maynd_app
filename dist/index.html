@@ -1251,14 +1251,17 @@ button:active,.btn:active,.agx-open:active,.conv-item:active,.quest:active,.chal
 .ob-choice-sq:active{transform:scale(.96)}
 .ob-choice-sq svg{width:34px;height:34px}
 .ob-choice-sq span{font-family:'Poppins',sans-serif;font-weight:700;font-size:14px;letter-spacing:.02em}
-/* ═══════ écran « accès rapide » : les trois choix centrés ═══════ */
+/* ═══════ écran « accès rapide » : les trois choix centrés, comme sms/email ═══════ */
 #ob-access .ob-method:first-of-type{margin-top:auto}
 #ob-access .ob-method:last-of-type{margin-bottom:auto}
-/* ═══════ écran « saisis ton code » : rose MAYND, écritures blanches, bouton rose foncé ═══════ */
+#ob-access .ob-method{transform:translateY(-8vh)}
+/* ═══════ écran « saisis ton code » : rose MAYND, écritures blanches, bouton rose foncé, code centré ═══════ */
 #onboarding.sat #ob-verify-code .btn{background:#A61E4D;color:#fff}
 #onboarding.sat #ob-verify-code .ob-otp input{background:var(--obt,#FFE0EC);color:#000;border-color:transparent}
 #onboarding.sat #ob-verify-code .ob-resend{color:#fff}
 #onboarding.sat #ob-verify-code .ob-resend a{color:#fff;text-decoration:underline}
+.ob-otp-wrap{margin-top:auto;margin-bottom:auto;transform:translateY(-8vh)}
+#ob-verify-code .ob-bottom{margin-top:18px}
 
 </style>
 </head>
@@ -1504,8 +1507,10 @@ button:active,.btn:active,.agx-open:active,.conv-item:active,.quest:active,.chal
       <div class="ob-head"><button class="ob-back" onclick="obShow('ob-verify-choice')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button><div class="ob-step">Étape 2 / 4</div><div style="width:38px"></div></div>
       <h1 class="ob-h1">Saisis ton code</h1>
       <p class="ob-sub">Un code à 6 chiffres vient de t'être envoyé. Entre-le ci-dessous.</p>
-      <div class="ob-otp" id="ob-otp"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"></div>
-      <div class="ob-resend">Pas reçu ? <a>Renvoyer le code</a></div>
+      <div class="ob-otp-wrap">
+        <div class="ob-otp" id="ob-otp"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"><input maxlength="1" inputmode="numeric"></div>
+        <div class="ob-resend">Pas reçu ? <a>Renvoyer le code</a></div>
+      </div>
       <div class="ob-bottom"><button class="btn full" onclick="obShow('ob-access')">Vérifier</button></div>
     </div>
 
