@@ -456,8 +456,8 @@ p{line-height:1.55}
 .ob-key.empty{background:transparent;border:none;pointer-events:none}
 .ob-key.back{font-size:20px;color:var(--mist)}
 .ob-trust-illu{display:flex;justify-content:center;margin:20px 0 6px}
-.ob-trust-illu .sh{width:120px;height:120px;border-radius:34px;background:#DDF0F8;display:flex;align-items:center;justify-content:center}
-.ob-trust-illu .sh svg{width:62px;height:62px;color:#075E7D}
+.ob-trust-illu .sh{width:120px;height:120px;border-radius:34px;background:#DFE8FF;display:flex;align-items:center;justify-content:center}
+.ob-trust-illu .sh svg{width:62px;height:62px;color:#224CF2}
 .ob-toggle-row{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:15px;margin-top:18px}
 .ob-toggle-row .tt{flex:1}
 .ob-toggle-row .tn{font-family:'Poppins',sans-serif;font-weight:700;font-size:14.5px}
