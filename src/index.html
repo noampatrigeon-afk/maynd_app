@@ -18,6 +18,7 @@
     <!-- ACCUEIL -->
     <section class="screen" id="tab-accueil">
       <div class="topbar">
+        <button class="ob-reopen-btn" onclick="openInscription()">Inscription</button>
         <div class="brand" id="brandmark-slot"></div>
         <button class="avatar-btn" id="avatar-accueil" aria-label="Profil" onclick="openProfile()">N</button>
       </div>
@@ -211,6 +212,8 @@
   </aside>
   <!-- ══════════ ONBOARDING ══════════ -->
   <div id="onboarding">
+
+    <button class="ob-exit" id="ob-exit-btn" onclick="closeInscription()" aria-label="Fermer">×</button>
 
     <div class="ob-screen on" id="ob-welcome">
       <div class="ob-head"><div style="width:38px"></div><div></div><div style="width:38px"></div></div>

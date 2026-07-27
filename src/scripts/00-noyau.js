@@ -1255,10 +1255,17 @@ function paySamu(){ toast('Adresse utilisée pour la facturation et, si besoin, 
 function obPay(){ state.paid=true; persist(); obShow('ob-pay-success'); }
 function enterApp(wantsQuiz){
   state.onboarded=true; persist();
-  $('onboarding').classList.add('done');
+  $('onboarding').classList.add('done'); $('onboarding').classList.remove('reopened');
   initRenders(); showTab('accueil');
   if(wantsQuiz){ startQuiz(); }
   else { checkMoodOnOpen(); }
+}
+function openInscription(){
+  $('onboarding').classList.remove('done'); $('onboarding').classList.add('reopened');
+  obShow('ob-welcome'); obPlanList();
+}
+function closeInscription(){
+  $('onboarding').classList.add('done'); $('onboarding').classList.remove('reopened');
 }
 
 /* ====================== RAPPEL QUESTIONNAIRE ====================== */

@@ -1267,6 +1267,9 @@ button:active,.btn:active,.agx-open:active,.conv-item:active,.quest:active,.chal
 #onboarding.sat #ob-verify-code .ob-resend a{color:#fff;text-decoration:underline}
 .ob-otp-wrap{margin-top:auto;margin-bottom:auto;transform:translateY(-8vh)}
 #ob-verify-code .ob-bottom{margin-top:18px}
+.ob-reopen-btn{display:inline-flex;align-items:center;height:32px;padding:0 14px;border:none;border-radius:var(--r-pill);background:var(--violet-tint);color:var(--violet-deep);font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;cursor:pointer}
+.ob-exit{display:none;position:absolute;top:16px;right:16px;z-index:95;width:38px;height:38px;border-radius:50%;background:rgba(15,15,20,.08);color:var(--ink);border:none;font-size:20px;line-height:1;cursor:pointer;align-items:center;justify-content:center}
+#onboarding.reopened .ob-exit{display:flex}
 
 </style>
 </head>
@@ -1277,6 +1280,7 @@ button:active,.btn:active,.agx-open:active,.conv-item:active,.quest:active,.chal
     <!-- ACCUEIL -->
     <section class="screen" id="tab-accueil">
       <div class="topbar">
+        <button class="ob-reopen-btn" onclick="openInscription()">Inscription</button>
         <div class="brand" id="brandmark-slot"></div>
         <button class="avatar-btn" id="avatar-accueil" aria-label="Profil" onclick="openProfile()">N</button>
       </div>
@@ -1470,6 +1474,8 @@ button:active,.btn:active,.agx-open:active,.conv-item:active,.quest:active,.chal
   </aside>
   <!-- ══════════ ONBOARDING ══════════ -->
   <div id="onboarding">
+
+    <button class="ob-exit" id="ob-exit-btn" onclick="closeInscription()" aria-label="Fermer">×</button>
 
     <div class="ob-screen on" id="ob-welcome">
       <div class="ob-head"><div style="width:38px"></div><div></div><div style="width:38px"></div></div>
@@ -2959,10 +2965,17 @@ function paySamu(){ toast('Adresse utilisée pour la facturation et, si besoin, 
 function obPay(){ state.paid=true; persist(); obShow('ob-pay-success'); }
 function enterApp(wantsQuiz){
   state.onboarded=true; persist();
-  $('onboarding').classList.add('done');
+  $('onboarding').classList.add('done'); $('onboarding').classList.remove('reopened');
   initRenders(); showTab('accueil');
   if(wantsQuiz){ startQuiz(); }
   else { checkMoodOnOpen(); }
+}
+function openInscription(){
+  $('onboarding').classList.remove('done'); $('onboarding').classList.add('reopened');
+  obShow('ob-welcome'); obPlanList();
+}
+function closeInscription(){
+  $('onboarding').classList.add('done'); $('onboarding').classList.remove('reopened');
 }
 
 /* ====================== RAPPEL QUESTIONNAIRE ====================== */
