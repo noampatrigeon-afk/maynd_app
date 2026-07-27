@@ -317,7 +317,7 @@ function safeParse(s,f){ try{ return JSON.parse(s); }catch(e){ return f; } }
 /* ===== etat ===== */
 const KEY='maynd.state.v7';
 let state = {
-  name:'', apiKey:'', model:'claude-sonnet-4-6', tier:'free', lang:'fr',
+  name:'', apiKey:'', model:'claude-sonnet-5', tier:'free', lang:'fr',
   socle:'', prompts:{}, threads:[], current:null,
   moods:[], moodSeen:'', xp:0, streak:0, lastActiveDay:'', objectives:[],
   onboarded:false, paid:false, questionnaireDone:false, freeDay:'', freeCount:0, wheel:null, focus:null, profile:null, why:'', whyEntry:'', vigilance:false, crisisFlagged:false, sound:true, pro:{name:''}, favorites:[], cap:'', capMeta:false, birthYear:'', challenges:{profile:false,objective:false}, objAnswers:null, questDay:'', quests:{mood:false,chat:false,goal:false}
@@ -325,6 +325,7 @@ let state = {
 function loadState(){
   const saved=safeParse(dbGet(KEY), null);
   if(saved && typeof saved==='object') Object.assign(state, saved);
+  if(state.model==='claude-sonnet-4-6') state.model='claude-sonnet-5';
   if(!Array.isArray(state.threads)) state.threads=[];
   if(!Array.isArray(state.moods)) state.moods=[];
   if(!Array.isArray(state.objectives)) state.objectives=[];
@@ -819,7 +820,7 @@ function renderProfile(){
     +'<div style="display:flex;gap:9px"><button class="btn sm" onclick="saveKey()">'+t('save')+'</button><button class="btn ghost sm" onclick="testKey()">'+t('test')+'</button></div>'
     +'<div class="note-priv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span>'+t('privNote')+'</span></div></div>';
   h+='<div class="block-title">'+t('intelligence')+'</div><div class="block">'
-    +'<button class="modelopt'+(state.model==='claude-sonnet-4-6'?' on':'')+'" onclick="setModel(\'claude-sonnet-4-6\')"><span class="radio"></span><span><span class="mt">Claude Sonnet</span><span class="md">'+t('sonnetD')+'</span></span></button>'
+    +'<button class="modelopt'+(state.model==='claude-sonnet-5'?' on':'')+'" onclick="setModel(\'claude-sonnet-5\')"><span class="radio"></span><span><span class="mt">Claude Sonnet</span><span class="md">'+t('sonnetD')+'</span></span></button>'
     +'<button class="modelopt'+(state.model==='claude-opus-4-8'?' on':'')+'" onclick="setModel(\'claude-opus-4-8\')"><span class="radio"></span><span><span class="mt">Claude Opus</span><span class="md">'+t('opusD')+'</span></span></button></div>';
   h+='<div class="block-title">'+t('yourPlan')+'</div><div class="block" style="padding:12px 16px"><button class="plan-row" onclick="openFormules()"><span class="pava"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3 7h7l-5.5 4 2 7L12 17l-6.5 5 2-7L2 9h7z"/></svg></span><span><span class="pn">'+tier+'</span><span class="pd">'+t('seeChange')+'</span></span><span class="chev">'+chev()+'</span></button></div>';
   h+='<div class="block-title">'+t('language')+'</div><div class="block" style="padding:6px 16px"><button class="lang-row on" onclick="openLang()"><span class="flag">'+lang.flag+'</span><span class="ln">'+lang.name+'</span><span class="chev" style="margin-left:auto;color:var(--mist)">'+chev()+'</span></button></div>';
@@ -941,7 +942,7 @@ function closeIO(){ closeSheet('io-backdrop','io-sheet'); }
 function clearConvos(){ state.threads=[]; const th=mkThread(['mia']); state.threads.push(th); state.current=th.id; persist(); if(isOpen('drawer')) renderDrawer(); if(activeScreen()==='tab-chat'){ renderChatHeader(); renderMessages(); renderPartsCount(); } toast(t('clearC')); }
 function resetAll(){
   dbDel(KEY); MEM={};
-  state={ name:'', apiKey:'', model:'claude-sonnet-4-6', tier:'free', lang:state.lang, socle:'', prompts:{}, threads:[], current:null, moods:[], moodSeen:'', xp:0, streak:0, lastActiveDay:'', objectives:[], questDay:'', quests:{mood:false,chat:false,goal:false} };
+  state={ name:'', apiKey:'', model:'claude-sonnet-5', tier:'free', lang:state.lang, socle:'', prompts:{}, threads:[], current:null, moods:[], moodSeen:'', xp:0, streak:0, lastActiveDay:'', objectives:[], questDay:'', quests:{mood:false,chat:false,goal:false} };
   loadState(); persist();
   applyI18n(); renderGreeting(); renderSuivi(); renderStrip(); renderProfile();
   if(activeScreen()==='tab-chat'){ renderChatHeader(); renderMessages(); renderPartsCount(); }
