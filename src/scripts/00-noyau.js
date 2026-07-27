@@ -1403,7 +1403,7 @@ function qzFinish(key){
   let primary=p.agents[0]; if(quizAns.q8&&quizAns.q8.help) primary='atlas';
   state.focus={agent:primary};
   state.favorites = p.agents.slice(); if(primary && state.favorites.indexOf(primary)<0) state.favorites.unshift(primary);
-  state.cap = (quizAns.q7||'').trim(); state.capMeta=false;
+  if(!state.cap){ const q7cap=(quizAns.q7||'').trim(); if(q7cap){ state.cap=q7cap; state.capMeta=false; } }
   getWheel(); if(quizAns.q5&&quizAns.q5.e) state.wheel.energie=quizAns.q5.e;
   state.questionnaireDone=true; persist();
   qzClose();
