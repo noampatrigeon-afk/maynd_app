@@ -52,6 +52,8 @@ ok(html.includes('#onboarding.noir .yw-item.on{color:#fff}'),'roulette adaptée 
 w.obShow('ob-account-success'); await wait(30);
 ok(/0, 168, 98/.test(w.$('onboarding').style.background),'validation en vert MAYND');
 ok(html.includes('#onboarding.sat #ob-account-success .circ{background:#FFFFFF;color:#00A862}'),'coche verte MAYND (meme vert que le fond) sur cercle blanc');
+const successSvg=w.$('onboarding').querySelector('#ob-account-success .circ svg');
+ok(!!successSvg && w.getComputedStyle(successSvg).color==='rgb(0, 168, 98)','la coche est reellement verte au rendu, pas blanche sur cercle blanc');
 const obIds=[...w.document.querySelectorAll('#onboarding .ob-screen')].map(s=>s.id);
 let verts=[], blancs=[];
 for(const id of obIds){
