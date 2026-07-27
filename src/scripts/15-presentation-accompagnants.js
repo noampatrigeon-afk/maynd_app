@@ -136,11 +136,11 @@ var AGENT_COLORS={
 };
 var LIGHT_AGENTS=[];
 (function(){ try{ ALL.forEach(function(a){ if(AGENT_COLORS[a.id]) a.color=AGENT_COLORS[a.id]; }); }catch(e){} })();
-/* ═══════════════ INSCRIPTION — aucun vert, écran du prénom en blanc ═══════════════ */
+/* ═══════════════ INSCRIPTION — écran du prénom en blanc, vert MAYND au compte prêt ═══════════════ */
 var OB_SAT={
   'ob-welcome':'#974AF0', 'ob-signup':'#FE6601', 'ob-verify-choice':'#224CF2', 'ob-verify-code':'#E8467F', 'ob-access':'#00A862',
   'ob-faceid':'#00A862', 'ob-fingerprint':'#00A862', 'ob-pin-create':'#00A862', 'ob-pin-confirm':'#00A862',
-  'ob-trust':'#0E2B6B', 'ob-firstname':'#FFFFFF', 'ob-account-success':'#974AF0',
+  'ob-trust':'#0E2B6B', 'ob-firstname':'#FFFFFF', 'ob-account-success':'#00A862',
   'ob-quiz-invite':'#6F2FC0', 'ob-plan':'#FE6601', 'ob-pay-success':'#FFC400'
 };
 var OB_DARK={'ob-pay-success':true, 'ob-firstname':true};

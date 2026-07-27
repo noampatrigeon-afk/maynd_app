@@ -43,15 +43,15 @@ console.log('\n=== 2. INSCRIPTION : vert MAYND à l\'étape 3, prénom en blanc 
 ok(w.eval("OB_SAT['ob-access']")==='#00A862','étape 3 (accès rapide) en vert MAYND');
 ok(w.eval("OB_SOFT['ob-faceid']")==='#D8F2E4' && w.eval("OB_SOFT['ob-pin-create']")==='#D8F2E4' && w.eval("OB_SOFT['ob-pin-confirm']")==='#D8F2E4','étape 3 : écrans de saisie assortis en vert clair');
 ok(w.eval("OB_SAT['ob-firstname']")==='#FFFFFF','écran du prénom en blanc');
-ok(w.eval("OB_SAT['ob-account-success']")==='#974AF0','validation en violet, plus de vert sur vert');
+ok(w.eval("OB_SAT['ob-account-success']")==='#00A862','validation en vert MAYND, coche verte sur cercle blanc');
 w.obShow('ob-firstname'); await wait(30);
 ok(/rgb\(255, 255, 255\)|#FFFFFF/i.test(w.$('onboarding').style.background),'blanc appliqué');
 ok(w.$('onboarding').classList.contains('dark') && !w.$('onboarding').classList.contains('noir'),'texte noir sur fond blanc (classe dark, pas noir)');
 ok(html.includes('#onboarding.noir .ob-input'),'champs adaptés au noir');
 ok(html.includes('#onboarding.noir .yw-item.on{color:#fff}'),'roulette adaptée au noir');
 w.obShow('ob-account-success'); await wait(30);
-ok(/151, 74, 240/.test(w.$('onboarding').style.background),'validation en violet MAYND');
-ok(html.includes('#onboarding.sat .ob-success .circ{background:rgba(255,255,255,.22)'),'la coche ressort sur le fond');
+ok(/0, 168, 98/.test(w.$('onboarding').style.background),'validation en vert MAYND');
+ok(html.includes('#onboarding.sat #ob-account-success .circ{background:#FFFFFF;color:#00C853}'),'coche verte sur cercle blanc, distincte du fond');
 const obIds=[...w.document.querySelectorAll('#onboarding .ob-screen')].map(s=>s.id);
 let verts=[], blancs=[];
 for(const id of obIds){
@@ -60,7 +60,7 @@ for(const id of obIds){
   if(/216, 242, 228|0, 168, 98/.test(bg)) verts.push(id);
   if(/255, 255, 255/.test(bg) || !bg) blancs.push(id);
 }
-const expectedVerts=['ob-access','ob-faceid','ob-fingerprint','ob-pin-create','ob-pin-confirm'];
+const expectedVerts=['ob-access','ob-faceid','ob-fingerprint','ob-pin-create','ob-pin-confirm','ob-account-success'];
 ok(verts.length===expectedVerts.length && expectedVerts.every(id=>verts.includes(id)),'étape 3 (accès rapide) en vert, aucun autre écran : '+verts.join(', '));
 ok(blancs.length===0,'aucun écran blanc');
 

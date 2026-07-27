@@ -81,7 +81,7 @@ console.log('\n=== 7. inscription : champs teintés ===');
 w.obShow('ob-welcome'); await wait(25);
 ok(w.$('onboarding').style.getPropertyValue('--obt')==='#EDE1FF','écran violet -> champs lavande');
 w.obShow('ob-account-success'); await wait(25);
-ok(w.$('onboarding').style.getPropertyValue('--obt')==='#EDE1FF','écran violet -> champs lavande');
+ok(w.$('onboarding').style.getPropertyValue('--obt')==='#D8F2E4','écran vert -> champs vert clair');
 w.obShow('ob-plan'); await wait(25);
 ok(w.$('onboarding').style.getPropertyValue('--obt')==='#FFE6D2','écran orange -> champs pêche');
 w.obShow('ob-pay-success'); await wait(25);

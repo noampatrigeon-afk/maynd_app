@@ -1268,6 +1268,8 @@ button:active,.btn:active,.agx-open:active,.conv-item:active,.quest:active,.chal
 .ob-otp-wrap{margin-top:auto;margin-bottom:auto;transform:translateY(-8vh)}
 #ob-verify-code .ob-bottom{margin-top:18px}
 .ob-reopen-btn{display:inline-flex;align-items:center;height:32px;padding:0 14px;border:none;border-radius:var(--r-pill);background:var(--violet-tint);color:var(--violet-deep);font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;cursor:pointer}
+/* ═══════ écran « ton compte est prêt » : coche verte sur cercle blanc ═══════ */
+#onboarding.sat #ob-account-success .circ{background:#FFFFFF;color:#00C853}
 .ob-exit{display:none;position:absolute;top:16px;right:16px;z-index:95;width:38px;height:38px;border-radius:50%;background:rgba(15,15,20,.08);color:var(--ink);border:none;font-size:20px;line-height:1;cursor:pointer;align-items:center;justify-content:center}
 #onboarding.reopened .ob-exit{display:flex}
 
@@ -4955,11 +4957,11 @@ var AGENT_COLORS={
 };
 var LIGHT_AGENTS=[];
 (function(){ try{ ALL.forEach(function(a){ if(AGENT_COLORS[a.id]) a.color=AGENT_COLORS[a.id]; }); }catch(e){} })();
-/* ═══════════════ INSCRIPTION — aucun vert, écran du prénom en blanc ═══════════════ */
+/* ═══════════════ INSCRIPTION — écran du prénom en blanc, vert MAYND au compte prêt ═══════════════ */
 var OB_SAT={
   'ob-welcome':'#974AF0', 'ob-signup':'#FE6601', 'ob-verify-choice':'#224CF2', 'ob-verify-code':'#E8467F', 'ob-access':'#00A862',
   'ob-faceid':'#00A862', 'ob-fingerprint':'#00A862', 'ob-pin-create':'#00A862', 'ob-pin-confirm':'#00A862',
-  'ob-trust':'#0E2B6B', 'ob-firstname':'#FFFFFF', 'ob-account-success':'#974AF0',
+  'ob-trust':'#0E2B6B', 'ob-firstname':'#FFFFFF', 'ob-account-success':'#00A862',
   'ob-quiz-invite':'#6F2FC0', 'ob-plan':'#FE6601', 'ob-pay-success':'#FFC400'
 };
 var OB_DARK={'ob-pay-success':true, 'ob-firstname':true};

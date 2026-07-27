@@ -54,7 +54,7 @@ ok(w.eval("Object.keys(OB_SAT).length")===15,'15 écrans d\'inscription en coule
 const obc=w.eval("Object.keys(OB_SAT).map(function(k){return OB_SAT[k]}).join(',')");
 ok(obc.includes('#FFFFFF') && obc.includes('#FFC400') && obc.includes('#FE6601'),'blanc, jaune et orange dans l\'inscription');
 w.obShow('ob-account-success'); await wait(20);
-ok(w.$('onboarding').classList.contains('sat') && /151, 74, 240/.test(w.$('onboarding').style.background),'création de compte en violet MAYND');
+ok(w.$('onboarding').classList.contains('sat') && /0, 168, 98/.test(w.$('onboarding').style.background),'création de compte en vert MAYND');
 w.obShow('ob-pay-success'); await wait(20);
 ok(w.$('onboarding').classList.contains('dark'),'paiement réussi en jaune, texte noir');
 w.obShow('ob-signup'); await wait(20);
