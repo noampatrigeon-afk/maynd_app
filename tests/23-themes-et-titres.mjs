@@ -51,7 +51,7 @@ ok(html.includes('#onboarding.noir .ob-input'),'champs adaptés au noir');
 ok(html.includes('#onboarding.noir .yw-item.on{color:#fff}'),'roulette adaptée au noir');
 w.obShow('ob-account-success'); await wait(30);
 ok(/0, 168, 98/.test(w.$('onboarding').style.background),'validation en vert MAYND');
-ok(html.includes('#onboarding.sat #ob-account-success .circ{background:#FFFFFF;color:#00C853}'),'coche verte sur cercle blanc, distincte du fond');
+ok(html.includes('#onboarding.sat #ob-account-success .circ{background:#FFFFFF;color:#00A862}'),'coche verte MAYND (meme vert que le fond) sur cercle blanc');
 const obIds=[...w.document.querySelectorAll('#onboarding .ob-screen')].map(s=>s.id);
 let verts=[], blancs=[];
 for(const id of obIds){

@@ -125,7 +125,7 @@
 /* ═══════ accès direct à l'espace inscription depuis l'accueil ═══════ */
 .ob-reopen-btn{display:inline-flex;align-items:center;height:32px;padding:0 14px;border:none;border-radius:var(--r-pill);background:var(--violet-tint);color:var(--violet-deep);font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;cursor:pointer}
 /* ═══════ écran « ton compte est prêt » : coche verte sur cercle blanc ═══════ */
-#onboarding.sat #ob-account-success .circ{background:#FFFFFF;color:#00C853}
+#onboarding.sat #ob-account-success .circ{background:#FFFFFF;color:#00A862}
 .ob-exit{display:none;position:absolute;top:16px;right:16px;z-index:95;width:38px;height:38px;border-radius:50%;background:rgba(15,15,20,.08);color:var(--ink);border:none;font-size:20px;line-height:1;cursor:pointer;align-items:center;justify-content:center}
 #onboarding.reopened .ob-exit{display:flex}
 
