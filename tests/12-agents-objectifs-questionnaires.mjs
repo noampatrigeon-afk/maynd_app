@@ -77,8 +77,10 @@ for(let i=0;i<8;i++){ w.objqPick(0); await wait(200); }
 ok(S().challenges.objective===true,'défi objectif validé');
 ok(S().objAnswers && S().objAnswers.domain==='travail','toutes les réponses stockées (dossier pro)');
 ok(S().cap && /travail/.test(S().cap),'cap généré selon le domaine');
-ok(S().objectives.length===1,'un premier objectif concret créé');
-ok(S().objectives[0].link==='mateo','objectif relié au bon accompagnant');
+ok(S().objectives.length===3,'objectif principal + 2 secondaires captés par le cap (abonné)');
+ok(S().objectives[0].link==='mateo','objectif principal relié au bon accompagnant');
+ok(S().objectives[0].principal===true,'le premier objectif est bien marqué principal');
+ok(S().objectives.filter(o=>o.principal).length===1,'un seul objectif principal à la fois');
 ok(S().favorites.includes('mateo'),'accompagnant ajouté aux favoris');
 // explorer -> objectif de se connaître
 w.eval("state.cap=''; state.capMeta=false; state.objectives=[]");

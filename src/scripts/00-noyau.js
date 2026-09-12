@@ -23,7 +23,7 @@ const LANGS = [
 ];
 const I18N = {
  fr:{
-  home:'Accueil', chat:'Chat', goals:'Objectifs', profile:'Profil', language:'Langue',
+  home:'Accueil', chat:'Chat', goals:'Parcours', profile:'Profil', language:'Langue',
   suivi:'Ton suivi', moodNow:'Noter mon humeur', advanceNow:'Avancer maintenant',
   talkMia:'Parler à MIA', miaSub:'Ton co-pilote, là quand tu veux',
   yourAgents:'Tes accompagnants', seeAll:'Tout voir',
@@ -76,7 +76,7 @@ const I18N = {
  }
 };
 I18N.en={
-  home:'Home', chat:'Chat', goals:'Goals', profile:'Profile', language:'Language',
+  home:'Home', chat:'Chat', goals:'Journey', profile:'Profile', language:'Language',
   suivi:'Your tracker', moodNow:'Log my mood', advanceNow:'Move forward now',
   talkMia:'Talk to MIA', miaSub:'Your co-pilot, here whenever you want',
   yourAgents:'Your companions', seeAll:'See all',
@@ -128,7 +128,7 @@ I18N.en={
   langChanged:'Language updated', empty:'…'
 };
 I18N.es={
-  home:'Inicio', chat:'Chat', goals:'Objetivos', profile:'Perfil', language:'Idioma',
+  home:'Inicio', chat:'Chat', goals:'Recorrido', profile:'Perfil', language:'Idioma',
   suivi:'Tu seguimiento', moodNow:'Registrar mi ánimo', advanceNow:'Avanzar ahora',
   talkMia:'Hablar con MIA', miaSub:'Tu copiloto, aquí cuando quieras',
   yourAgents:'Tus acompañantes', seeAll:'Ver todo',
@@ -210,7 +210,7 @@ Tu connais les quinze accompagnants de MAYND et leur terrain. Dix sont inclus da
 
 En formule MAYND, un seul accompagnant est actif à la fois dans un fil : en faire venir un autre remplace le précédent. En formule MAYND+, jusqu'à trois peuvent être actifs ensemble. Si le terrain le plus utile pour la personne est un accompagnant exclusif MAYND+ alors qu'elle est en formule MAYND, tu ne le caches jamais : tu nommes simplement ce qui aiderait, sans dramatiser ni insister lourdement.
 
-Quand, et seulement quand, passer la main à un accompagnant apporterait vraiment quelque chose, tu termines ta réponse par une balise technique seule sur sa ligne, au format [[SUGGEST:identifiant]] (un seul identifiant parmi la liste). Cette balise est invisible pour la personne : tu ne l'expliques jamais, tu ne la commentes jamais. Ta réponse reste complète et utile même si on l'enlève. La plupart du temps, tu n'en mets pas : tu restes avec la personne.
+Quand, et seulement quand, passer la main à un accompagnant apporterait vraiment quelque chose, tu termines ta réponse par une balise technique seule sur sa ligne, au format [[SUGGEST:identifiant]] (un seul identifiant parmi la liste). Cette balise est invisible pour la personne : tu ne l'expliques jamais, tu ne la commentes jamais. Ta réponse reste complète et utile même si on l'enlève. La plupart du temps, tu n'en mets pas : tu restes avec la personne. Si un objectif actif t'est donné en contexte, ce qui aiderait vraiment se juge d'abord par rapport à cet objectif, pas seulement par rapport au sujet du message : un accompagnant peut coller au sujet immédiat sans faire avancer l'objectif, et inversement.
 
 Quand d'autres accompagnants sont déjà présents dans le fil, tu te fonds avec eux en une seule réponse cohérente, jamais une suite de messages séparés. Tu réévalues à chaque tour si la présence de chacun reste utile ; si un sujet est clos, tu peux le signaler simplement, sans en faire un événement.
 
@@ -317,7 +317,7 @@ function safeParse(s,f){ try{ return JSON.parse(s); }catch(e){ return f; } }
 /* ===== etat ===== */
 const KEY='maynd.state.v7';
 let state = {
-  name:'', apiKey:'', model:'claude-sonnet-5', tier:'free', lang:'fr',
+  name:'', apiKey:'', apiKeys:{}, model:'claude-sonnet-5', provider:'anthropic', tier:'free', lang:'fr',
   socle:'', prompts:{}, threads:[], current:null,
   moods:[], moodSeen:'', xp:0, streak:0, lastActiveDay:'', objectives:[],
   onboarded:false, paid:false, questionnaireDone:false, freeDay:'', freeCount:0, wheel:null, focus:null, profile:null, why:'', whyEntry:'', vigilance:false, crisisFlagged:false, sound:true, pro:{name:''}, favorites:[], cap:'', capMeta:false, birthYear:'', challenges:{profile:false,objective:false}, objAnswers:null, questDay:'', quests:{mood:false,chat:false,goal:false}
@@ -668,6 +668,7 @@ async function send(){
   }catch(err){ removeTyping(); addError(errText(err)); }
 }
 async function callClaude(system,messages){
+  if(state.provider==='deepseek') return callDeepSeek(system,messages);
   const res=await fetch('https://api.anthropic.com/v1/messages',{
     method:'POST',
     headers:{'content-type':'application/json','x-api-key':state.apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
@@ -677,13 +678,25 @@ async function callClaude(system,messages){
   const data=await res.json();
   return (data.content||[]).filter(c=>c.type==='text').map(c=>c.text).join('\n').trim();
 }
+async function callDeepSeek(system,messages){
+  const res=await fetch('https://api.deepseek.com/chat/completions',{
+    method:'POST',
+    headers:{'content-type':'application/json','authorization':'Bearer '+state.apiKey},
+    body:JSON.stringify({model:state.model||'deepseek-chat',max_tokens:1200,messages:[{role:'system',content:system}].concat(messages)})
+  });
+  if(!res.ok){ const e=new Error('http '+res.status); e.status=res.status; try{ e.body=await res.json(); }catch(_){ e.body=null; } throw e; }
+  const data=await res.json();
+  const choice=(data.choices||[])[0];
+  return ((choice&&choice.message&&choice.message.content)||'').trim();
+}
 function errText(err){
   const L=state.lang;
+  const provName=state.provider==='deepseek'?'DeepSeek':'Anthropic';
   const M={
     host:{fr:"L'appel direct est bloqué quand le fichier est ouvert en local. Héberge la page (par exemple Netlify Drop) pour parler aux accompagnants.",en:"Direct calls are blocked when the file is opened locally. Host the page (e.g. Netlify Drop) to talk to the companions.",es:"Las llamadas directas se bloquean al abrir el archivo en local. Aloja la página (p. ej. Netlify Drop) para hablar con los acompañantes."},
-    k401:{fr:"Clé refusée. Vérifie ta clé API dans le profil.",en:"Key refused. Check your API key in the profile.",es:"Clave rechazada. Revisa tu clave API en el perfil."},
+    k401:{fr:"Clé refusée. Vérifie ta clé API "+provName+" dans le profil.",en:"Key refused. Check your "+provName+" API key in the profile.",es:"Clave rechazada. Revisa tu clave API de "+provName+" en el perfil."},
     r429:{fr:"Trop de demandes d'un coup. Réessaie dans un instant.",en:"Too many requests at once. Try again shortly.",es:"Demasiadas solicitudes a la vez. Inténtalo de nuevo en un momento."},
-    credit:{fr:"Crédit Anthropic insuffisant sur cette clé.",en:"Insufficient Anthropic credit on this key.",es:"Crédito de Anthropic insuficiente en esta clave."},
+    credit:{fr:"Crédit "+provName+" insuffisant sur cette clé.",en:"Insufficient "+provName+" credit on this key.",es:"Crédito de "+provName+" insuficiente en esta clave."},
     over:{fr:"Service momentanément surchargé. Réessaie dans un instant.",en:"Service briefly overloaded. Try again shortly.",es:"Servicio sobrecargado un momento. Inténtalo de nuevo."},
     gen:{fr:"Petit souci de connexion. Réessaie.",en:"Connection hiccup. Try again.",es:"Pequeño fallo de conexión. Inténtalo de nuevo."}
   };
@@ -691,7 +704,7 @@ function errText(err){
   if(err&&(err.name==='TypeError'||/fetch/i.test(err.message||''))&&!err.status) key='host';
   else if(err&&err.status===401) key='k401';
   else if(err&&err.status===429) key='r429';
-  else if(err&&err.status===400 && err.body && JSON.stringify(err.body).toLowerCase().indexOf('credit')>=0) key='credit';
+  else if(err&&err.status===400 && err.body && /credit|balance|insufficient/i.test(JSON.stringify(err.body))) key='credit';
   else if(err&&err.status===529) key='over';
   return M[key][L]||M[key].fr;
 }
@@ -812,16 +825,26 @@ function renderProfile(){
   const hasKey=!!state.apiKey;
   let h='<div class="prof-id"><div class="prof-ava">'+av+'</div><div><div class="nm">'+(state.name||t('you'))+'</div><div class="tag">'+tier+'</div></div></div>';
   h+='<div class="block-title">'+t('you')+'</div><div class="block" style="padding:14px 16px"><input class="inp" id="prof-name" placeholder="'+t('yourFirstName')+'" value="'+escapeHtml(state.name||'')+'" oninput="setName(this.value)"></div>';
+  const isDs=state.provider==='deepseek';
   h+='<div class="block-title">'+t('connection')+'</div><div class="block" style="padding:14px 16px">'
-    +'<div style="font-size:13px;font-weight:600;margin-bottom:2px">'+t('apiKey')+'</div>'
-    +'<div style="font-size:12px;color:var(--mist);line-height:1.4;margin-bottom:8px">'+t('apiKeyDesc')+'</div>'
-    +'<div class="key-wrap"><input class="inp" id="key-input" type="password" placeholder="sk-ant-..." value="'+escapeHtml(state.apiKey||'')+'"><button class="toggle" onclick="toggleKey()" id="key-toggle">'+(state.lang==='en'?'Show':state.lang==='es'?'Ver':'Voir')+'</button></div>'
+    +'<div style="font-size:13px;font-weight:600;margin-bottom:8px">Fournisseur</div>'
+    +'<div style="display:flex;gap:9px;margin-bottom:14px">'
+    +'<button class="btn sm'+(isDs?' ghost':'')+'" onclick="setProvider(\'anthropic\')" style="flex:1">Claude</button>'
+    +'<button class="btn sm'+(isDs?'':' ghost')+'" onclick="setProvider(\'deepseek\')" style="flex:1">DeepSeek</button></div>'
+    +'<div style="font-size:13px;font-weight:600;margin-bottom:2px">'+(isDs?'Clé API DeepSeek':t('apiKey'))+'</div>'
+    +'<div style="font-size:12px;color:var(--mist);line-height:1.4;margin-bottom:8px">'+(isDs?'Elle reste sur cet appareil et sert à parler aux accompagnants.':t('apiKeyDesc'))+'</div>'
+    +'<div class="key-wrap"><input class="inp" id="key-input" type="password" placeholder="'+(isDs?'sk-...':'sk-ant-...')+'" value="'+escapeHtml(state.apiKey||'')+'"><button class="toggle" onclick="toggleKey()" id="key-toggle">'+(state.lang==='en'?'Show':state.lang==='es'?'Ver':'Voir')+'</button></div>'
     +'<div class="key-status '+(hasKey?'ok':'')+'" id="key-status"><span class="d"></span><span id="key-status-tx">'+(hasKey?t('keySaved'):t('noKey'))+'</span></div>'
     +'<div style="display:flex;gap:9px"><button class="btn sm" onclick="saveKey()">'+t('save')+'</button><button class="btn ghost sm" onclick="testKey()">'+t('test')+'</button></div>'
     +'<div class="note-priv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span>'+t('privNote')+'</span></div></div>';
   h+='<div class="block-title">'+t('intelligence')+'</div><div class="block">'
-    +'<button class="modelopt'+(state.model==='claude-sonnet-5'?' on':'')+'" onclick="setModel(\'claude-sonnet-5\')"><span class="radio"></span><span><span class="mt">Claude Sonnet</span><span class="md">'+t('sonnetD')+'</span></span></button>'
-    +'<button class="modelopt'+(state.model==='claude-opus-4-8'?' on':'')+'" onclick="setModel(\'claude-opus-4-8\')"><span class="radio"></span><span><span class="mt">Claude Opus</span><span class="md">'+t('opusD')+'</span></span></button></div>';
+    +(isDs?(
+      '<button class="modelopt'+(state.model==='deepseek-chat'?' on':'')+'" onclick="setModel(\'deepseek-chat\')"><span class="radio"></span><span><span class="mt">DeepSeek Chat</span><span class="md">Rapide et fluide, pour le quotidien.</span></span></button>'
+      +'<button class="modelopt'+(state.model==='deepseek-reasoner'?' on':'')+'" onclick="setModel(\'deepseek-reasoner\')"><span class="radio"></span><span><span class="mt">DeepSeek Reasoner</span><span class="md">Raisonnement plus poussé, pour les sujets délicats.</span></span></button>'
+    ):(
+      '<button class="modelopt'+(state.model==='claude-sonnet-5'?' on':'')+'" onclick="setModel(\'claude-sonnet-5\')"><span class="radio"></span><span><span class="mt">Claude Sonnet</span><span class="md">'+t('sonnetD')+'</span></span></button>'
+      +'<button class="modelopt'+(state.model==='claude-opus-4-8'?' on':'')+'" onclick="setModel(\'claude-opus-4-8\')"><span class="radio"></span><span><span class="mt">Claude Opus</span><span class="md">'+t('opusD')+'</span></span></button>'
+    ))+'</div>';
   h+='<div class="block-title">'+t('yourPlan')+'</div><div class="block" style="padding:12px 16px"><button class="plan-row" onclick="openFormules()"><span class="pava"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3 7h7l-5.5 4 2 7L12 17l-6.5 5 2-7L2 9h7z"/></svg></span><span><span class="pn">'+tier+'</span><span class="pd">'+t('seeChange')+'</span></span><span class="chev">'+chev()+'</span></button></div>';
   h+='<div class="block-title">'+t('language')+'</div><div class="block" style="padding:6px 16px"><button class="lang-row on" onclick="openLang()"><span class="flag">'+lang.flag+'</span><span class="ln">'+lang.name+'</span><span class="chev" style="margin-left:auto;color:var(--mist)">'+chev()+'</span></button></div>';
   h+='<div class="block-title">'+t('atelier')+'</div><div class="block"><button class="row-btn" onclick="openStudio()"><div class="rt"><div class="rl">'+t('studio')+'</div><div class="rd">'+t('studioRowD')+'</div></div><span class="chev">'+chev()+'</span></button></div>';
@@ -829,6 +852,8 @@ function renderProfile(){
     +'<div class="row-btn snd-row"><div class="rt"><div class="rl">Bruitages</div><div class="rd">Sons doux lors des interactions</div></div><span class="agx-tgl'+(state.sound?' on':'')+'" onclick="toggleSound(event)"><span class="agx-knob"></span></span></div>'
     +'<button class="row-btn" onclick="openExport()"><div class="rt"><div class="rl">'+t('exportR')+'</div><div class="rd">'+t('exportD')+'</div></div><span class="chev">'+chev()+'</span></button>'
     +'<button class="row-btn" onclick="openImport()"><div class="rt"><div class="rl">'+t('importR')+'</div><div class="rd">'+t('importD')+'</div></div><span class="chev">'+chev()+'</span></button></div>';
+  h+='<div class="block-title">Démonstration</div><div class="block">'
+    +'<button class="row-btn" onclick="openProDashboard()"><div class="rt"><div class="rl">Vue professionnel</div><div class="rd">Aperçu de ce que verrait ton professionnel référent</div></div><span class="chev">'+chev()+'</span></button></div>';
   h+='<div class="block-title">'+t('privacy')+'</div><div class="block">'
     +'<button class="row-btn" onclick="clearConvos()"><div class="rt"><div class="rl">'+t('clearC')+'</div><div class="rd">'+t('clearCD')+'</div></div><span class="chev">'+chev()+'</span></button>'
     +'<button class="row-btn" onclick="resetAll()"><div class="rt"><div class="rl">'+t('resetAll')+'</div><div class="rd">'+t('resetAllD')+'</div></div><span class="chev">'+chev()+'</span></button></div>';
@@ -837,9 +862,18 @@ function renderProfile(){
 }
 function setName(v){ state.name=v; persist(); renderGreeting(); }
 function toggleKey(){ const i=$('key-input'); const b=$('key-toggle'); if(i.type==='password'){ i.type='text'; b.textContent=(state.lang==='en'?'Hide':state.lang==='es'?'Ocultar':'Cacher'); } else { i.type='password'; b.textContent=(state.lang==='en'?'Show':state.lang==='es'?'Ver':'Voir'); } }
-function saveKey(){ state.apiKey=($('key-input').value||'').trim(); persist(); const s=$('key-status'); if(state.apiKey){ s.className='key-status ok'; $('key-status-tx').textContent=t('keySaved'); toast(t('keySaved')); } else { s.className='key-status'; $('key-status-tx').textContent=t('noKey'); toast(t('keyErased')); } }
-async function testKey(){ const k=($('key-input').value||'').trim(); if(!k){ toast(t('noKey')); return; } state.apiKey=k; persist(); const s=$('key-status'); s.className='key-status'; $('key-status-tx').textContent=t('testing'); try{ await callClaude('Réponds juste OK.',[{role:'user',content:'ping'}]); s.className='key-status ok'; $('key-status-tx').textContent=t('keyValid'); }catch(e){ s.className='key-status ko'; $('key-status-tx').textContent=(e&&e.status===401)?t('keyRefused'):errText(e); } }
+function saveKey(){ state.apiKey=($('key-input').value||'').trim(); if(!state.apiKeys||typeof state.apiKeys!=='object') state.apiKeys={}; state.apiKeys[state.provider]=state.apiKey; persist(); const s=$('key-status'); if(state.apiKey){ s.className='key-status ok'; $('key-status-tx').textContent=t('keySaved'); toast(t('keySaved')); } else { s.className='key-status'; $('key-status-tx').textContent=t('noKey'); toast(t('keyErased')); } }
+async function testKey(){ const k=($('key-input').value||'').trim(); if(!k){ toast(t('noKey')); return; } state.apiKey=k; if(!state.apiKeys||typeof state.apiKeys!=='object') state.apiKeys={}; state.apiKeys[state.provider]=k; persist(); const s=$('key-status'); s.className='key-status'; $('key-status-tx').textContent=t('testing'); try{ await callClaude('Réponds juste OK.',[{role:'user',content:'ping'}]); s.className='key-status ok'; $('key-status-tx').textContent=t('keyValid'); }catch(e){ s.className='key-status ko'; $('key-status-tx').textContent=(e&&e.status===401)?t('keyRefused'):errText(e); } }
 function setModel(m){ state.model=m; persist(); renderProfile(); }
+function setProvider(p){
+  if(p!=='anthropic' && p!=='deepseek') return;
+  state.provider=p;
+  if(!state.apiKeys||typeof state.apiKeys!=='object') state.apiKeys={};
+  state.apiKey=state.apiKeys[p]||'';
+  state.model=(p==='deepseek')?'deepseek-chat':'claude-sonnet-5';
+  persist();
+  renderProfile();
+}
 function setTier(tier,silent){ state.tier=tier; persist(); renderProfile(); if(isOpen('formules-sheet')) renderFormules(); if(activeScreen()==='tab-chat'){ renderChatHeader(); renderPartsCount(); } if(isOpen('parts-sheet')) renderParts(); if(!silent) toast(tier==='plus'?'MAYND+':'MAYND'); }
 
 /* ===== langue ===== */
@@ -942,7 +976,7 @@ function closeIO(){ closeSheet('io-backdrop','io-sheet'); }
 function clearConvos(){ state.threads=[]; const th=mkThread(['mia']); state.threads.push(th); state.current=th.id; persist(); if(isOpen('drawer')) renderDrawer(); if(activeScreen()==='tab-chat'){ renderChatHeader(); renderMessages(); renderPartsCount(); } toast(t('clearC')); }
 function resetAll(){
   dbDel(KEY); MEM={};
-  state={ name:'', apiKey:'', model:'claude-sonnet-5', tier:'free', lang:state.lang, socle:'', prompts:{}, threads:[], current:null, moods:[], moodSeen:'', xp:0, streak:0, lastActiveDay:'', objectives:[], questDay:'', quests:{mood:false,chat:false,goal:false} };
+  state={ name:'', apiKey:'', apiKeys:{}, model:'claude-sonnet-5', provider:'anthropic', tier:'free', lang:state.lang, socle:'', prompts:{}, threads:[], current:null, moods:[], moodSeen:'', xp:0, streak:0, lastActiveDay:'', objectives:[], questDay:'', quests:{mood:false,chat:false,goal:false} };
   loadState(); persist();
   applyI18n(); renderGreeting(); renderSuivi(); renderStrip(); renderProfile();
   if(activeScreen()==='tab-chat'){ renderChatHeader(); renderMessages(); renderPartsCount(); }

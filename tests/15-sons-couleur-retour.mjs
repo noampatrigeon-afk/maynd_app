@@ -77,7 +77,7 @@ w.objqPick(0); await wait(200);                          // super lancée
 w.objqPick(0); await wait(200);                          // bienveillant
 w.objqPick(1); await wait(250);                          // rythme régulier
 ok(S().cap==="Monter d'un cran dans mon travail.",'cap positif généré');
-ok(S().objectives.length===1,'objectif créé');
+ok(S().objectives.length===3,'objectif principal + 2 secondaires captés par le cap (abonné)');
 ok(/cette semaine|palier|résultat/.test(S().objectives[0].name),'objectif de progression, pas de réparation');
 ok(S().favorites.includes('kael'),'ce que la personne aime enrichit ses accompagnants');
 ok(typeof S().objAnswers.likes==='string','réponse enregistrée pour le professionnel');

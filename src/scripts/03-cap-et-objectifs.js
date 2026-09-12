@@ -9,7 +9,10 @@ function renderCapCard(){
   }
   if(state.cap && state.cap.trim()){
     return '<div class="cap-card"><div class="cap-lbl">Ton cap</div><div class="cap-txt">'+escapeHtml(state.cap)+'</div>'
-      +'<button class="cap-edit" onclick="editCap()">Modifier</button></div>';
+      +'<div style="display:flex;gap:8px;margin-top:14px">'
+      +'<button class="cap-edit" style="margin-top:0;flex:1" onclick="editCap()">Modifier</button>'
+      +'<button class="cap-edit" style="margin-top:0;flex:1" onclick="startObrient()">Recommencer</button>'
+      +'</div></div>';
   }
   return '<div class="cap-card empty"><div class="cap-lbl">Ton cap</div>'
     +'<div class="cap-empty-t">Ton cap n\u2019est pas encore clair.</div>'

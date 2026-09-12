@@ -895,6 +895,20 @@ button:active,.btn:active,.agx-open:active,.conv-item:active,.quest:active,.chal
 .pro-lock{text-align:center;padding:4px 0 2px}
 .pro-lock .pro-note{margin-bottom:14px}
 
+/* ═══════ dashboard professionnel (démonstration, même compte) ═══════ */
+#pro-dashboard{position:absolute;inset:0;z-index:89;background:var(--paper);display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity .35s ease}
+#pro-dashboard.show{opacity:1;pointer-events:auto}
+.pd-top{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:20px 20px 14px;border-bottom:1px solid var(--line)}
+.pd-title{font-family:'Poppins',sans-serif;font-weight:800;font-size:19px;color:var(--ink)}
+.pd-close{background:var(--paper-2);border:none;border-radius:var(--r-pill);padding:9px 16px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;color:var(--ink)}
+.pd-scroll{flex:1;overflow-y:auto}
+.pd-pad{padding:16px 20px calc(28px + env(safe-area-inset-bottom,0))}
+.pd-queue-row{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;margin-bottom:14px;box-shadow:var(--sh)}
+.pd-queue-row.urgent{background:#FDEDE7;border-color:transparent}
+.pd-q-ava{width:38px;height:38px;border-radius:12px;background:var(--violet);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-weight:700;flex-shrink:0}
+.pd-q-tag{flex-shrink:0;font-family:'Poppins',sans-serif;font-weight:800;font-size:10px;letter-spacing:.04em;text-transform:uppercase;padding:4px 10px;border-radius:var(--r-pill);background:var(--paper-2);color:var(--mist)}
+.pd-q-tag.urgent{background:var(--warn);color:#fff}
+
 
 /* ═══════ questionnaires colorés ═══════ */
 #quiz,#orient{transition:background .35s var(--e)}
@@ -1378,7 +1392,7 @@ button:active,.btn:active,.agx-open:active,.conv-item:active,.quest:active,.chal
     </button>
     <button class="nav-item" data-tab="objectifs" onclick="showTab('objectifs')">
       <span class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/></svg></span>
-      <span class="nav-lb" data-i="goals">Objectifs</span>
+      <span class="nav-lb" data-i="goals">Parcours</span>
     </button>
   </nav>
 
@@ -1463,6 +1477,12 @@ button:active,.btn:active,.agx-open:active,.conv-item:active,.quest:active,.chal
     <div class="sheet-head"><div><h2>Ton espace de suivi</h2></div><button class="sheet-close" aria-label="Fermer" onclick="closePro()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
     <div class="sheet-body" id="pro-sheet-body"></div>
   </aside>
+
+  <!-- VUE PROFESSIONNEL (démonstration) plein ecran -->
+  <div id="pro-dashboard">
+    <div class="pd-top"><span class="pd-title">Vue professionnel</span><button class="pd-close" onclick="closeProDashboard()">Fermer</button></div>
+    <div class="pd-scroll"><div class="pd-pad" id="pd-body"></div></div>
+  </div>
 
   <!-- EXPORT / IMPORT -->
   <div class="backdrop" id="io-backdrop" onclick="closeIO()"></div>
@@ -1665,9 +1685,9 @@ button:active,.btn:active,.agx-open:active,.conv-item:active,.quest:active,.chal
       <h1 class="ob-h1" style="text-align:center;font-size:25px">Qui es-tu&nbsp;?</h1>
       <p class="ob-sub" style="text-align:center">Quelques questions pour personnaliser ton accompagnement. C'est vivement conseillé : sans ça, l'accompagnement reste générique.</p>
       <div class="ob-bottom">
-        <button class="btn full" onclick="enterApp(true)">Répondre — 5 min</button>
+        <button class="btn full" onclick="obEnterAndQuiz()">Répondre — 5 min</button>
         <div style="height:10px"></div>
-        <button class="btn ghost full" onclick="enterApp(false)">Plus tard</button>
+        <button class="btn ghost full" onclick="obEnterSkipQuiz()">Plus tard</button>
       </div>
     </div>
 
@@ -1736,7 +1756,7 @@ const LANGS = [
 ];
 const I18N = {
  fr:{
-  home:'Accueil', chat:'Chat', goals:'Objectifs', profile:'Profil', language:'Langue',
+  home:'Accueil', chat:'Chat', goals:'Parcours', profile:'Profil', language:'Langue',
   suivi:'Ton suivi', moodNow:'Noter mon humeur', advanceNow:'Avancer maintenant',
   talkMia:'Parler à MIA', miaSub:'Ton co-pilote, là quand tu veux',
   yourAgents:'Tes accompagnants', seeAll:'Tout voir',
@@ -1789,7 +1809,7 @@ const I18N = {
  }
 };
 I18N.en={
-  home:'Home', chat:'Chat', goals:'Goals', profile:'Profile', language:'Language',
+  home:'Home', chat:'Chat', goals:'Journey', profile:'Profile', language:'Language',
   suivi:'Your tracker', moodNow:'Log my mood', advanceNow:'Move forward now',
   talkMia:'Talk to MIA', miaSub:'Your co-pilot, here whenever you want',
   yourAgents:'Your companions', seeAll:'See all',
@@ -1841,7 +1861,7 @@ I18N.en={
   langChanged:'Language updated', empty:'…'
 };
 I18N.es={
-  home:'Inicio', chat:'Chat', goals:'Objetivos', profile:'Perfil', language:'Idioma',
+  home:'Inicio', chat:'Chat', goals:'Recorrido', profile:'Perfil', language:'Idioma',
   suivi:'Tu seguimiento', moodNow:'Registrar mi ánimo', advanceNow:'Avanzar ahora',
   talkMia:'Hablar con MIA', miaSub:'Tu copiloto, aquí cuando quieras',
   yourAgents:'Tus acompañantes', seeAll:'Ver todo',
@@ -1923,7 +1943,7 @@ Tu connais les quinze accompagnants de MAYND et leur terrain. Dix sont inclus da
 
 En formule MAYND, un seul accompagnant est actif à la fois dans un fil : en faire venir un autre remplace le précédent. En formule MAYND+, jusqu'à trois peuvent être actifs ensemble. Si le terrain le plus utile pour la personne est un accompagnant exclusif MAYND+ alors qu'elle est en formule MAYND, tu ne le caches jamais : tu nommes simplement ce qui aiderait, sans dramatiser ni insister lourdement.
 
-Quand, et seulement quand, passer la main à un accompagnant apporterait vraiment quelque chose, tu termines ta réponse par une balise technique seule sur sa ligne, au format [[SUGGEST:identifiant]] (un seul identifiant parmi la liste). Cette balise est invisible pour la personne : tu ne l'expliques jamais, tu ne la commentes jamais. Ta réponse reste complète et utile même si on l'enlève. La plupart du temps, tu n'en mets pas : tu restes avec la personne.
+Quand, et seulement quand, passer la main à un accompagnant apporterait vraiment quelque chose, tu termines ta réponse par une balise technique seule sur sa ligne, au format [[SUGGEST:identifiant]] (un seul identifiant parmi la liste). Cette balise est invisible pour la personne : tu ne l'expliques jamais, tu ne la commentes jamais. Ta réponse reste complète et utile même si on l'enlève. La plupart du temps, tu n'en mets pas : tu restes avec la personne. Si un objectif actif t'est donné en contexte, ce qui aiderait vraiment se juge d'abord par rapport à cet objectif, pas seulement par rapport au sujet du message : un accompagnant peut coller au sujet immédiat sans faire avancer l'objectif, et inversement.
 
 Quand d'autres accompagnants sont déjà présents dans le fil, tu te fonds avec eux en une seule réponse cohérente, jamais une suite de messages séparés. Tu réévalues à chaque tour si la présence de chacun reste utile ; si un sujet est clos, tu peux le signaler simplement, sans en faire un événement.
 
@@ -2030,7 +2050,7 @@ function safeParse(s,f){ try{ return JSON.parse(s); }catch(e){ return f; } }
 /* ===== etat ===== */
 const KEY='maynd.state.v7';
 let state = {
-  name:'', apiKey:'', model:'claude-sonnet-5', tier:'free', lang:'fr',
+  name:'', apiKey:'', apiKeys:{}, model:'claude-sonnet-5', provider:'anthropic', tier:'free', lang:'fr',
   socle:'', prompts:{}, threads:[], current:null,
   moods:[], moodSeen:'', xp:0, streak:0, lastActiveDay:'', objectives:[],
   onboarded:false, paid:false, questionnaireDone:false, freeDay:'', freeCount:0, wheel:null, focus:null, profile:null, why:'', whyEntry:'', vigilance:false, crisisFlagged:false, sound:true, pro:{name:''}, favorites:[], cap:'', capMeta:false, birthYear:'', challenges:{profile:false,objective:false}, objAnswers:null, questDay:'', quests:{mood:false,chat:false,goal:false}
@@ -2381,6 +2401,7 @@ async function send(){
   }catch(err){ removeTyping(); addError(errText(err)); }
 }
 async function callClaude(system,messages){
+  if(state.provider==='deepseek') return callDeepSeek(system,messages);
   const res=await fetch('https://api.anthropic.com/v1/messages',{
     method:'POST',
     headers:{'content-type':'application/json','x-api-key':state.apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
@@ -2390,13 +2411,25 @@ async function callClaude(system,messages){
   const data=await res.json();
   return (data.content||[]).filter(c=>c.type==='text').map(c=>c.text).join('\n').trim();
 }
+async function callDeepSeek(system,messages){
+  const res=await fetch('https://api.deepseek.com/chat/completions',{
+    method:'POST',
+    headers:{'content-type':'application/json','authorization':'Bearer '+state.apiKey},
+    body:JSON.stringify({model:state.model||'deepseek-chat',max_tokens:1200,messages:[{role:'system',content:system}].concat(messages)})
+  });
+  if(!res.ok){ const e=new Error('http '+res.status); e.status=res.status; try{ e.body=await res.json(); }catch(_){ e.body=null; } throw e; }
+  const data=await res.json();
+  const choice=(data.choices||[])[0];
+  return ((choice&&choice.message&&choice.message.content)||'').trim();
+}
 function errText(err){
   const L=state.lang;
+  const provName=state.provider==='deepseek'?'DeepSeek':'Anthropic';
   const M={
     host:{fr:"L'appel direct est bloqué quand le fichier est ouvert en local. Héberge la page (par exemple Netlify Drop) pour parler aux accompagnants.",en:"Direct calls are blocked when the file is opened locally. Host the page (e.g. Netlify Drop) to talk to the companions.",es:"Las llamadas directas se bloquean al abrir el archivo en local. Aloja la página (p. ej. Netlify Drop) para hablar con los acompañantes."},
-    k401:{fr:"Clé refusée. Vérifie ta clé API dans le profil.",en:"Key refused. Check your API key in the profile.",es:"Clave rechazada. Revisa tu clave API en el perfil."},
+    k401:{fr:"Clé refusée. Vérifie ta clé API "+provName+" dans le profil.",en:"Key refused. Check your "+provName+" API key in the profile.",es:"Clave rechazada. Revisa tu clave API de "+provName+" en el perfil."},
     r429:{fr:"Trop de demandes d'un coup. Réessaie dans un instant.",en:"Too many requests at once. Try again shortly.",es:"Demasiadas solicitudes a la vez. Inténtalo de nuevo en un momento."},
-    credit:{fr:"Crédit Anthropic insuffisant sur cette clé.",en:"Insufficient Anthropic credit on this key.",es:"Crédito de Anthropic insuficiente en esta clave."},
+    credit:{fr:"Crédit "+provName+" insuffisant sur cette clé.",en:"Insufficient "+provName+" credit on this key.",es:"Crédito de "+provName+" insuficiente en esta clave."},
     over:{fr:"Service momentanément surchargé. Réessaie dans un instant.",en:"Service briefly overloaded. Try again shortly.",es:"Servicio sobrecargado un momento. Inténtalo de nuevo."},
     gen:{fr:"Petit souci de connexion. Réessaie.",en:"Connection hiccup. Try again.",es:"Pequeño fallo de conexión. Inténtalo de nuevo."}
   };
@@ -2404,7 +2437,7 @@ function errText(err){
   if(err&&(err.name==='TypeError'||/fetch/i.test(err.message||''))&&!err.status) key='host';
   else if(err&&err.status===401) key='k401';
   else if(err&&err.status===429) key='r429';
-  else if(err&&err.status===400 && err.body && JSON.stringify(err.body).toLowerCase().indexOf('credit')>=0) key='credit';
+  else if(err&&err.status===400 && err.body && /credit|balance|insufficient/i.test(JSON.stringify(err.body))) key='credit';
   else if(err&&err.status===529) key='over';
   return M[key][L]||M[key].fr;
 }
@@ -2525,16 +2558,26 @@ function renderProfile(){
   const hasKey=!!state.apiKey;
   let h='<div class="prof-id"><div class="prof-ava">'+av+'</div><div><div class="nm">'+(state.name||t('you'))+'</div><div class="tag">'+tier+'</div></div></div>';
   h+='<div class="block-title">'+t('you')+'</div><div class="block" style="padding:14px 16px"><input class="inp" id="prof-name" placeholder="'+t('yourFirstName')+'" value="'+escapeHtml(state.name||'')+'" oninput="setName(this.value)"></div>';
+  const isDs=state.provider==='deepseek';
   h+='<div class="block-title">'+t('connection')+'</div><div class="block" style="padding:14px 16px">'
-    +'<div style="font-size:13px;font-weight:600;margin-bottom:2px">'+t('apiKey')+'</div>'
-    +'<div style="font-size:12px;color:var(--mist);line-height:1.4;margin-bottom:8px">'+t('apiKeyDesc')+'</div>'
-    +'<div class="key-wrap"><input class="inp" id="key-input" type="password" placeholder="sk-ant-..." value="'+escapeHtml(state.apiKey||'')+'"><button class="toggle" onclick="toggleKey()" id="key-toggle">'+(state.lang==='en'?'Show':state.lang==='es'?'Ver':'Voir')+'</button></div>'
+    +'<div style="font-size:13px;font-weight:600;margin-bottom:8px">Fournisseur</div>'
+    +'<div style="display:flex;gap:9px;margin-bottom:14px">'
+    +'<button class="btn sm'+(isDs?' ghost':'')+'" onclick="setProvider(\'anthropic\')" style="flex:1">Claude</button>'
+    +'<button class="btn sm'+(isDs?'':' ghost')+'" onclick="setProvider(\'deepseek\')" style="flex:1">DeepSeek</button></div>'
+    +'<div style="font-size:13px;font-weight:600;margin-bottom:2px">'+(isDs?'Clé API DeepSeek':t('apiKey'))+'</div>'
+    +'<div style="font-size:12px;color:var(--mist);line-height:1.4;margin-bottom:8px">'+(isDs?'Elle reste sur cet appareil et sert à parler aux accompagnants.':t('apiKeyDesc'))+'</div>'
+    +'<div class="key-wrap"><input class="inp" id="key-input" type="password" placeholder="'+(isDs?'sk-...':'sk-ant-...')+'" value="'+escapeHtml(state.apiKey||'')+'"><button class="toggle" onclick="toggleKey()" id="key-toggle">'+(state.lang==='en'?'Show':state.lang==='es'?'Ver':'Voir')+'</button></div>'
     +'<div class="key-status '+(hasKey?'ok':'')+'" id="key-status"><span class="d"></span><span id="key-status-tx">'+(hasKey?t('keySaved'):t('noKey'))+'</span></div>'
     +'<div style="display:flex;gap:9px"><button class="btn sm" onclick="saveKey()">'+t('save')+'</button><button class="btn ghost sm" onclick="testKey()">'+t('test')+'</button></div>'
     +'<div class="note-priv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span>'+t('privNote')+'</span></div></div>';
   h+='<div class="block-title">'+t('intelligence')+'</div><div class="block">'
-    +'<button class="modelopt'+(state.model==='claude-sonnet-5'?' on':'')+'" onclick="setModel(\'claude-sonnet-5\')"><span class="radio"></span><span><span class="mt">Claude Sonnet</span><span class="md">'+t('sonnetD')+'</span></span></button>'
-    +'<button class="modelopt'+(state.model==='claude-opus-4-8'?' on':'')+'" onclick="setModel(\'claude-opus-4-8\')"><span class="radio"></span><span><span class="mt">Claude Opus</span><span class="md">'+t('opusD')+'</span></span></button></div>';
+    +(isDs?(
+      '<button class="modelopt'+(state.model==='deepseek-chat'?' on':'')+'" onclick="setModel(\'deepseek-chat\')"><span class="radio"></span><span><span class="mt">DeepSeek Chat</span><span class="md">Rapide et fluide, pour le quotidien.</span></span></button>'
+      +'<button class="modelopt'+(state.model==='deepseek-reasoner'?' on':'')+'" onclick="setModel(\'deepseek-reasoner\')"><span class="radio"></span><span><span class="mt">DeepSeek Reasoner</span><span class="md">Raisonnement plus poussé, pour les sujets délicats.</span></span></button>'
+    ):(
+      '<button class="modelopt'+(state.model==='claude-sonnet-5'?' on':'')+'" onclick="setModel(\'claude-sonnet-5\')"><span class="radio"></span><span><span class="mt">Claude Sonnet</span><span class="md">'+t('sonnetD')+'</span></span></button>'
+      +'<button class="modelopt'+(state.model==='claude-opus-4-8'?' on':'')+'" onclick="setModel(\'claude-opus-4-8\')"><span class="radio"></span><span><span class="mt">Claude Opus</span><span class="md">'+t('opusD')+'</span></span></button>'
+    ))+'</div>';
   h+='<div class="block-title">'+t('yourPlan')+'</div><div class="block" style="padding:12px 16px"><button class="plan-row" onclick="openFormules()"><span class="pava"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3 7h7l-5.5 4 2 7L12 17l-6.5 5 2-7L2 9h7z"/></svg></span><span><span class="pn">'+tier+'</span><span class="pd">'+t('seeChange')+'</span></span><span class="chev">'+chev()+'</span></button></div>';
   h+='<div class="block-title">'+t('language')+'</div><div class="block" style="padding:6px 16px"><button class="lang-row on" onclick="openLang()"><span class="flag">'+lang.flag+'</span><span class="ln">'+lang.name+'</span><span class="chev" style="margin-left:auto;color:var(--mist)">'+chev()+'</span></button></div>';
   h+='<div class="block-title">'+t('atelier')+'</div><div class="block"><button class="row-btn" onclick="openStudio()"><div class="rt"><div class="rl">'+t('studio')+'</div><div class="rd">'+t('studioRowD')+'</div></div><span class="chev">'+chev()+'</span></button></div>';
@@ -2542,6 +2585,8 @@ function renderProfile(){
     +'<div class="row-btn snd-row"><div class="rt"><div class="rl">Bruitages</div><div class="rd">Sons doux lors des interactions</div></div><span class="agx-tgl'+(state.sound?' on':'')+'" onclick="toggleSound(event)"><span class="agx-knob"></span></span></div>'
     +'<button class="row-btn" onclick="openExport()"><div class="rt"><div class="rl">'+t('exportR')+'</div><div class="rd">'+t('exportD')+'</div></div><span class="chev">'+chev()+'</span></button>'
     +'<button class="row-btn" onclick="openImport()"><div class="rt"><div class="rl">'+t('importR')+'</div><div class="rd">'+t('importD')+'</div></div><span class="chev">'+chev()+'</span></button></div>';
+  h+='<div class="block-title">Démonstration</div><div class="block">'
+    +'<button class="row-btn" onclick="openProDashboard()"><div class="rt"><div class="rl">Vue professionnel</div><div class="rd">Aperçu de ce que verrait ton professionnel référent</div></div><span class="chev">'+chev()+'</span></button></div>';
   h+='<div class="block-title">'+t('privacy')+'</div><div class="block">'
     +'<button class="row-btn" onclick="clearConvos()"><div class="rt"><div class="rl">'+t('clearC')+'</div><div class="rd">'+t('clearCD')+'</div></div><span class="chev">'+chev()+'</span></button>'
     +'<button class="row-btn" onclick="resetAll()"><div class="rt"><div class="rl">'+t('resetAll')+'</div><div class="rd">'+t('resetAllD')+'</div></div><span class="chev">'+chev()+'</span></button></div>';
@@ -2550,9 +2595,18 @@ function renderProfile(){
 }
 function setName(v){ state.name=v; persist(); renderGreeting(); }
 function toggleKey(){ const i=$('key-input'); const b=$('key-toggle'); if(i.type==='password'){ i.type='text'; b.textContent=(state.lang==='en'?'Hide':state.lang==='es'?'Ocultar':'Cacher'); } else { i.type='password'; b.textContent=(state.lang==='en'?'Show':state.lang==='es'?'Ver':'Voir'); } }
-function saveKey(){ state.apiKey=($('key-input').value||'').trim(); persist(); const s=$('key-status'); if(state.apiKey){ s.className='key-status ok'; $('key-status-tx').textContent=t('keySaved'); toast(t('keySaved')); } else { s.className='key-status'; $('key-status-tx').textContent=t('noKey'); toast(t('keyErased')); } }
-async function testKey(){ const k=($('key-input').value||'').trim(); if(!k){ toast(t('noKey')); return; } state.apiKey=k; persist(); const s=$('key-status'); s.className='key-status'; $('key-status-tx').textContent=t('testing'); try{ await callClaude('Réponds juste OK.',[{role:'user',content:'ping'}]); s.className='key-status ok'; $('key-status-tx').textContent=t('keyValid'); }catch(e){ s.className='key-status ko'; $('key-status-tx').textContent=(e&&e.status===401)?t('keyRefused'):errText(e); } }
+function saveKey(){ state.apiKey=($('key-input').value||'').trim(); if(!state.apiKeys||typeof state.apiKeys!=='object') state.apiKeys={}; state.apiKeys[state.provider]=state.apiKey; persist(); const s=$('key-status'); if(state.apiKey){ s.className='key-status ok'; $('key-status-tx').textContent=t('keySaved'); toast(t('keySaved')); } else { s.className='key-status'; $('key-status-tx').textContent=t('noKey'); toast(t('keyErased')); } }
+async function testKey(){ const k=($('key-input').value||'').trim(); if(!k){ toast(t('noKey')); return; } state.apiKey=k; if(!state.apiKeys||typeof state.apiKeys!=='object') state.apiKeys={}; state.apiKeys[state.provider]=k; persist(); const s=$('key-status'); s.className='key-status'; $('key-status-tx').textContent=t('testing'); try{ await callClaude('Réponds juste OK.',[{role:'user',content:'ping'}]); s.className='key-status ok'; $('key-status-tx').textContent=t('keyValid'); }catch(e){ s.className='key-status ko'; $('key-status-tx').textContent=(e&&e.status===401)?t('keyRefused'):errText(e); } }
 function setModel(m){ state.model=m; persist(); renderProfile(); }
+function setProvider(p){
+  if(p!=='anthropic' && p!=='deepseek') return;
+  state.provider=p;
+  if(!state.apiKeys||typeof state.apiKeys!=='object') state.apiKeys={};
+  state.apiKey=state.apiKeys[p]||'';
+  state.model=(p==='deepseek')?'deepseek-chat':'claude-sonnet-5';
+  persist();
+  renderProfile();
+}
 function setTier(tier,silent){ state.tier=tier; persist(); renderProfile(); if(isOpen('formules-sheet')) renderFormules(); if(activeScreen()==='tab-chat'){ renderChatHeader(); renderPartsCount(); } if(isOpen('parts-sheet')) renderParts(); if(!silent) toast(tier==='plus'?'MAYND+':'MAYND'); }
 
 /* ===== langue ===== */
@@ -2655,7 +2709,7 @@ function closeIO(){ closeSheet('io-backdrop','io-sheet'); }
 function clearConvos(){ state.threads=[]; const th=mkThread(['mia']); state.threads.push(th); state.current=th.id; persist(); if(isOpen('drawer')) renderDrawer(); if(activeScreen()==='tab-chat'){ renderChatHeader(); renderMessages(); renderPartsCount(); } toast(t('clearC')); }
 function resetAll(){
   dbDel(KEY); MEM={};
-  state={ name:'', apiKey:'', model:'claude-sonnet-5', tier:'free', lang:state.lang, socle:'', prompts:{}, threads:[], current:null, moods:[], moodSeen:'', xp:0, streak:0, lastActiveDay:'', objectives:[], questDay:'', quests:{mood:false,chat:false,goal:false} };
+  state={ name:'', apiKey:'', apiKeys:{}, model:'claude-sonnet-5', provider:'anthropic', tier:'free', lang:state.lang, socle:'', prompts:{}, threads:[], current:null, moods:[], moodSeen:'', xp:0, streak:0, lastActiveDay:'', objectives:[], questDay:'', quests:{mood:false,chat:false,goal:false} };
   loadState(); persist();
   applyI18n(); renderGreeting(); renderSuivi(); renderStrip(); renderProfile();
   if(activeScreen()==='tab-chat'){ renderChatHeader(); renderMessages(); renderPartsCount(); }
@@ -3295,7 +3349,10 @@ function renderCapCard(){
   }
   if(state.cap && state.cap.trim()){
     return '<div class="cap-card"><div class="cap-lbl">Ton cap</div><div class="cap-txt">'+escapeHtml(state.cap)+'</div>'
-      +'<button class="cap-edit" onclick="editCap()">Modifier</button></div>';
+      +'<div style="display:flex;gap:8px;margin-top:14px">'
+      +'<button class="cap-edit" style="margin-top:0;flex:1" onclick="editCap()">Modifier</button>'
+      +'<button class="cap-edit" style="margin-top:0;flex:1" onclick="startObrient()">Recommencer</button>'
+      +'</div></div>';
   }
   return '<div class="cap-card empty"><div class="cap-lbl">Ton cap</div>'
     +'<div class="cap-empty-t">Ton cap n\u2019est pas encore clair.</div>'
@@ -5063,6 +5120,621 @@ var LIGHT_AGENTS=['felix'];
       return r;
     };
   }
+})();
+
+
+/* ═══════════════ OBJECTIF PRINCIPAL + SECONDAIRES — modèle de données ═══════════════ */
+(function(){
+  var base=addObjective;
+  if(typeof base!=='function') return;
+  window.addObjective=function(name, steps, link, principal){
+    var o=base.apply(this, [name, steps, link]);
+    if(!o) return o;
+    o.createdAt=o.createdAt||Date.now();
+    var hasPrincipal=(state.objectives||[]).some(function(x){ return x!==o && x.principal; });
+    if(principal || !hasPrincipal){
+      state.objectives.forEach(function(x){ x.principal=(x===o); });
+      state.principalObjectiveId=o.id;
+    } else {
+      o.principal=false;
+    }
+    persist();
+    return o;
+  };
+})();
+function getPrincipalObjective(){
+  var list=state.objectives||[];
+  return list.find(function(o){ return o.id===state.principalObjectiveId; })
+      || list.find(function(o){ return o.principal; })
+      || null;
+}
+function sameMonth(a,b){ var da=new Date(a), db=new Date(b); return da.getFullYear()===db.getFullYear() && da.getMonth()===db.getMonth(); }
+function promoteObjective(id){
+  if(state.tier==='free'){ openUpsell('objectives'); return; }
+  var o=(state.objectives||[]).find(function(x){ return x.id===id; });
+  if(!o || o.principal) return;
+  state.objectives.forEach(function(x){ x.principal=(x===o); });
+  state.principalObjectiveId=o.id;
+  state.principalChanges=(state.principalChanges||[]).filter(function(ts){ return sameMonth(ts, Date.now()); });
+  state.principalChanges.push(Date.now());
+  persist();
+  toast('Nouvel objectif principal : '+o.name);
+  try{ if(activeScreen()==='tab-objectifs') renderObjectives(); }catch(e){}
+}
+var SECONDARY_OBJ_NAME={
+  naoki:'Installer une habitude qui tient, un jour à la fois',
+  otis:'Mieux te faire entendre dans tes échanges',
+  sol:'Retrouver un peu de calme dans ta journée',
+  atlas:'Y voir plus clair sur ce qui compte pour toi',
+  felix:'Renforcer la confiance en toi, pas à pas',
+  kael:'Bouger un peu plus, à ton rythme',
+  iris:'Recréer du lien avec les gens autour de toi',
+  mateo:'Avancer sur ce qui compte au travail'
+};
+function addSecondaryFromCap(agentId){
+  if(!agentId || !byId(agentId)) return null;
+  var already=(state.objectives||[]).some(function(o){ return o.fromCap && o.secondaryOf===agentId; });
+  if(already) return null;
+  var a=byId(agentId);
+  var name=SECONDARY_OBJ_NAME[agentId]||a.domain||a.name;
+  var o=addObjective(name, 3, agentId, false);
+  o.fromCap=true; o.secondaryOf=agentId;
+  persist();
+  return o;
+}
+(function(){
+  var base=objqFinish;
+  if(typeof base!=='function') return;
+  window.objqFinish=function(){
+    state.objectives=(state.objectives||[]).filter(function(o){ return !(o.fromCap && o.secondaryOf); });
+    var r=base.apply(this, arguments);
+    try{
+      var capObj=(state.objectives||[]).find(function(o){ return o.fromCap && !o.secondaryOf; });
+      if(capObj){
+        state.objectives.forEach(function(x){ x.principal=(x===capObj); });
+        state.principalObjectiveId=capObj.id;
+        if(state.tier!=='free'){
+          var ans=state.objAnswers||{};
+          var helpAgent=(typeof HELP_AGENT!=='undefined' && HELP_AGENT[ans.help])||null;
+          if(ans.inner==='harsh') helpAgent='felix';
+          var likeAgent=(typeof LIKE_AGENT!=='undefined' && ans.likes) ? (LIKE_AGENT[ans.likes]||null) : null;
+          [helpAgent, likeAgent].forEach(function(id){ if(id && id!==capObj.link) addSecondaryFromCap(id); });
+        }
+        persist();
+      }
+    }catch(e){}
+    return r;
+  };
+})();
+(function(){
+  var base=openUpsell;
+  if(typeof base!=='function') return;
+  window.openUpsell=function(reason){
+    if(reason==='objectives'){ showPaywall('maynd','Objectifs secondaires réservés aux abonnés','Passe à MAYND pour ajouter des objectifs secondaires en plus de ton objectif principal.'); return; }
+    return base.apply(this, arguments);
+  };
+})();
+(function(){
+  var base=openObjSheet;
+  if(typeof base!=='function') return;
+  window.openObjSheet=function(){
+    if(state.tier==='free' && (state.objectives||[]).length>=1){ openUpsell('objectives'); return; }
+    return base.apply(this, arguments);
+  };
+})();
+(function(){
+  var base=renderObjectives;
+  if(typeof base!=='function') return;
+  window.renderObjectives=function(){
+    var r=base.apply(this, arguments);
+    try{
+      var cards=document.querySelectorAll('#obj-pad .objective');
+      var list=state.objectives||[];
+      cards.forEach(function(card, i){
+        var o=list[i]; if(!o) return;
+        var head=card.querySelector('.oh'); if(!head) return;
+        var old=head.querySelector('.obj-role'); if(old) old.remove();
+        var delBtn=head.querySelector('.odel');
+        var nameEl=head.querySelector('.on');
+        if(nameEl && !o.archived){
+          nameEl.style.cursor='pointer';
+          nameEl.title='Renommer';
+          nameEl.onclick=function(ev){ ev.stopPropagation(); renameObjective(o.id); };
+        }
+        var pill=document.createElement('span');
+        pill.className='obj-role';
+        pill.style.cssText='align-self:center;font-family:Poppins,sans-serif;font-size:9.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:3px 8px;border-radius:99px;';
+        if(o.principal){
+          pill.textContent='Principal';
+          pill.style.background=o.color; pill.style.color='#fff';
+        } else if(state.tier!=='free'){
+          pill.textContent='Faire principal';
+          pill.style.background='rgba(15,15,20,.06)'; pill.style.color='var(--ink,#15131c)'; pill.style.cursor='pointer';
+          pill.onclick=function(ev){ ev.stopPropagation(); promoteObjective(o.id); };
+        } else { return; }
+        if(delBtn) head.insertBefore(pill, delBtn); else head.appendChild(pill);
+        if(o.closureProposed){
+          var badge=card.querySelector('.obadge');
+          if(badge){
+            var note=document.createElement('span');
+            note.textContent=' · validation en attente';
+            badge.appendChild(note);
+          }
+        }
+        if(!o.deepDone){
+          var ofoot=card.querySelector('.ofoot');
+          if(ofoot){
+            var deepBtn=document.createElement('button');
+            deepBtn.type='button';
+            deepBtn.className='obj-deep-cta';
+            deepBtn.textContent='Mieux cerner cet objectif';
+            deepBtn.style.cssText='margin-left:8px;background:none;border:none;font-size:11px;font-weight:700;color:var(--mist,#8b8894);text-decoration:underline;text-decoration-style:dotted;cursor:pointer;padding:0';
+            deepBtn.onclick=function(ev){ ev.stopPropagation(); openDeepSheet(o.id); };
+            ofoot.appendChild(deepBtn);
+          }
+        }
+      });
+      var archive=state.objectivesArchive||[];
+      var pad=document.getElementById('obj-pad');
+      if(pad && state.tier!=='free' && archive.length && !pad.querySelector('.archive-list')){
+        var h='<div class="section-head"><h2>Chemin parcouru</h2></div><div class="archive-list">';
+        archive.slice().reverse().forEach(function(o){
+          var d=o.archivedAt?new Date(o.archivedAt):null;
+          var dateTxt=d?(String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear()):'';
+          h+='<div class="objective archived" style="opacity:.65"><div class="oh"><span class="odot" style="background:'+o.color+'"></span><span class="on">'+escapeHtml(o.name)+'</span></div>'
+            +'<div class="ofoot"><span class="opct">Clôturé'+(dateTxt?(' le '+dateTxt):'')+(o.archivedBy?(' · validé par '+escapeHtml(o.archivedBy)):'')+'</span></div></div>';
+        });
+        h+='</div>';
+        pad.insertAdjacentHTML('beforeend', h);
+      }
+    }catch(e){}
+    return r;
+  };
+})();
+(function(){
+  var base=stepObjective;
+  if(typeof base!=='function') return;
+  window.stepObjective=function(id){
+    var o=(state.objectives||[]).find(function(x){ return x.id===id; });
+    var wasDone=!!(o && o.progress>=o.steps);
+    var r=base.apply(this, arguments);
+    if(o && !wasDone){
+      var now=Date.now();
+      o.lastStepAt=now;
+      o.stepLog=(o.stepLog||[]).concat(now).slice(-30);
+      if(o.progress>=o.steps && !o.closureProposed) o.closureProposed=true;
+      persist();
+    }
+    return r;
+  };
+})();
+function validateClosure(id){
+  var list=state.objectives||[];
+  var idx=list.findIndex(function(x){ return x.id===id; });
+  if(idx<0) return;
+  var o=list[idx];
+  list.splice(idx,1);
+  o.archived=true; o.archivedAt=Date.now(); o.archivedBy=proName(); o.closureProposed=false;
+  var wasPrincipal=!!o.principal;
+  o.principal=false;
+  state.objectivesArchive=(state.objectivesArchive||[]);
+  state.objectivesArchive.push(o);
+  if(wasPrincipal){
+    var next=list.find(function(x){ return !x.archived; });
+    list.forEach(function(x){ x.principal=(x===next); });
+    state.principalObjectiveId=next?next.id:null;
+  }
+  persist();
+  toast('Objectif clôturé, archivé dans le chemin parcouru.');
+  try{ renderProSheet(); }catch(e){}
+  try{ if(activeScreen()==='tab-objectifs') renderObjectives(); }catch(e){}
+}
+(function(){
+  var base=renderProSheet;
+  if(typeof base!=='function') return;
+  window.renderProSheet=function(){
+    var r=base.apply(this, arguments);
+    try{
+      var pending=(state.objectives||[]).filter(function(o){ return o.closureProposed && !o.archived; });
+      if(pending.length){
+        var body=document.getElementById('pro-sheet-body');
+        if(body){
+          var h='<div class="block-title">Clôtures proposées par MIA</div>';
+          pending.forEach(function(o){
+            h+='<div class="pro-blk"><div class="pro-tx">« '+escapeHtml(o.name)+' » semble atteint. À valider pour l’archiver dans le chemin parcouru.</div>'
+              +'<button class="btn full light" onclick="validateClosure(\''+o.id+'\')">Valider la clôture</button></div>';
+          });
+          body.insertAdjacentHTML('beforeend', h);
+        }
+      }
+    }catch(e){}
+    return r;
+  };
+})();
+
+
+/* ═══════════════ LES 4 SIGNAUX — détection réelle à partir du parcours ═══════════════ */
+/* Seuils à calibrer avec le professionnel qui portera la supervision (non chiffrés dans le plan d'affaires). */
+var SIGNAL_TUNING={ stagnationDays:5, blocageDays:12, blocageKeywordMin:2, progressionSteps:2, progressionDays:7 };
+var STAGNATION_WORDS=['bloqué','bloquée','je bloque','coincé','coincée','je n’y arrive pas','je n’y arrive plus','ça ne bouge pas','rien ne change','toujours pareil','je stagne','je n’avance pas','je tourne en rond'];
+var BLOCAGE_WORDS=['je craque','je n’en peux plus','épuisé','épuisée','je lâche','j’abandonne','à bout','je n’y crois plus'];
+function normApos(s){ return String(s).replace(/[’‘]/g,"'"); }
+function recentUserText(days){
+  var since=Date.now()-days*86400000;
+  var out=[];
+  (state.threads||[]).forEach(function(th){
+    if((th.updated||0)<since) return;
+    (th.msgs||[]).forEach(function(m){ if(m.role==='user' && typeof m.content==='string') out.push(normApos(m.content.toLowerCase())); });
+  });
+  return out.join(' \n ');
+}
+function countHits(text, words){ var n=0; words.forEach(function(w){ if(text.indexOf(normApos(w.toLowerCase()))>=0) n++; }); return n; }
+function proSignals(){
+  var s=[];
+  var changes=(state.principalChanges||[]).filter(function(ts){ return sameMonth(ts, Date.now()); });
+  if(changes.length>4) s.push({k:'desalignement', d:'Le cap a changé '+changes.length+' fois ce mois-ci.', w:'Traité au bilan mensuel'});
+  var principal=(typeof getPrincipalObjective==='function')?getPrincipalObjective():null;
+  var lastStep=principal?(principal.lastStepAt||principal.createdAt||0):0;
+  if(principal && lastStep){
+    var daysSince=Math.floor((Date.now()-lastStep)/86400000);
+    if(daysSince>=SIGNAL_TUNING.stagnationDays){
+      var text=recentUserText(14);
+      var stagHits=countHits(text, STAGNATION_WORDS);
+      var blockHits=countHits(text, BLOCAGE_WORDS);
+      if(daysSince>=SIGNAL_TUNING.blocageDays && (blockHits>=1 || stagHits>=SIGNAL_TUNING.blocageKeywordMin)){
+        s.push({k:'blocage', d:'Aucun pas depuis '+daysSince+' jours sur « '+principal.name+' », et le ton des échanges le confirme.', w:'Intervention rapide, hors cycle mensuel'});
+      } else if(stagHits>=1){
+        s.push({k:'stagnation', d:'Aucun pas depuis '+daysSince+' jours sur « '+principal.name+' ».', w:'Traité au bilan mensuel'});
+      }
+    }
+  }
+  if(principal){
+    var recentSteps=(principal.stepLog||[]).filter(function(ts){ return ts>=Date.now()-SIGNAL_TUNING.progressionDays*86400000; }).length;
+    if(recentSteps>=SIGNAL_TUNING.progressionSteps) s.push({k:'progression', d:recentSteps+' pas cochés cette semaine sur « '+principal.name+' ».', w:'MIA a félicité, le professionnel consolide au bilan suivant'});
+  }
+  return s;
+}
+
+
+/* ═══════════════ QUESTIONNAIRE D'APPROFONDISSEMENT PAR OBJECTIF — optionnel ═══════════════ */
+var DEEP_PACE_OPTS=[{t:'Tout doucement',v:'slow'},{t:'Pas à pas, régulier',v:'steady'},{t:'À fond dès que possible',v:'fast'},{t:'Je verrai au fil de l’eau',v:'flow'}];
+var _deepObjId=null, _deepStep=0, _deepAns={}, _deepQ=[];
+function openDeepSheet(id){
+  var o=(state.objectives||[]).find(function(x){ return x.id===id; });
+  if(!o) return;
+  _deepObjId=id; _deepStep=0; _deepAns=o.deepAnswers?Object.assign({}, o.deepAnswers):{};
+  var reusePace=!!(o.fromCap && !o.secondaryOf && state.objAnswers && state.objAnswers.pace);
+  _deepQ=[
+    {ax:'importance', type:'text', q:'Pourquoi cet objectif plutôt qu’un autre, maintenant ?'},
+    {ax:'impact', type:'text', q:'Qu’est-ce que ça changerait concrètement dans ton quotidien ?'}
+  ];
+  if(reusePace){ _deepAns.engagement=state.objAnswers.pace; }
+  else { _deepQ.push({ax:'engagement', type:'choice', q:'À quel rythme tu veux avancer sur cet objectif ?', opts:DEEP_PACE_OPTS}); }
+  $('obj-sheet-title').textContent='Mieux cerner : '+o.name;
+  renderDeepStep();
+  openSheet('obj-backdrop','obj-sheet');
+}
+function renderDeepStep(){
+  if(_deepStep>=_deepQ.length){ finishDeepSheet(); return; }
+  var q=_deepQ[_deepStep];
+  var h='<div class="block-title">'+escapeHtml(q.q)+'</div>';
+  if(q.type==='text'){
+    h+='<textarea class="qz2-ta" id="deep-ta" placeholder="Ta réponse…">'+escapeHtml(_deepAns[q.ax]||'')+'</textarea>';
+    h+='<div class="studio-actions"><button class="btn full" onclick="deepNext()">Continuer</button></div>';
+  } else {
+    h+=q.opts.map(function(o,i){ var sel=_deepAns[q.ax]===o.v; return '<button class="qz2-opt'+(sel?' sel':'')+'" onclick="deepPick('+i+')"><span class="rd"></span><span>'+escapeHtml(o.t)+'</span></button>'; }).join('');
+  }
+  $('obj-sheet-body').innerHTML=h;
+  if(q.type==='text'){ setTimeout(function(){ try{ $('deep-ta').focus(); }catch(e){} },150); }
+}
+function deepNext(){
+  var q=_deepQ[_deepStep];
+  if(q.type==='text'){ var ta=$('deep-ta'); _deepAns[q.ax]=ta?ta.value.trim():''; }
+  _deepStep++;
+  renderDeepStep();
+}
+function deepPick(i){
+  var q=_deepQ[_deepStep];
+  _deepAns[q.ax]=q.opts[i].v;
+  _deepStep++;
+  renderDeepStep();
+}
+function finishDeepSheet(){
+  var o=(state.objectives||[]).find(function(x){ return x.id===_deepObjId; });
+  if(o){ o.deepAnswers=_deepAns; o.deepDone=true; persist(); }
+  closeObjSheet();
+  toast('Merci, c’est noté.');
+  try{ if(activeScreen()==='tab-objectifs') renderObjectives(); }catch(e){}
+}
+(function(){
+  var base=renderProSheet;
+  if(typeof base!=='function') return;
+  window.renderProSheet=function(){
+    var r=base.apply(this, arguments);
+    try{
+      var p=(typeof getPrincipalObjective==='function')?getPrincipalObjective():null;
+      if(p && p.deepDone && p.deepAnswers){
+        var body=document.getElementById('pro-sheet-body');
+        if(body){
+          var d=p.deepAnswers;
+          var h='<div class="block-title">Ce que la personne a partagé sur « '+escapeHtml(p.name)+' »</div><div class="pro-blk">';
+          if(d.importance) h+='<div class="pro-tx">Pourquoi maintenant : '+escapeHtml(d.importance)+'</div>';
+          if(d.impact) h+='<div class="pro-tx">Impact au quotidien : '+escapeHtml(d.impact)+'</div>';
+          if(d.engagement){ var lb=(DEEP_PACE_OPTS.find(function(o){return o.v===d.engagement;})||{}).t||d.engagement; h+='<div class="pro-tx">Rythme souhaité : '+escapeHtml(lb)+'</div>'; }
+          h+='</div>';
+          body.insertAdjacentHTML('beforeend', h);
+        }
+      }
+    }catch(e){}
+    return r;
+  };
+})();
+var MOOD_NOTE_LABELS={top:'plutôt au top', bien:'plutôt bien', moyen:'en demi-teinte', bas:'plutôt bas', dur:'difficile'};
+(function(){
+  var base=composeSystem;
+  if(typeof base!=='function') return;
+  window.composeSystem=function(){
+    var sys=base.apply(this, arguments);
+    try{
+      var bits=[];
+      if(state.profile && state.profile.name){
+        var prof=(typeof PROFILES!=='undefined' && PROFILES[state.profile.key])?PROFILES[state.profile.key]:null;
+        bits.push('profil MAYND de la personne : '+state.profile.name+(prof&&prof.desc?' — '+prof.desc:''));
+      }
+      if(!state.capMeta && state.cap && state.cap.trim()) bits.push('cap qu’elle s’est fixé : '+state.cap.trim());
+      var p=(typeof getPrincipalObjective==='function')?getPrincipalObjective():null;
+      if(p){
+        bits.push('objectif principal en cours : « '+p.name+' » ('+p.progress+'/'+p.steps+' pas faits)');
+        if(p.deepDone && p.deepAnswers){
+          var d=p.deepAnswers;
+          if(d.importance) bits.push('pourquoi cet objectif compte maintenant : '+d.importance);
+          if(d.impact) bits.push('ce que ça changerait au quotidien : '+d.impact);
+          if(d.engagement) bits.push('rythme souhaité : '+d.engagement);
+        }
+      }
+      if(typeof wheelEdited==='function' && wheelEdited() && typeof getWheel==='function' && typeof WHEEL!=='undefined'){
+        var w=getWheel();
+        var low=WHEEL.filter(function(a){ return w[a.k]<=4; }).sort(function(a,b){ return w[a.k]-w[b.k]; });
+        if(low.length) bits.push('sur sa boussole (1 à 10), ce qui est le plus bas en ce moment : '+low.map(function(a){ return wLabel(a)+' ('+w[a.k]+'/10)'; }).join(', '));
+      }
+      var mk=(typeof todayMood==='function')?todayMood():null;
+      if(mk && MOOD_NOTE_LABELS[mk]) bits.push('humeur du jour, à accueillir sans t’y attarder : '+MOOD_NOTE_LABELS[mk]);
+      if(bits.length) sys+=SEP+'Contexte silencieux, jamais à mentionner tel quel : '+bits.join(' ; ')+'.';
+    }catch(e){}
+    return sys;
+  };
+})();
+
+
+/* ═══════════════ ACCUEIL — l'objectif principal en premier plan, humeur retirée de la vitrine ═══════════════ */
+function renderHomeGoals(){
+  var box=$('home-goals'); if(!box) return;
+  var h='';
+  if(state.capMeta){
+    h+='<div class="hg-cap meta"><div class="hg-lbl">Ton cap</div><div class="hg-txt">Mieux me connaître avant de viser</div></div>';
+  } else if(state.cap && state.cap.trim()){
+    h+='<div class="hg-cap"><div class="hg-lbl">Ton cap</div><div class="hg-txt">'+escapeHtml(state.cap)+'</div>'
+      +'<button class="hg-go" style="background:rgba(255,255,255,.14)" onclick="startObrient()">Recommencer</button></div>';
+  } else {
+    h+='<div class="hg-cap empty"><div class="hg-lbl">Ton cap</div><div class="hg-txt">Pas encore défini</div>'
+      +'<button class="hg-go" onclick="startObrient()">Le trouver</button></div>';
+  }
+  var objs=state.objectives||[];
+  var principal=(typeof getPrincipalObjective==='function')?getPrincipalObjective():null;
+  var ordered=principal?[principal].concat(objs.filter(function(o){ return o!==principal; })):objs.slice();
+  function card(o){
+    var isP=(o===principal);
+    var done=o.progress>=o.steps, pct=Math.round(o.progress/o.steps*100);
+    var link=o.link?byId(o.link):null;
+    return '<div class="hg-obj'+(done?' done':'')+(isP?' hg-principal':'')+'">'
+      +'<div class="hg-oh">'+(link?'<span class="hg-ava" style="background:'+link.color+'">'+(link.id==='mia'?'M':link.name[0])+'</span>':'')
+      +'<span class="hg-on">'+escapeHtml(o.name)+'</span>'+(isP?'<span class="hg-ptag" style="margin-left:6px;font-size:9px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--mist,#8b8894)">Principal</span>':'')+'</div>'
+      +'<div class="hg-bar"><i style="width:'+pct+'%;background:'+(link?link.color:'#974AF0')+'"></i></div>'
+      +'<div class="hg-of"><span>'+o.progress+' / '+o.steps+'</span>'
+      +(done?'<span class="hg-done">Terminé</span>':'<button class="hg-step" onclick="stepObjective(\''+o.id+'\')" style="background:'+(link?link.color:'#974AF0')+'">+ 1 pas</button>')
+      +'</div></div>';
+  }
+  if(ordered.length){
+    h+=ordered.slice(0,3).map(card).join('');
+    if(ordered.length>3) h+='<button class="hg-all" onclick="showTab(\'objectifs\')">Voir mes '+ordered.length+' objectifs</button>';
+  } else {
+    h+='<div class="hg-empty">Aucune action en cours. Trouve ton premier objectif et il s’affichera ici.</div>'
+      +'<button class="hg-all" onclick="startObrient()">Trouver mon objectif</button>';
+  }
+  box.innerHTML=h;
+}
+
+
+/* ═══════════════ QUESTIONNAIRE DE CAP — écran d'intro à l'initiative de la personne, jamais enchaîné automatiquement ═══════════════ */
+function startObrient(){
+  objqAns={}; objqIdx=0;
+  $('orient').classList.add('show');
+  renderObjIntro();
+}
+function renderObjIntro(){
+  var th=(typeof qTheme==='function')?qTheme(0):{bg:'#974AF0',c:'#974AF0'};
+  var wrap=$('orient'); if(wrap){ wrap.style.background=th.bg; wrap.classList.add('tinted'); }
+  var inner=$('or-inner'); if(inner) inner.style.height='100%';
+  var h='<div class="qz2-wrap" style="height:100%"><div class="qz2-head"><button class="qz2-close" onclick="objqClose()">'+qzIcoClose()+'</button></div>'
+    +'<div class="qz2-body">'
+    +'<div style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:10px">'
+    +'<div class="qz2-q">Quel sera ton objectif ?</div>'
+    +'<div class="qz2-hint">Quelques questions rapides, pour te proposer un premier objectif concret adapté à ce que tu vis en ce moment. Tu pourras toujours le renommer ou en changer ensuite.</div>'
+    +'</div>'
+    +'<div class="qz2-foot"><button class="btn full light" onclick="objqRenderQ()">Commencer</button></div>'
+    +'</div></div>';
+  $('or-inner').innerHTML=h; $('orient').scrollTop=0;
+}
+function renameObjective(id){
+  var o=(state.objectives||[]).find(function(x){ return x.id===id; });
+  if(!o) return;
+  var v=prompt('Renommer cet objectif', o.name);
+  if(v===null) return;
+  v=v.trim();
+  if(!v) return;
+  o.name=v;
+  persist();
+  try{ renderObjectives(); }catch(e){}
+  try{ renderHomeGoals(); }catch(e){}
+}
+
+
+/* ═══════════════ DASHBOARD PROFESSIONNEL — démonstration, même compte, aucune identité ni client inventés ═══════════════ */
+function openProDashboard(){
+  renderProDashboard();
+  var el=document.getElementById('pro-dashboard'); if(el) el.classList.add('show');
+}
+function closeProDashboard(){
+  var el=document.getElementById('pro-dashboard'); if(el) el.classList.remove('show');
+}
+function draftBilanText(){
+  var principal=(typeof getPrincipalObjective==='function')?getPrincipalObjective():null;
+  var bits=[];
+  if(state.profile && state.profile.name) bits.push('Profil '+state.profile.name+'.');
+  if(principal){
+    bits.push('Objectif principal en cours : « '+principal.name+' », '+principal.progress+' pas sur '+principal.steps+' réalisés.');
+    if(principal.deepDone && principal.deepAnswers && principal.deepAnswers.importance){
+      bits.push('Ce que la personne en dit : '+principal.deepAnswers.importance);
+    }
+  } else {
+    bits.push('Aucun objectif principal actif sur la période.');
+  }
+  bits.push('Série d’activité en cours : '+(state.streak||0)+' jour'+((state.streak||0)>1?'s':'')+'.');
+  var sigs=(typeof proSignals==='function')?proSignals():[];
+  if(sigs.length && typeof PRO_SIGNALS!=='undefined'){
+    bits.push('Signaux du mois : '+sigs.map(function(s){ return (PRO_SIGNALS[s.k]||{}).n||s.k; }).join(', ')+'.');
+  } else {
+    bits.push('Aucun signal particulier ce mois-ci.');
+  }
+  return bits.join('\n\n');
+}
+function signBilan(){
+  var ta=document.getElementById('pd-bilan-draft');
+  var text=ta?ta.value.trim():'';
+  if(!text){ toast('Écris ou garde le brouillon avant de signer.'); return; }
+  var principal=(typeof getPrincipalObjective==='function')?getPrincipalObjective():null;
+  state.bilanHistory=(state.bilanHistory||[]);
+  state.bilanHistory.unshift({ text:text, date:Date.now(), by:proName(), objectiveName:principal?principal.name:null });
+  persist();
+  toast('Bilan signé et envoyé.');
+  renderProDashboard();
+  try{ renderProSheet(); }catch(e){}
+}
+function renderProDashboard(){
+  var body=document.getElementById('pd-body'); if(!body) return;
+  var principal=(typeof getPrincipalObjective==='function')?getPrincipalObjective():null;
+  var sigs=(typeof proSignals==='function')?proSignals():[];
+  var blocage=sigs.find(function(s){ return s.k==='blocage'; });
+  var h='';
+  h+='<div class="block-title">File d’attente</div>';
+  h+='<div class="pd-queue-row'+(blocage?' urgent':'')+'">'
+    +'<span class="pd-q-ava">'+escapeHtml((state.name||'T')[0].toUpperCase())+'</span>'
+    +'<span style="flex:1;min-width:0">'
+    +'<span style="display:block;font-family:Poppins,sans-serif;font-weight:700;font-size:14px;color:var(--ink)">'+escapeHtml(state.name||'Cette personne')+'</span>'
+    +'<span style="display:block;font-family:\'DM Sans\',sans-serif;font-size:12px;color:var(--mist);margin-top:2px">'+(principal?escapeHtml(principal.name):'Aucun objectif principal actif')+'</span>'
+    +'</span>'
+    +'<span class="pd-q-tag'+(blocage?' urgent':'')+'">'+(blocage?'Urgent':'Bilan du mois')+'</span>'
+    +'</div>';
+
+  h+='<div class="block-title">Vue par utilisateur</div>';
+  h+='<div class="pro-card"><div class="pro-blk"><div class="pro-lbl">Feuille de route</div>';
+  var axes=(typeof proAxes==='function')?proAxes():[];
+  h+=axes.map(function(a){ var ag=byId(a.id)||byId('mia'); return '<div class="pro-axe"><span class="pro-dot" style="background:'+ag.color+'">'+(ag.id==='mia'?'M':ag.name[0])+'</span><span class="pro-tx">'+escapeHtml(a.tx)+'</span></div>'; }).join('');
+  h+='</div>';
+  if(principal && principal.deepDone && principal.deepAnswers){
+    var d=principal.deepAnswers;
+    h+='<div class="pro-blk"><div class="pro-lbl">Questionnaire d’approfondissement</div>';
+    if(d.importance) h+='<div class="pro-tx">Pourquoi maintenant : '+escapeHtml(d.importance)+'</div>';
+    if(d.impact) h+='<div class="pro-tx" style="margin-top:6px">Impact au quotidien : '+escapeHtml(d.impact)+'</div>';
+    h+='</div>';
+  }
+  h+='</div>';
+
+  var hist=state.bilanHistory||[];
+  h+='<div class="block-title">Historique des bilans</div>';
+  if(!hist.length){ h+='<div class="pro-empty">Aucun bilan signé pour l’instant.</div>'; }
+  else{
+    h+=hist.map(function(b){
+      var d=new Date(b.date);
+      var dateTxt=String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear();
+      return '<div class="pro-card" style="margin-bottom:10px"><div class="pro-tx" style="white-space:pre-wrap">'+escapeHtml(b.text)+'</div>'
+        +'<div class="pro-sign">'+proCheckSVG()+'<span>Signé le '+dateTxt+' par <span class="pro-sig-nm">'+escapeHtml(b.by)+'</span></span></div></div>';
+    }).join('');
+  }
+
+  h+='<div class="block-title">Brouillon de bilan, pré-rédigé par MIA</div>';
+  h+='<textarea class="qz2-ta" id="pd-bilan-draft" style="min-height:160px">'+escapeHtml(draftBilanText())+'</textarea>';
+  h+='<button class="btn full" style="margin-top:12px" onclick="signBilan()">Signer et publier le bilan</button>';
+
+  body.innerHTML=h;
+}
+(function(){
+  var base=renderProSheet;
+  if(typeof base!=='function') return;
+  window.renderProSheet=function(){
+    var r=base.apply(this, arguments);
+    try{
+      var hist=state.bilanHistory||[];
+      if(hist.length){
+        var body=document.getElementById('pro-sheet-body');
+        if(body){
+          var h='<div class="block-title">Bilans signés par ton professionnel</div>';
+          hist.forEach(function(b){
+            var d=new Date(b.date);
+            var dateTxt=String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear();
+            h+='<div class="pro-blk"><div class="pro-tx" style="white-space:pre-wrap">'+escapeHtml(b.text)+'</div>'
+              +'<div class="pro-sign">'+proCheckSVG()+'<span>Signé le '+dateTxt+' par <span class="pro-sig-nm">'+escapeHtml(b.by)+'</span></span></div></div>';
+          });
+          body.insertAdjacentHTML('beforeend', h);
+        }
+      }
+    }catch(e){}
+    return r;
+  };
+})();
+
+
+/* ═══════════════ ONBOARDING — quiz de personnalité puis cap, cap rendu obligatoire avant de rendre la main ═══════════════ */
+/* Nouvelles fonctions dédiées aux deux boutons de l'écran ob-quiz-invite, pour ne pas changer le comportement */
+/* du enterApp() générique utilisé tel quel par ailleurs (notamment les suites de tests, qui l'appellent en raccourci). */
+var _obForceCap=false;
+function obEnterAndQuiz(){
+  _obForceCap=!state.cap && !state.capMeta;
+  enterApp(true);
+}
+function obEnterSkipQuiz(){
+  var needsCap=!state.cap && !state.capMeta;
+  enterApp(false);
+  if(needsCap){
+    _obForceCap=true;
+    try{ closeMoodScreen(); }catch(e){}
+    startObrient();
+  }
+}
+(function(){
+  var base=qzFinish;
+  if(typeof base!=='function') return;
+  window.qzFinish=function(){
+    var r=base.apply(this, arguments);
+    try{
+      if(_obForceCap){
+        if(!state.cap && !state.capMeta) startObrient();
+        else _obForceCap=false;
+      }
+    }catch(e){}
+    return r;
+  };
+})();
+(function(){
+  var base=objqAfter;
+  if(typeof base!=='function') return;
+  window.objqAfter=function(){
+    var r=base.apply(this, arguments);
+    try{
+      if(_obForceCap){ _obForceCap=false; checkMoodOnOpen(); }
+    }catch(e){}
+    return r;
+  };
 })();
 
 

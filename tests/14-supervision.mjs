@@ -50,16 +50,43 @@ ok(sh.includes('stagnation') && sh.includes('blocage') && sh.includes('désalign
 w.closePro(); await wait(20);
 ok(!w.$('pro-sheet').classList.contains('show'),'fermeture');
 
-console.log('\n=== 5. les signaux viennent du parcours réel ===');
-w.eval("state.objectives=[{id:'o1',name:'x',steps:4,progress:0,color:'#974AF0'}]; state.streak=0; state.capMeta=false");
+console.log('\n=== 5. les signaux viennent du parcours réel (principal, délai, échanges) ===');
+const DAY=86400000;
+w.eval("state.objectives=[]; state.objectivesArchive=[]; state.principalChanges=[]; state.capMeta=false; "
+  +"state.threads=[{id:'tx',parts:['mia'],msgs:[],created:Date.now(),updated:Date.now(),title:''}]; state.current='tx'");
+w.addObjective('Objectif test', 4, null); await wait(10);
+
+// stagnation : aucun pas depuis plusieurs jours + le contenu des échanges le confirme
+w.eval("state.objectives[0].createdAt=Date.now()-6*"+DAY+"; delete state.objectives[0].lastStepAt; "
+  +"state.threads[0].msgs=[{role:'user',content:'je stagne, rien ne change en ce moment'}]; state.threads[0].updated=Date.now()");
 w.openPro(); await wait(10);
-ok(w.$('pro-sheet-body').innerHTML.includes('Stagnation'),'objectif sans progrès -> signal stagnation');
-w.eval("state.objectives[0].progress=2; state.streak=8");
+let sb=w.$('pro-sheet-body').innerHTML;
+ok(sb.includes('Stagnation'),'aucun pas depuis plusieurs jours + échanges qui le confirment -> stagnation');
+ok(!sb.includes('Blocage'),'pas encore assez sévère pour du blocage');
+
+// progression : des pas récents cochés -> stagnation levée, progression affichée
+w.eval("state.objectives[0].stepLog=[Date.now()-"+DAY+",Date.now()-2*"+DAY+"]; state.objectives[0].lastStepAt=Date.now()-"+DAY);
 w.renderProSheet();
-const s2=w.$('pro-sheet-body').innerHTML;
-ok(s2.includes('Progression'),'série de 7 jours -> signal progression');
-ok(!s2.includes('Stagnation'),'signal stagnation levé quand ça avance');
-w.eval("state.streak=0; state.objectives=[]"); w.renderProSheet();
+sb=w.$('pro-sheet-body').innerHTML;
+ok(sb.includes('Progression'),'plusieurs pas cochés cette semaine -> signal progression à consolider');
+ok(!sb.includes('Stagnation'),'signal stagnation levé quand ça avance');
+
+// blocage : stagnation prolongée + un ton plus dur dans les échanges (même signal, sur une échelle)
+w.eval("state.objectives[0].stepLog=[]; delete state.objectives[0].lastStepAt; state.objectives[0].createdAt=Date.now()-15*"+DAY+"; "
+  +"state.threads[0].msgs=[{role:'user',content:\"je n'en peux plus, je craque\"}]; state.threads[0].updated=Date.now()");
+w.renderProSheet();
+sb=w.$('pro-sheet-body').innerHTML;
+ok(sb.includes('Blocage'),'stagnation prolongée + ton plus dur -> blocage (intervention hors cycle mensuel)');
+
+// désalignement : plus de 4 changements de principal ce mois-ci
+w.eval("state.principalChanges=[Date.now(),Date.now(),Date.now(),Date.now(),Date.now()]");
+w.renderProSheet();
+sb=w.$('pro-sheet-body').innerHTML;
+ok(sb.includes('Désalignement'),'plus de 4 changements de cap ce mois-ci -> désalignement');
+
+// aucun signal inventé sans raison
+w.eval("state.objectives=[]; state.principalChanges=[]; state.threads[0].msgs=[]");
+w.renderProSheet();
 ok(w.$('pro-sheet-body').innerHTML.includes('Aucun signal'),'aucun signal inventé sans raison');
 w.closePro();
 
