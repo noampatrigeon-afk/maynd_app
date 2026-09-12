@@ -2049,12 +2049,15 @@ function safeParse(s,f){ try{ return JSON.parse(s); }catch(e){ return f; } }
 
 /* ===== etat ===== */
 const KEY='maynd.state.v7';
-let state = {
-  name:'', apiKey:'', apiKeys:{}, model:'claude-sonnet-5', provider:'anthropic', tier:'free', lang:'fr',
-  socle:'', prompts:{}, threads:[], current:null,
-  moods:[], moodSeen:'', xp:0, streak:0, lastActiveDay:'', objectives:[],
-  onboarded:false, paid:false, questionnaireDone:false, freeDay:'', freeCount:0, wheel:null, focus:null, profile:null, why:'', whyEntry:'', vigilance:false, crisisFlagged:false, sound:true, pro:{name:''}, favorites:[], cap:'', capMeta:false, birthYear:'', challenges:{profile:false,objective:false}, objAnswers:null, questDay:'', quests:{mood:false,chat:false,goal:false}
-};
+function defaultState(lang){
+  return {
+    name:'', apiKey:'', apiKeys:{}, model:'claude-sonnet-5', provider:'anthropic', tier:'free', lang:lang||'fr',
+    socle:'', prompts:{}, threads:[], current:null,
+    moods:[], moodSeen:'', xp:0, streak:0, lastActiveDay:'', objectives:[],
+    onboarded:false, paid:false, questionnaireDone:false, freeDay:'', freeCount:0, wheel:null, focus:null, profile:null, why:'', whyEntry:'', vigilance:false, crisisFlagged:false, sound:true, pro:{name:''}, favorites:[], cap:'', capMeta:false, birthYear:'', challenges:{profile:false,objective:false}, objAnswers:null, questDay:'', quests:{mood:false,chat:false,goal:false}
+  };
+}
+let state = defaultState('fr');
 function loadState(){
   const saved=safeParse(dbGet(KEY), null);
   if(saved && typeof saved==='object') Object.assign(state, saved);
@@ -2709,7 +2712,7 @@ function closeIO(){ closeSheet('io-backdrop','io-sheet'); }
 function clearConvos(){ state.threads=[]; const th=mkThread(['mia']); state.threads.push(th); state.current=th.id; persist(); if(isOpen('drawer')) renderDrawer(); if(activeScreen()==='tab-chat'){ renderChatHeader(); renderMessages(); renderPartsCount(); } toast(t('clearC')); }
 function resetAll(){
   dbDel(KEY); MEM={};
-  state={ name:'', apiKey:'', apiKeys:{}, model:'claude-sonnet-5', provider:'anthropic', tier:'free', lang:state.lang, socle:'', prompts:{}, threads:[], current:null, moods:[], moodSeen:'', xp:0, streak:0, lastActiveDay:'', objectives:[], questDay:'', quests:{mood:false,chat:false,goal:false} };
+  state=defaultState(state.lang);
   loadState(); persist();
   applyI18n(); renderGreeting(); renderSuivi(); renderStrip(); renderProfile();
   if(activeScreen()==='tab-chat'){ renderChatHeader(); renderMessages(); renderPartsCount(); }
