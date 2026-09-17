@@ -14,13 +14,21 @@ pas la première. C'est la principale source de confusion pour quelqu'un qui rep
 
 Avant toute reprise sérieuse : supprimer les versions mortes, puis relancer `npm test`.
 
+**Cas particulier : `DEFAULT_PERSONAS.mia`.** Ce n'est ni une redéclaration ni une enveloppe :
+`17-refonte-intelligence.js` mute une seule fois, au chargement, la propriété `mia` de l'objet
+`DEFAULT_PERSONAS` (`DEFAULT_PERSONAS.mia += ...`). `DEFAULT_PERSONAS` est un `const`, donc
+non réassignable dans son ensemble, mais une propriété d'objet reste mutable — ça ne duplique
+rien puisque la mutation n'a lieu qu'une fois, avant toute interaction. `getPersona()` n'est pas
+touchée : le Studio des accompagnants continue de lire/écrire `DEFAULT_PERSONAS.mia` (déjà
+augmenté) sans rien de spécial à gérer côté édition.
+
 | Fonction | Déclarations | Enveloppes | Version qui s'applique | Fichiers concernés |
 |---|---|---|---|---|
 | `obShow` | 1 | 7 | 15-presentation-accompagnants.js (enveloppe) | 00-noyau.js |
 | `renderObjectives` | 4 | 3 | 16-palette-finale.js (enveloppe) | 00-noyau.js, 03-cap-et-objectifs.js, 05-objectifs-refonte.js |
 | `qzRenderCrisis` | 2 | 3 | 10-couleurs-pleines.js (enveloppe) | 00-noyau.js, 01-freemium-et-crise.js |
 | `showTab` | 1 | 4 | 14-palette-et-accueil.js (enveloppe) | 00-noyau.js |
-| `addParticipant` | 3 | 1 | 11-palette-enregistree.js (enveloppe) | 00-noyau.js, 01-freemium-et-crise.js |
+| `addParticipant` | 3 | 2 | 17-refonte-intelligence.js (enveloppe) | 00-noyau.js, 01-freemium-et-crise.js, 11-palette-enregistree.js |
 | `enterApp` | 1 | 3 | 14-palette-et-accueil.js (enveloppe) | 00-noyau.js |
 | `obPay` | 2 | 2 | 13-teintes-calculees.js (enveloppe) | 00-noyau.js, 01-freemium-et-crise.js |
 | `objqRenderQ` | 4 | 0 | 10-couleurs-pleines.js | 05-objectifs-refonte.js, 09-couleur-questionnaires.js, 10-couleurs-pleines.js |
@@ -41,7 +49,16 @@ Avant toute reprise sérieuse : supprimer les versions mortes, puis relancer `np
 | `closeFormules` | 2 | 0 | 00-noyau.js | 00-noyau.js |
 | `closeSheet` | 1 | 1 | 09-couleur-questionnaires.js (enveloppe) | 00-noyau.js |
 | `createObjective` | 2 | 0 | 00-noyau.js | 00-noyau.js |
-| `callDeepSeek` | 1 | 0 | 00-noyau.js | 00-noyau.js |
+| `callDeepSeek` | 2 | 0 | 17-refonte-intelligence.js | 00-noyau.js |
+| `callClaude` | 2 | 0 | 17-refonte-intelligence.js | 00-noyau.js |
+| `parseSignals` | 2 | 0 | 17-refonte-intelligence.js | 00-noyau.js |
+| `handleJoin` | 2 | 0 | 17-refonte-intelligence.js | 00-noyau.js |
+| `renderMessages` | 2 | 0 | 17-refonte-intelligence.js | 00-noyau.js |
+| `removeParticipant` | 1 | 1 | 17-refonte-intelligence.js (enveloppe) | 00-noyau.js |
+| `computeLengthBudget` | 1 | 0 | 17-refonte-intelligence.js | 17-refonte-intelligence.js |
+| `addBubbleSplit` | 1 | 0 | 17-refonte-intelligence.js | 17-refonte-intelligence.js |
+| `regenerateEtatCourant` | 1 | 0 | 17-refonte-intelligence.js | 17-refonte-intelligence.js |
+| `arrivalNoteEl` / `withdrawArrival` | 1 | 0 | 17-refonte-intelligence.js | 17-refonte-intelligence.js |
 | `setProvider` | 1 | 0 | 00-noyau.js | 00-noyau.js |
 | `deckSync` | 1 | 1 | 16-palette-finale.js (enveloppe) | 15-presentation-accompagnants.js |
 | `deleteObjective` | 1 | 1 | 14-palette-et-accueil.js (enveloppe) | 00-noyau.js |
@@ -83,7 +100,7 @@ Avant toute reprise sérieuse : supprimer les versions mortes, puis relancer `np
 | `renderJRow` | 2 | 0 | 10-couleurs-pleines.js | 10-couleurs-pleines.js |
 | `renderProBlock` | 2 | 0 | 13-teintes-calculees.js | 07-supervision.js |
 | `renderSuivi` | 1 | 1 | 14-palette-et-accueil.js (enveloppe) | 00-noyau.js |
-| `send` | 2 | 0 | 00-noyau.js | 00-noyau.js |
+| `send` | 3 | 0 | 17-refonte-intelligence.js | 00-noyau.js, 17-refonte-intelligence.js |
 | `setTier` | 2 | 0 | 00-noyau.js | 00-noyau.js |
 | `sfx` | 2 | 0 | 08-sons-et-icones.js | 06-roulette-et-animations.js |
 | `stepObjective` | 1 | 2 | 16-palette-finale.js (enveloppe) | 00-noyau.js |
@@ -93,7 +110,7 @@ Avant toute reprise sérieuse : supprimer les versions mortes, puis relancer `np
 | `draftBilanText` | 1 | 0 | 16-palette-finale.js | 16-palette-finale.js |
 | `signBilan` | 1 | 0 | 16-palette-finale.js | 16-palette-finale.js |
 | `renderProDashboard` | 1 | 0 | 16-palette-finale.js | 16-palette-finale.js |
-| `composeSystem` | 1 | 1 | 16-palette-finale.js (enveloppe) | 00-noyau.js |
+| `composeSystem` | 1 | 2 | 17-refonte-intelligence.js (enveloppe) | 00-noyau.js, 16-palette-finale.js |
 | `openDeepSheet` | 1 | 0 | 16-palette-finale.js | 16-palette-finale.js |
 | `renderDeepStep` | 1 | 0 | 16-palette-finale.js | 16-palette-finale.js |
 | `deepNext` | 1 | 0 | 16-palette-finale.js | 16-palette-finale.js |
