@@ -1461,6 +1461,19 @@ button:active,.btn:active,.agx-open:active,.conv-item:active,.quest:active,.chal
     </div>
   </aside>
 
+  <!-- ══════════ MULTI-ACCOMPAGNANTS (progression pas encore livrée : bouton fonctionnel quand même) ══════════ -->
+  <div class="backdrop" id="mix-backdrop" onclick="closeSheet('mix-backdrop','mix-sheet')"></div>
+  <aside class="sheet" id="mix-sheet" role="dialog" aria-label="Accompagnant non débloqué">
+    <div class="sheet-grip"></div>
+    <div class="pw-body">
+      <div class="pw-lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+      <h2 class="pw-title" id="mix-title">Accompagnant non débloqué</h2>
+      <p class="pw-sub" id="mix-sub"></p>
+      <button class="btn full" id="mix-cta" onclick="mixUnlockGo()">Débloquer</button>
+      <button class="pw-later" onclick="closeSheet('mix-backdrop','mix-sheet')">Plus tard</button>
+    </div>
+  </aside>
+
 
   <!-- STUDIO -->
   <div class="backdrop" id="studio-backdrop" onclick="closeStudio()"></div>
@@ -3228,7 +3241,7 @@ function obPay(){
   } else { state.paid=true; persist(); obShow('ob-pay-success'); }
 }
 function openUpsell(reason, id){
-  if(reason==='mix'){ toast(t('mixPlus')); return; }
+  if(reason==='mix'){ if(typeof openMixSheet==='function') openMixSheet(id); return; }
   var title='Débloque tout MAYND', sub='Passe à l’abonnement pour aller plus loin.';
   if(reason==='agent'){ title='Cet accompagnant fait partie de l’abonnement MAYND'; sub='Passe à MAYND pour accéder aux seize accompagnants et à ton suivi par un professionnel.'; }
   else if(reason==='limit'){ title='Tu as atteint ta limite du jour'; sub='En Freemium, tu as 5 messages par jour avec MIA. Passe à MAYND pour des échanges illimités.'; }
@@ -5934,10 +5947,19 @@ function giveBoucleFeedback(idx){
 var _lastLengthBudget=null;
 var LENGTH_LEVELS={
   1:{words:45,  tokens:90,  instruction:"réponds en deux phrases maximum, une seule idée, ton direct, aucune liste ni structure apparente"},
-  2:{words:90,  tokens:190, instruction:"réponds en un petit paragraphe : un seul angle, une piste concrète si elle sert vraiment"},
-  3:{words:180, tokens:400, instruction:"tu peux développer davantage, articule deux idées et propose une piste plus détaillée si utile"},
-  4:{words:99999,tokens:1200,instruction:"la personne demande du fond : tu peux développer pleinement, jusqu'à ta longueur habituelle"}
+  2:{words:90,  tokens:190, instruction:"réponds en un petit paragraphe : un seul angle, et cherche activement une piste concrète que la personne peut vraiment essayer — ne t'arrête à la seule réflexion que si aucune piste sincère ne se présente"},
+  3:{words:180, tokens:400, instruction:"tu peux développer davantage : articule deux idées et une piste concrète et détaillée à essayer — comprendre ne suffit pas quand un pas concret existe, propose-le clairement plutôt que de rester sur le seul constat"},
+  4:{words:99999,tokens:1200,instruction:"la personne demande du fond : tu peux développer pleinement, jusqu'à ta longueur habituelle, et si un pas concret se dessine, propose-le sans le diluer dans l'explication"}
 };
+/* Retour utilisateur du 25/09/2026 : les accompagnants décelaient bien les problèmes mais ne
+   proposaient presque jamais rien de concret derrière. Diagnostic : mécanique, pas bug — les
+   niveaux 2 et 3 ne mentionnaient une piste que sous condition molle ("si elle sert vraiment",
+   "si utile"), qui laissait la porte grande ouverte au silence. Renforcé sur demande explicite,
+   "toujours au jugement" : la piste devient la sortie par défaut d'un échange installé, sauf
+   qu'aucune ne s'impose sincèrement — jamais forcée quand ça n'a pas de sens, mais plus proposée
+   par réflexe d'écoute seule. Le niveau 1 (ouverture) n'est pas touché : forcer une action dès le
+   tout premier échange contredirait l'esprit du reste du fichier (MIA, par exemple, n'oriente
+   jamais dans sa toute première réponse sauf risque). */
 /* Déclencheurs de niveau 4 : une vraie formulation de demande d'approfondissement, pas un mot
    isolé. "pourquoi"/"comment" seuls sont retirés — beaucoup de questions courtes et simples
    commencent par ces mots en français, et les faire basculer en niveau 4 était le bug qui
@@ -6323,6 +6345,45 @@ function canUseMulti(){ return !!(typeof state!=='undefined' && state.multiUnloc
 function toggleMultiUnlocked(){
   state.multiUnlocked=!state.multiUnlocked; persist();
   if(typeof renderProfile==='function' && typeof isOpen==='function' && isOpen('profile-sheet')) renderProfile();
+}
+
+/* Retour utilisateur du 25/09/2026 : le message discret ("ça se découvre au fil du parcours")
+   laissait croire à un bug, y compris pour une personne payante — puisque le multi-accompagnants
+   n'est justement plus lié au palier. Demande explicite : un message net, avec un bouton qui
+   débloque vraiment (la seule mécanique de déblocage qui existe tant que la progression n'est pas
+   construite), plutôt qu'un bouton mort. Vocabulaire « débloqué » assumé ici en connaissance de
+   cause : c'est une dérogation ponctuelle et volontaire à la règle du chantier 12 pour cet écran
+   précis, pas un retour en arrière général sur les accompagnants ou les formules. */
+var _mixPendingId=null;
+function openMixSheet(id){
+  _mixPendingId=id;
+  var a=id?byId(id):null;
+  $('mix-sub').textContent=(a?a.name:'Cet accompagnant')+' rejoindra la conversation dès que le multi-accompagnants sera débloqué sur ce compte.';
+  $('mix-cta').textContent='Débloquer'+(a?' '+a.name:'');
+  openSheet('mix-backdrop','mix-sheet');
+}
+function mixUnlockGo(){
+  closeSheet('mix-backdrop','mix-sheet');
+  state.multiUnlocked=true; persist();
+  if(typeof renderProfile==='function' && typeof isOpen==='function' && isOpen('profile-sheet')) renderProfile();
+  var id=_mixPendingId; _mixPendingId=null;
+  if(id) addParticipant(id);
+}
+
+/* inviteEl redéfinie : deuxième chemin par lequel le blocage multi-accompagnants apparaissait,
+   raté à la première passe du chantier 12. Quand MIA propose elle-même de faire venir un
+   accompagnant sans que canUseMulti() soit vrai, handleJoin passe par addInvite/inviteEl plutôt
+   que par addParticipant — la carte affichait encore « · MAYND+ » (palier disparu) et son clic
+   ouvrait l'écran de formules (payer ne change plus rien ici). Le clic route maintenant par
+   addParticipant, qui contient déjà toute la bonne logique de blocage (agent non accessible,
+   multi non débloqué -> openMixSheet, cap de 3 déjà atteint) : une seule vérité, pas de duplication. */
+function inviteEl(agentId){
+  const a=byId(agentId);
+  const couldHelp={fr:"pourrait t'aider",en:"could help",es:"podría ayudarte"}[state.lang]||"pourrait t'aider";
+  const d=document.createElement('div'); d.className='bubble note'; d.style.cursor='pointer';
+  d.onclick=function(){ addParticipant(agentId); };
+  d.innerHTML='<span class="nd" style="background:'+a.color+'">'+a.name[0]+'</span><span>'+a.name+' '+couldHelp+'</span>';
+  return d;
 }
 </script>
 </body>

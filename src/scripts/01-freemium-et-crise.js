@@ -37,11 +37,12 @@ function obPay(){
 /* Trois motifs, trois traitements distincts (chantier 12) :
    - 'agent' : personne en gratuit, un accompagnant demande l'abonnement -> paywall 60 €.
    - 'limit' : personne en gratuit, plafond de 5 messages/jour atteint -> paywall 60 €.
-   - 'mix' : déjà abonnée, mais le multi-accompagnants se gagne par la progression (le
-     chantier des jeux n'existe pas encore) -> jamais de paywall, un message neutre qui
-     explique que ça se découvre au fil du parcours, sans jamais suggérer de payer davantage. */
+   - 'mix' : déjà abonnée, mais le multi-accompagnants se gagne par la progression (le chantier
+     des jeux n'existe pas encore) -> jamais de paywall (pas question de payer davantage), mais un
+     message net avec un bouton qui débloque réellement (openMixSheet, 17-refonte-intelligence.js) :
+     un toast discret laissait croire à un bug, y compris pour une personne déjà abonnée. */
 function openUpsell(reason, id){
-  if(reason==='mix'){ toast(t('mixPlus')); return; }
+  if(reason==='mix'){ if(typeof openMixSheet==='function') openMixSheet(id); return; }
   var title='Débloque tout MAYND', sub='Passe à l’abonnement pour aller plus loin.';
   if(reason==='agent'){ title='Cet accompagnant fait partie de l’abonnement MAYND'; sub='Passe à MAYND pour accéder aux seize accompagnants et à ton suivi par un professionnel.'; }
   else if(reason==='limit'){ title='Tu as atteint ta limite du jour'; sub='En Freemium, tu as 5 messages par jour avec MIA. Passe à MAYND pour des échanges illimités.'; }
