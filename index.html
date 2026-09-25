@@ -1292,6 +1292,9 @@ button:active,.btn:active,.agx-open:active,.conv-item:active,.quest:active,.chal
    .obj-deep-cta (soulignement pointillé) — aplat, aucun dégradé, aucune fenêtre de confirmation. */
 .bubble.note .note-retrait{background:none;border:none;padding:0;margin:0;font:inherit;font-weight:800;font-size:11px;color:var(--violet-deep);text-decoration:underline;text-decoration-style:dotted;cursor:pointer;flex-shrink:0}
 .bubble.note .note-retrait:hover{opacity:.75}
+.bubble.assistant .cross-feedback{display:block;margin-top:8px;background:none;border:none;padding:0;font:inherit;font-weight:800;font-size:11px;color:var(--violet-deep);text-decoration:underline;text-decoration-style:dotted;cursor:pointer}
+.bubble.assistant .cross-feedback:hover{opacity:.75}
+.bubble.assistant .cross-feedback:disabled{color:var(--mist);text-decoration:none;cursor:default;font-weight:600}
 
 </style>
 </head>
@@ -1335,7 +1338,7 @@ button:active,.btn:active,.agx-open:active,.conv-item:active,.quest:active,.chal
           <span data-i="reassure">Un espace à toi, confidentiel. Tes échanges restent sur cet appareil.</span>
         </div>
         <div class="slogan" id="slogan"></div>
-        <div class="build-tag" id="build-tag">Version 17/09 16:42</div>
+        <div class="build-tag" id="build-tag">Version 25/09 19:30</div>
       </div></div>
     </section>
 
@@ -1447,12 +1450,12 @@ button:active,.btn:active,.agx-open:active,.conv-item:active,.quest:active,.chal
     <div class="sheet-grip"></div>
     <div class="pw-body">
       <div class="pw-lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
-      <div class="pw-badge" id="pw-badge">MAYND+</div>
+      <div class="pw-badge" id="pw-badge">MAYND</div>
       <h2 class="pw-title" id="pw-title"></h2>
       <p class="pw-sub" id="pw-sub"></p>
       <div class="pw-feats" id="pw-feats"></div>
       <div class="pw-price" id="pw-price"></div>
-      <button class="btn full" id="pw-cta" onclick="pwGo()">Passer à MAYND+</button>
+      <button class="btn full" id="pw-cta" onclick="pwGo()">Passer à MAYND</button>
       <button class="btn ghost full" onclick="pwFormules()" style="margin-top:9px">Voir toutes les formules</button>
       <button class="pw-later" onclick="closeSheet('paywall-backdrop','paywall-sheet')">Plus tard</button>
     </div>
@@ -1643,7 +1646,7 @@ button:active,.btn:active,.agx-open:active,.conv-item:active,.quest:active,.chal
     <div class="ob-screen" id="ob-payment">
       <div class="ob-head"><button class="ob-back" onclick="payCancel()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button><div style="font-family:Poppins;font-weight:700;font-size:16px">Paiement</div><button class="ob-skip" onclick="payCancel()">Annuler</button></div>
       <div class="pay-recap">
-        <div class="pr-top"><div class="pr-name" id="pay-name">MAYND+</div><div class="pr-price"><b id="pay-price">69&nbsp;€</b> <span>/ mois</span></div></div>
+        <div class="pr-top"><div class="pr-name" id="pay-name">MAYND</div><div class="pr-price"><b id="pay-price">60&nbsp;€</b> <span>/ mois</span></div></div>
         <div class="pr-tag" id="pay-tag">Tout MAYND, et le multi-accompagnants.</div>
         <div class="pr-feats" id="pay-feats"></div>
       </div>
@@ -1781,7 +1784,7 @@ const I18N = {
   needKey:'Pour me parler, ajoute ta clé API Anthropic.', openProfileLink:'Ouvrir le profil',
   partsSub:'Choisis qui t\u2019accompagne ici.', partsActive:'actif', partsActives:'actifs',
   partsNote:'Un accompagnant peut rejoindre tout seul quand un sujet le concerne. Tu peux l\u2019ajouter ou le retirer ici à tout moment.',
-  max3:'Trois accompagnants au maximum', mixPlus:'Le multi-accompagnants est réservé à MAYND+',
+  max3:'Trois accompagnants au maximum', mixPlus:'Le multi-accompagnants se découvre au fil du parcours.',
   keepOne:'Il faut au moins un accompagnant',
   you:'Toi', firstName:'Prénom', yourFirstName:'Ton prénom', connection:'Connexion',
   apiKey:'Clé API Anthropic', apiKeyDesc:'Elle reste sur cet appareil et sert à parler aux accompagnants.',
@@ -1834,7 +1837,7 @@ I18N.en={
   needKey:'To talk with me, add your Anthropic API key.', openProfileLink:'Open profile',
   partsSub:'Choose who supports you here.', partsActive:'active', partsActives:'active',
   partsNote:'A companion can join on its own when a topic calls for it. You can add or remove anyone here, anytime.',
-  max3:'Three companions maximum', mixPlus:'Multiple companions is a MAYND+ feature',
+  max3:'Three companions maximum', mixPlus:'Multiple companions unlock as you progress.',
   keepOne:'You need at least one companion',
   you:'You', firstName:'First name', yourFirstName:'Your first name', connection:'Connection',
   apiKey:'Anthropic API key', apiKeyDesc:'It stays on this device and is used to talk to the companions.',
@@ -1886,7 +1889,7 @@ I18N.es={
   needKey:'Para hablar conmigo, añade tu clave API de Anthropic.', openProfileLink:'Abrir el perfil',
   partsSub:'Elige quién te acompaña aquí.', partsActive:'activo', partsActives:'activos',
   partsNote:'Un acompañante puede unirse solo cuando un tema lo requiere. Puedes añadir o quitar a quien quieras aquí, cuando quieras.',
-  max3:'Tres acompañantes como máximo', mixPlus:'Varios acompañantes es una función de MAYND+',
+  max3:'Tres acompañantes como máximo', mixPlus:'Varios acompañantes se descubren a lo largo del recorrido.',
   keepOne:'Necesitas al menos un acompañante',
   you:'Tú', firstName:'Nombre', yourFirstName:'Tu nombre', connection:'Conexión',
   apiKey:'Clave API de Anthropic', apiKeyDesc:'Se queda en este dispositivo y sirve para hablar con los acompañantes.',
@@ -1944,9 +1947,9 @@ mia:`Tu es MIA, hôte et co-pilote de MAYND. Tu n'es pas une standardiste : tu n
 
 Tu écoutes sur trois niveaux en même temps : ce qui est dit, ce qui est demandé, et ce qui est porté émotionnellement en dessous. Tu réponds à la personne réelle, pas au mot-clé.
 
-Tu connais les quinze accompagnants de MAYND et leur terrain. Dix sont inclus dans MAYND : naoki (discipline, habitudes), felix (confiance, dialogue intérieur), atlas (identité, sens), ava (émotions, deuil), leo (couple, attachement), otis (communication, affirmation de soi), kael (sport, performance), miro (sommeil), sol (anxiété, respiration), mateo (travail, carrière). Cinq sont exclusifs à MAYND+ : soren (parentalité), iris (lien social, solitude), eden (sexualité, intimité), vince (argent), neo (addictions).
+Tu connais les seize accompagnants de MAYND et leur terrain. Dix sont inclus dans MAYND : naoki (discipline, habitudes), felix (confiance, dialogue intérieur), atlas (identité, sens), ava (émotions, deuil), leo (couple, attachement), otis (communication, affirmation de soi), kael (sport, performance), miro (sommeil), sol (anxiété, respiration), mateo (travail, carrière). Six sont exclusifs à MAYND+ : soren (parentalité), iris (lien social, solitude), eden (sexualité, intimité), vince (argent), neo (addictions), nora (rapport au corps).
 
-En formule MAYND, un seul accompagnant est actif à la fois dans un fil : en faire venir un autre remplace le précédent. En formule MAYND+, jusqu'à trois peuvent être actifs ensemble. Si le terrain le plus utile pour la personne est un accompagnant exclusif MAYND+ alors qu'elle est en formule MAYND, tu ne le caches jamais : tu nommes simplement ce qui aiderait, sans dramatiser ni insister lourdement.
+MAYND est un abonnement unique : les seize accompagnants sont tous accessibles, aucun n'est réservé. Un seul accompagnant est actif à la fois dans un fil tant que la personne n'a pas encore atteint, dans son parcours, la possibilité d'en réunir plusieurs ensemble (jusqu'à trois) — cela se gagne par la progression, ce n'est jamais une question de prix. Si le terrain le plus utile pour la personne est un accompagnant qu'elle n'a pas encore rencontré, tu ne le caches jamais : tu nommes simplement ce qui aiderait, sans dramatiser ni insister lourdement.
 
 Quand, et seulement quand, passer la main à un accompagnant apporterait vraiment quelque chose, tu termines ta réponse par une balise technique seule sur sa ligne, au format [[SUGGEST:identifiant]] (un seul identifiant parmi la liste). Cette balise est invisible pour la personne : tu ne l'expliques jamais, tu ne la commentes jamais. Ta réponse reste complète et utile même si on l'enlève. La plupart du temps, tu n'en mets pas : tu restes avec la personne. Si un objectif actif t'est donné en contexte, ce qui aiderait vraiment se juge d'abord par rapport à cet objectif, pas seulement par rapport au sujet du message : un accompagnant peut coller au sujet immédiat sans faire avancer l'objectif, et inversement.
 
@@ -2560,7 +2563,7 @@ function openProfile(){ renderProfile(); openSheet('profile-backdrop','profile-s
 function closeProfile(){ closeSheet('profile-backdrop','profile-sheet'); }
 function chev(){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>'; }
 function renderProfile(){
-  const tier=state.tier==='free'?'Freemium':(state.tier==='plus'?'MAYND+':'MAYND');
+  const tier=state.tier==='free'?'Freemium':'MAYND';
   const av=state.name?state.name[0].toUpperCase():'N';
   const lang=LANGS.find(l=>l.code===state.lang)||LANGS[0];
   const hasKey=!!state.apiKey;
@@ -2594,7 +2597,8 @@ function renderProfile(){
     +'<button class="row-btn" onclick="openExport()"><div class="rt"><div class="rl">'+t('exportR')+'</div><div class="rd">'+t('exportD')+'</div></div><span class="chev">'+chev()+'</span></button>'
     +'<button class="row-btn" onclick="openImport()"><div class="rt"><div class="rl">'+t('importR')+'</div><div class="rd">'+t('importD')+'</div></div><span class="chev">'+chev()+'</span></button></div>';
   h+='<div class="block-title">Démonstration</div><div class="block">'
-    +'<button class="row-btn" onclick="openProDashboard()"><div class="rt"><div class="rl">Vue professionnel</div><div class="rd">Aperçu de ce que verrait ton professionnel référent</div></div><span class="chev">'+chev()+'</span></button></div>';
+    +'<button class="row-btn" onclick="openProDashboard()"><div class="rt"><div class="rl">Vue professionnel</div><div class="rd">Aperçu de ce que verrait ton professionnel référent</div></div><span class="chev">'+chev()+'</span></button>'
+    +'<div class="row-btn snd-row"><div class="rt"><div class="rl">Multi-accompagnants</div><div class="rd">Remplace la progression, pas encore livrée, pour tester le multi-accompagnants</div></div><span class="agx-tgl'+(state.multiUnlocked?' on':'')+'" onclick="toggleMultiUnlocked()"><span class="agx-knob"></span></span></div></div>';
   h+='<div class="block-title">'+t('privacy')+'</div><div class="block">'
     +'<button class="row-btn" onclick="clearConvos()"><div class="rt"><div class="rl">'+t('clearC')+'</div><div class="rd">'+t('clearCD')+'</div></div><span class="chev">'+chev()+'</span></button>'
     +'<button class="row-btn" onclick="resetAll()"><div class="rt"><div class="rl">'+t('resetAll')+'</div><div class="rd">'+t('resetAllD')+'</div></div><span class="chev">'+chev()+'</span></button></div>';
@@ -2628,9 +2632,9 @@ function closeFormules(){ closeSheet('formules-backdrop','formules-sheet'); }
 function openUpgrade(){ openFormules(); }
 function renderFormules(){
   const F={
-   fr:{a10:'10 accompagnants + MIA',a15:'15 accompagnants + MIA',multi:'Plusieurs accompagnants ensemble (jusqu\u2019à 3)',voice:'Voix incluse',sup:'Supervision par un professionnel',mem:'Mémoire et personnalisation',vol:'Volume d\u2019échanges confortable',volp:'Volume d\u2019échanges étendu',plusHead:'Tout MAYND, et en plus :',inc:'/ mois'},
-   en:{a10:'10 companions + MIA',a15:'15 companions + MIA',multi:'Several companions together (up to 3)',voice:'Voice included',sup:'Supervised by a professional',mem:'Memory and personalization',vol:'Comfortable message volume',volp:'Extended message volume',plusHead:'Everything in MAYND, plus:',inc:'/ month'},
-   es:{a10:'10 acompañantes + MIA',a15:'15 acompañantes + MIA',multi:'Varios acompañantes juntos (hasta 3)',voice:'Voz incluida',sup:'Supervisado por un profesional',mem:'Memoria y personalización',vol:'Volumen de mensajes cómodo',volp:'Volumen de mensajes ampliado',plusHead:'Todo MAYND, y además:',inc:'/ mes'}
+   fr:{a10:'10 accompagnants + MIA',a15:'Les seize accompagnants + MIA',multi:'Plusieurs accompagnants ensemble (jusqu\u2019à 3)',voice:'Voix incluse',sup:'Supervision par un professionnel',mem:'Mémoire et personnalisation',vol:'Volume d\u2019échanges confortable',volp:'Volume d\u2019échanges étendu',plusHead:'Tout MAYND, et en plus :',inc:'/ mois'},
+   en:{a10:'10 companions + MIA',a15:'The sixteen companions + MIA',multi:'Several companions together (up to 3)',voice:'Voice included',sup:'Supervised by a professional',mem:'Memory and personalization',vol:'Comfortable message volume',volp:'Extended message volume',plusHead:'Everything in MAYND, plus:',inc:'/ month'},
+   es:{a10:'10 acompañantes + MIA',a15:'Los dieciséis acompañantes + MIA',multi:'Varios acompañantes juntos (hasta 3)',voice:'Voz incluida',sup:'Supervisado por un profesional',mem:'Memoria y personalización',vol:'Volumen de mensajes cómodo',volp:'Volumen de mensajes ampliado',plusHead:'Todo MAYND, y además:',inc:'/ mes'}
   }[state.lang]||{};
   const tick='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
   function feat(x){ return '<div class="feat">'+tick+'<span>'+x+'</span></div>'; }
@@ -2787,25 +2791,20 @@ function openUpgrade(){ openFormules(); }
 function openUpsell(r){ _upsell=r||null; openFormulesRaw(); }
 function renderFormules(){
   const F={
-   fr:{a10:'10 accompagnants + MIA',a15:'15 accompagnants + MIA',multi:'Plusieurs accompagnants ensemble (jusqu\u2019à 3)',voice:'Voix incluse',sup:'Supervision par un professionnel',mem:'Mémoire et personnalisation',vol:'Volume d\u2019échanges confortable',volp:'Volume d\u2019échanges étendu',plusHead:'Tout MAYND, et en plus :',inc:'/ mois'},
-   en:{a10:'10 companions + MIA',a15:'15 companions + MIA',multi:'Several companions together (up to 3)',voice:'Voice included',sup:'Supervised by a professional',mem:'Memory and personalization',vol:'Comfortable message volume',volp:'Extended message volume',plusHead:'Everything in MAYND, plus:',inc:'/ month'},
-   es:{a10:'10 acompañantes + MIA',a15:'15 acompañantes + MIA',multi:'Varios acompañantes juntos (hasta 3)',voice:'Voz incluida',sup:'Supervisado por un profesional',mem:'Memoria y personalización',vol:'Volumen de mensajes cómodo',volp:'Volumen de mensajes ampliado',plusHead:'Todo MAYND, y además:',inc:'/ mes'}
+   fr:{a10:'10 accompagnants + MIA',a15:'Les seize accompagnants + MIA',multi:'Plusieurs accompagnants ensemble (jusqu\u2019à 3)',voice:'Voix incluse',sup:'Supervision par un professionnel',mem:'Mémoire et personnalisation',vol:'Volume d\u2019échanges confortable',volp:'Volume d\u2019échanges étendu',plusHead:'Tout MAYND, et en plus :',inc:'/ mois'},
+   en:{a10:'10 companions + MIA',a15:'The sixteen companions + MIA',multi:'Several companions together (up to 3)',voice:'Voice included',sup:'Supervised by a professional',mem:'Memory and personalization',vol:'Comfortable message volume',volp:'Extended message volume',plusHead:'Everything in MAYND, plus:',inc:'/ month'},
+   es:{a10:'10 acompañantes + MIA',a15:'Los dieciséis acompañantes + MIA',multi:'Varios acompañantes juntos (hasta 3)',voice:'Voz incluida',sup:'Supervisado por un profesional',mem:'Memoria y personalización',vol:'Volumen de mensajes cómodo',volp:'Volumen de mensajes ampliado',plusHead:'Todo MAYND, y además:',inc:'/ mes'}
   }[state.lang]||{};
   const tick='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
   function feat(x){ return '<div class="feat">'+tick+'<span>'+x+'</span></div>'; }
   let h='';
   if(_upsell){ const U={agent:{t:t('upAgentT'),s:t('upAgentS')},limit:{t:t('upLimitT'),s:t('upLimitS')},mix:{t:t('upMixT'),s:t('upMixS')}}[_upsell]; if(U) h+='<div class="up-head"><div class="ut">'+U.t+'</div><div class="us">'+U.s+'</div></div>'; }
   if(state.tier==='free'){ h+='<div style="display:flex;align-items:center;justify-content:space-between;background:var(--paper-2);border-radius:14px;padding:12px 15px;margin-bottom:14px"><div><div style="font-family:Poppins;font-weight:700;font-size:14px">Freemium</div><div style="font-size:12px;color:var(--mist)">'+t('freeNowDesc')+'</div></div></div>'; }
-  const curM=state.tier==='maynd', curP=state.tier==='plus';
-  h+='<div class="formula">'+(curM?'<span class="badge-now">'+t('current')+'</span>':'')
-    +'<div class="fname">MAYND</div><div class="fprice"><b>49&nbsp;€</b> <span>'+F.inc+'</span></div>'
-    +feat(F.a10)+feat(F.voice)+feat(F.sup)+feat(F.mem)+feat(F.vol)
-    +'<button class="btn full fcta'+(curM?' ghost':'')+'" onclick="pickPlan(\'maynd\')">'+(curM?t('current'):t('chooseM'))+'</button></div>';
+  const curP=state.tier!=='free';
   h+='<div class="formula plus">'+(curP?'<span class="badge-now">'+t('current')+'</span>':'')
-    +'<span class="ribbon">MAYND+</span><div class="fname">MAYND+</div><div class="fprice"><b>69&nbsp;€</b> <span>'+F.inc+'</span></div>'
-    +'<div class="feat head">'+F.plusHead+'</div>'
-    +feat(F.a15)+feat(F.multi)+feat(F.volp)
-    +'<button class="btn full fcta light" onclick="pickPlan(\'plus\')">'+(curP?t('current'):t('goPlus'))+'</button>'
+    +'<div class="fname">MAYND</div><div class="fprice"><b>60&nbsp;€</b> <span>'+F.inc+'</span></div>'
+    +feat(F.a15)+feat(F.voice)+feat(F.sup)+feat(F.mem)
+    +'<button class="btn full fcta light" onclick="pickPlan(\'plus\')">'+(curP?t('current'):t('chooseM'))+'</button>'
     +'<div style="text-align:center;font-size:11px;color:rgba(251,250,247,.6);margin-top:10px">'+t('noEngage')+'</div></div>';
   $('formules-body').innerHTML=h;
 }
@@ -2835,7 +2834,7 @@ function setTier(tier,silent){
   if(activeScreen()==='tab-chat'){ renderChatHeader(); renderPartsCount(); }
   if(isOpen('parts-sheet')) renderParts();
   closeFormules();
-  if(!silent) toast(tier==='free'?'Freemium':(tier==='plus'?'MAYND+':'MAYND'));
+  if(!silent) toast(tier==='free'?'Freemium':'MAYND');
 }
 
 /* ---- envoi avec limite freemium ---- */
@@ -3003,8 +3002,7 @@ function obPlanList(){
   function pf(x){ return '<div class="pf">'+tick+'<span>'+x+'</span></div>'; }
   let h='';
   h+='<button class="ob-plan" onclick="obChoosePlan(\'free\')"><div class="pn">Freemium</div><div class="pp"><b>0&nbsp;€</b> <span>pour découvrir</span></div><div class="pt">Faire un premier pas, sans payer.</div>'+pf('MIA, ton co-pilote')+pf('5 messages par jour')+pf('Échanges en texte')+'<div class="pcta btn ghost full" style="pointer-events:none;margin-top:14px;display:flex;align-items:center;justify-content:center">Commencer gratuitement</div></button>';
-  h+='<button class="ob-plan" onclick="obChoosePlan(\'maynd\')"><div class="pn">MAYND</div><div class="pp"><b>49&nbsp;€</b> <span>/ mois</span></div><div class="pt">L\u2019accompagnement complet.</div>'+pf('10 accompagnants + MIA')+pf('Voix incluse')+pf('Supervision par un professionnel')+'<div class="pcta btn full" style="pointer-events:none;margin-top:14px;display:flex;align-items:center;justify-content:center">Choisir MAYND</div></button>';
-  h+='<button class="ob-plan dark" onclick="obChoosePlan(\'plus\')"><span class="pribbon">le + complet</span><div class="pn">MAYND+</div><div class="pp"><b>69&nbsp;€</b> <span>/ mois</span></div><div class="pt">Tout MAYND, et le multi-accompagnants.</div>'+pf('15 accompagnants + MIA')+pf('Plusieurs accompagnants ensemble (jusqu\u2019à 3)')+pf('Volume d\u2019échanges étendu')+'<div class="pcta btn full light" style="pointer-events:none;margin-top:14px;display:flex;align-items:center;justify-content:center">Choisir MAYND+</div></button>';
+  h+='<button class="ob-plan" onclick="obChoosePlan(\'plus\')"><div class="pn">MAYND</div><div class="pp"><b>60&nbsp;€</b> <span>/ mois</span></div><div class="pt">L\u2019accompagnement complet.</div>'+pf('Les seize accompagnants + MIA')+pf('Voix incluse')+pf('Supervision par un professionnel')+'<div class="pcta btn full" style="pointer-events:none;margin-top:14px;display:flex;align-items:center;justify-content:center">Choisir MAYND</div></button>';
   $('ob-plan-list').innerHTML=h;
 }
 var _payPlan='plus';
@@ -3014,14 +3012,13 @@ function obChoosePlan(plan){
   _payPlan=plan; obFillPay(); obShow('ob-payment'); payTab('card');
 }
 function obFillPay(){
-  const isPlus=_payPlan==='plus';
-  $('pay-name').textContent=isPlus?'MAYND+':'MAYND';
-  $('pay-price').innerHTML=isPlus?'69&nbsp;€':'49&nbsp;€';
-  $('pay-tag').textContent=isPlus?'Tout MAYND, et le multi-accompagnants.':'L\u2019accompagnement complet.';
+  $('pay-name').textContent='MAYND';
+  $('pay-price').innerHTML='60&nbsp;€';
+  $('pay-tag').textContent='L’accompagnement complet.';
   const tick='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
-  const feats=isPlus?['15 accompagnants + MIA','Multi-accompagnants (jusqu\u2019à 3)','Voix et supervision incluses']:['10 accompagnants + MIA','Voix incluse','Supervision par un professionnel'];
+  const feats=['Les seize accompagnants + MIA','Voix incluse','Supervision par un professionnel'];
   $('pay-feats').innerHTML=feats.map(f=>'<div class="pr-feat">'+tick+'<span>'+f+'</span></div>').join('');
-  $('pay-cta-label').textContent='Payer '+(isPlus?'69':'49')+' €';
+  $('pay-cta-label').textContent='Payer 60 €';
 }
 function payTab(m){ document.querySelectorAll('#ob-payment .pay-tab').forEach(b=>b.classList.toggle('active', b.getAttribute('data-m')===m)); ['card','apple','google','paypal'].forEach(k=>{ const f=$('pay-form-'+k); if(f) f.style.display=k===m?'':'none'; }); }
 function payFmtNum(el){ let v=el.value.replace(/\D/g,'').slice(0,16); el.value=v.replace(/(.{4})/g,'$1 ').trim(); }
@@ -3202,20 +3199,16 @@ function qzCrisisClose(){ state.crisisFlagged=true; state.questionnaireDone=true
 
 /* ══════════ FREEMIUM : paywall + parcours d'upgrade ══════════ */
 var _pwTier='plus', _upgrading=false;
-function showPaywall(tierKey, title, sub){
-  var isPlus=tierKey==='plus';
-  var name=isPlus?'MAYND+':'MAYND';
-  var price=isPlus?'69':'49';
-  var feats=isPlus?['15 accompagnants + MIA','Plusieurs accompagnants ensemble (jusqu\u2019à 3)','Voix et supervision incluses','Volume d\u2019échanges étendu']
-                  :['10 accompagnants + MIA','Voix incluse','Supervision par un professionnel','Mémoire et personnalisation'];
+function showPaywall(title, sub){
+  var feats=['Les seize accompagnants + MIA','Voix et supervision incluses','Mémoire et personnalisation','700 messages par mois'];
   var tick='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
-  $('pw-badge').textContent=name; $('pw-badge').className='pw-badge'+(isPlus?' plus':'');
+  $('pw-badge').textContent='MAYND'; $('pw-badge').className='pw-badge';
   $('pw-title').textContent=title;
   $('pw-sub').textContent=sub;
   $('pw-feats').innerHTML=feats.map(function(f){return '<div class="pw-feat">'+tick+'<span>'+f+'</span></div>';}).join('');
-  $('pw-price').innerHTML='<b>'+price+'&nbsp;€</b> <span>/ mois</span>';
-  $('pw-cta').textContent='Passer à '+name;
-  _pwTier=tierKey;
+  $('pw-price').innerHTML='<b>60&nbsp;€</b> <span>/ mois</span>';
+  $('pw-cta').textContent='Passer à MAYND';
+  _pwTier='plus';
   openSheet('paywall-backdrop','paywall-sheet');
 }
 function pwGo(){ closeSheet('paywall-backdrop','paywall-sheet'); startUpgrade(_pwTier); }
@@ -3223,7 +3216,7 @@ function pwFormules(){ closeSheet('paywall-backdrop','paywall-sheet'); openFormu
 function pickPlan(tier){ if(typeof closeFormules==='function') closeFormules(); startUpgrade(tier); }
 function startUpgrade(tier){
   if(tier==='free'){ setTier('free'); return; }
-  _payPlan=tier; _upgrading=true; obFillPay();
+  _payPlan='plus'; _upgrading=true; obFillPay();
   $('onboarding').classList.remove('done'); obShow('ob-payment'); payTab('card');
 }
 function payCancel(){ _upgrading=false; $('onboarding').classList.add('done'); }
@@ -3231,23 +3224,21 @@ function obPay(){
   if(_upgrading){
     _upgrading=false; setTier(_payPlan,true); state.paid=true; persist();
     $('onboarding').classList.add('done');
-    toast(_payPlan==='plus'?'Bienvenue dans MAYND+':'Bienvenue dans MAYND');
+    toast('Bienvenue dans MAYND');
   } else { state.paid=true; persist(); obShow('ob-pay-success'); }
 }
 function openUpsell(reason, id){
-  var tierKey='maynd', title='Débloque tout MAYND', sub='Choisis une formule pour aller plus loin.';
-  if(reason==='agent'){
-    var a=id?byId(id):null;
-    if(a && a.plus){ tierKey='plus'; title='Cet accompagnant fait partie de MAYND+'; sub='Passe à MAYND+ pour débloquer les 15 accompagnants et le multi-accompagnants.'; }
-    else { tierKey='maynd'; title='Cet accompagnant est réservé aux abonnés'; sub='Passe à MAYND pour accéder aux accompagnants et à ton suivi par un professionnel.'; }
-  } else if(reason==='mix'){ tierKey='plus'; title='Le multi-accompagnants est réservé à MAYND+'; sub='Réunis jusqu\u2019à 3 accompagnants dans une même conversation avec MAYND+.'; }
-  else if(reason==='limit'){ tierKey='maynd'; title='Tu as atteint ta limite du jour'; sub='En Freemium, tu as 5 messages par jour avec MIA. Passe à MAYND pour des échanges illimités.'; }
-  showPaywall(tierKey, title, sub);
+  if(reason==='mix'){ toast(t('mixPlus')); return; }
+  var title='Débloque tout MAYND', sub='Passe à l’abonnement pour aller plus loin.';
+  if(reason==='agent'){ title='Cet accompagnant fait partie de l’abonnement MAYND'; sub='Passe à MAYND pour accéder aux seize accompagnants et à ton suivi par un professionnel.'; }
+  else if(reason==='limit'){ title='Tu as atteint ta limite du jour'; sub='En Freemium, tu as 5 messages par jour avec MIA. Passe à MAYND pour des échanges illimités.'; }
+  showPaywall(title, sub);
 }
 function addParticipant(id, silent){
   var th=activeThread(); if(!th) return false;
   if(th.parts.includes(id)) return true;
-  if(!isUnlocked(id)){ openUpsell(state.tier==='free'?'agent':'mix', id); return false; }
+  if(!isUnlocked(id)){ openUpsell('agent', id); return false; }
+  if(th.parts.length>=1 && !canUseMulti()){ openUpsell('mix', id); return false; }
   if(th.parts.length>=3){ toast(t('max3')); return false; }
   th.parts.push(id); touchThread(); persist();
   if(!silent){ addNote(byId(id), byId(id).name+' '+t('joined')); }
@@ -3255,7 +3246,7 @@ function addParticipant(id, silent){
   return true;
 }
 function startWithAgent(id){
-  if(!isUnlocked(id)){ openUpsell(state.tier==='free'?'agent':'mix', id); return; }
+  if(!isUnlocked(id)){ openUpsell('agent', id); return; }
   var th=[...state.threads].filter(function(x){return x.parts.length===1&&x.parts[0]===id;}).sort(function(a,b){return b.updated-a.updated;})[0];
   if(!th){ th=mkThread([id]); state.threads.push(th); }
   state.current=th.id; persist(); closeDrawer(); showTab('chat');
@@ -3391,7 +3382,7 @@ function renderObjectives(){
   h+='<div class="cap-zone">'+renderCapCard()+renderWeekCard()+'</div>';
   if(state.tier==='free'){
     h+='<div class="section-head"><h2>Ton suivi</h2></div>';
-    h+='<div class="track-lock"><div class="tl-ico">'+lockSVG()+'</div><div class="tl-t">Ton suivi complet</div><div class="tl-s">Boussole, jalons, objectifs et progression. Réservé aux abonnés.</div><button class="btn full" onclick="openUpsell(\'agent\')">Débloquer mon suivi</button></div>';
+    h+='<div class="track-lock"><div class="tl-ico">'+lockSVG()+'</div><div class="tl-t">Ton suivi complet</div><div class="tl-s">Boussole, jalons, objectifs et progression. Réservé aux abonnés.</div><button class="btn full" onclick="openUpsell(\'agent\')">Découvrir mon suivi</button></div>';
     $('obj-pad').innerHTML=h; return;
   }
   const lvl=levelOf(), inl=xpInLevel(), frac=inl/100; const r=36,C=2*Math.PI*r,off=C*(1-frac); const streak=state.streak||0;
@@ -3588,7 +3579,7 @@ function renderObjectives(){
   h+=renderProBlock();
   if(state.tier==='free'){
     h+='<div class="section-head"><h2>Ton suivi</h2></div>';
-    h+='<div class="track-lock"><div class="tl-ico">'+lockSVG()+'</div><div class="tl-t">Ton suivi complet</div><div class="tl-s">Boussole, défis, jalons et objectifs. Réservé aux abonnés.</div><button class="btn full" onclick="openUpsell(\'agent\')">Débloquer mon suivi</button></div>';
+    h+='<div class="track-lock"><div class="tl-ico">'+lockSVG()+'</div><div class="tl-t">Ton suivi complet</div><div class="tl-s">Boussole, défis, jalons et objectifs. Réservé aux abonnés.</div><button class="btn full" onclick="openUpsell(\'agent\')">Découvrir mon suivi</button></div>';
     $('obj-pad').innerHTML=h; return;
   }
   var w=getWheel();
@@ -3856,7 +3847,7 @@ function renderProBlock(){
     return h+'<div class="pro-card pro-lock"><div class="pro-head"><span class="pro-ava">'+proBadgeSVG()+'</span>'
       +'<span class="pro-id"><span class="pro-nm">Professionnel référent certifié</span><span class="pro-rl">Inclus dès l\u2019abonnement</span></span></div>'
       +'<div class="pro-note">Un professionnel certifié suit ton parcours, signe ta feuille de route chaque mois et ton bilan. Il intervient sur signal. Sans rendez-vous.</div>'
-      +'<button class="btn full" onclick="openUpsell(\'agent\')">Débloquer ma supervision</button></div>';
+      +'<button class="btn full" onclick="openUpsell(\'agent\')">Découvrir ma supervision</button></div>';
   }
   var ready=proReady();
   var axes=proAxes();
@@ -4642,16 +4633,16 @@ function agentRowHTML(id, mode){
   var a=byId(id); var plus=!!a.plus; var fav=isFav(id); var lock=!isUnlocked(id);
   var inConv = mode==='chat' && typeof threadParts==='function' && threadParts().indexOf(id)>=0;
   var ava = id==='mia' ? '<span class="agx-ava mia">'+brainSVG()+'</span>' : '<span class="agx-ava" style="background:'+a.color+'">'+a.name[0]+'</span>';
-  var badge = plus ? '<span class="agx-badge">MAYND+</span>' : '';
+  var badge = '';
   var star = id==='mia' ? '' : '<button class="agx-star'+(fav?' on':'')+'" onclick="toggleFav(\''+id+'\',event)" aria-label="Favori">'+starSVG(fav)+'</button>';
   var right='';
   if(mode==='chat'){
     if(id==='mia'){ right='<span class="agx-lock" style="color:var(--mist);background:rgba(0,0,0,.06)">Toujours là</span>'; }
-    else if(lock && !inConv){ right='<span class="agx-lock">MAYND+</span>'; }
+    else if(lock && !inConv){ right='<span class="agx-lock">Abonnement</span>'; }
     else { right='<span class="agx-tgl'+(inConv?' on':'')+'" onclick="togglePartRow(\''+id+'\',event)"><span class="agx-knob"></span></span>'; }
   }
   var rowClick = mode==='chat' ? ' onclick="togglePartRow(\''+id+'\',event)"' : ' onclick="startWithAgent(\''+id+'\')"';
-  return '<div class="agx-row'+(plus?' plus':'')+'" style="--agt:'+tintOf(a.color,0.90)+'">'
+  return '<div class="agx-row" style="--agt:'+tintOf(a.color,0.90)+'">'
     +'<button class="agx-open"'+rowClick+'>'+ava
     +'<span class="agx-tx"><span class="agx-nm">'+a.name+badge+'</span><span class="agx-dm">'+(id==='mia'?t('miaStatus'):a.domain)+'</span></span></button>'
     +star+right+'</div>';
@@ -4717,7 +4708,7 @@ function renderProBlock(){
       +'<div class="pro-lock-t">Professionnel référent certifié</div>'
       +'<div class="pro-lock-s">Inclus dès l\u2019abonnement</div>'
       +'<div class="pro-note">Il suit ton parcours, signe ta feuille de route chaque mois et ton bilan. Il intervient sur signal. Sans rendez-vous.</div>'
-      +'<button class="btn full" onclick="openUpsell(\'agent\')">Débloquer ma supervision</button></div>';
+      +'<button class="btn full" onclick="openUpsell(\'agent\')">Découvrir ma supervision</button></div>';
   }
   var ready=proReady();
   var axes=proAxes();
@@ -4946,7 +4937,7 @@ function openAgentDeck(startId){
     var info=AGENT_INFO[id]||{tag:'',does:[],when:[]};
     var lock=!isUnlocked(id);
     var fav=isFav(id);
-    var acc = id==='mia' ? 'Toujours disponible' : (a.plus ? 'Exclusif MAYND+' : 'Inclus dans MAYND');
+    var acc = id==='mia' ? 'Toujours disponible' : 'Inclus dans MAYND';
     var ava = id==='mia' ? '<span class="deck-ava mia">'+brainSVG()+'</span>' : '<span class="deck-ava">'+a.name[0]+'</span>';
     return '<section class="deck-page" data-id="'+id+'" style="--dc:'+a.color+'">'
       +'<div class="deck-inner">'
@@ -4955,13 +4946,13 @@ function openAgentDeck(startId){
       +'</div>'
       +'<div class="deck-name">'+a.name+'</div>'
       +'<div class="deck-dom">'+(id==='mia'?t('miaStatus'):a.domain)+'</div>'
-      +'<div class="deck-acc'+(a.plus?' plus':'')+'">'+acc+'</div>'
+      +'<div class="deck-acc">'+acc+'</div>'
       +'<div class="deck-tag">'+escapeHtml(info.tag)+'</div>'
       +'<div class="deck-sec">Ce qu\u2019il fait avec toi</div>'
       +'<ul class="deck-list">'+info.does.map(function(x){return '<li>'+escapeHtml(x)+'</li>';}).join('')+'</ul>'
       +'<div class="deck-sec">Quand l\u2019appeler</div>'
       +'<ul class="deck-list dot">'+info.when.map(function(x){return '<li>'+escapeHtml(x)+'</li>';}).join('')+'</ul>'
-      +'<button class="deck-cta" onclick="deckStart(\''+id+'\')">'+(lock?'Débloquer '+a.name:'Parler à '+a.name)+'</button>'
+      +'<button class="deck-cta" onclick="deckStart(\''+id+'\')">'+(lock?'Découvrir '+a.name:'Parler à '+a.name)+'</button>'
       +'</div></section>';
   }).join('');
   $('deck-dots').innerHTML=DECK_IDS.map(function(id,i){ return '<span class="deck-dot'+(i===0?' on':'')+'" onclick="deckGo('+i+')"></span>'; }).join('');
@@ -5065,8 +5056,7 @@ var OB_SOFT={
 /* ═══════════════ BOUTON DE PRÉSENTATION DANS LA LISTE ═══════════════ */
 function renderAgentList(mode){
   var favs=(state.favorites||[]).filter(function(id){return byId(id);});
-  var base=ALL.filter(function(a){return a.id!=='mia' && !a.plus;}).map(function(a){return a.id;});
-  var plusA=ALL.filter(function(a){return !!a.plus;}).map(function(a){return a.id;});
+  var base=ALL.filter(function(a){return a.id!=='mia';}).map(function(a){return a.id;});
   var h='<button class="deck-btn" onclick="openAgentDeck()">'
     +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M8 9h8M8 13h5"/></svg>'
     +'<span>Présenter les accompagnants</span>'
@@ -5074,8 +5064,6 @@ function renderAgentList(mode){
   if(favs.length){ h+='<div class="agx-sec">Tes accompagnants</div>'+favs.map(function(id){return agentRowHTML(id,mode);}).join(''); }
   var baseShown=['mia'].concat(base).filter(function(id){return favs.indexOf(id)<0;});
   h+='<div class="agx-sec">Tous les accompagnants</div>'+baseShown.map(function(id){return agentRowHTML(id,mode);}).join('');
-  var plusShown=plusA.filter(function(id){return favs.indexOf(id)<0;});
-  if(plusShown.length){ h+='<div class="agx-sec plus">Exclusifs MAYND+</div>'+plusShown.map(function(id){return agentRowHTML(id,mode);}).join(''); }
   return h;
 }
 
@@ -5218,7 +5206,7 @@ function addSecondaryFromCap(agentId){
   var base=openUpsell;
   if(typeof base!=='function') return;
   window.openUpsell=function(reason){
-    if(reason==='objectives'){ showPaywall('maynd','Objectifs secondaires réservés aux abonnés','Passe à MAYND pour ajouter des objectifs secondaires en plus de ton objectif principal.'); return; }
+    if(reason==='objectives'){ showPaywall('Objectifs secondaires réservés aux abonnés','Passe à MAYND pour ajouter des objectifs secondaires en plus de ton objectif principal.'); return; }
     return base.apply(this, arguments);
   };
 })();
@@ -5778,10 +5766,17 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
    REFONTE DE L'INTELLIGENCE — MIA et les accompagnants
    Fichier tardif : toute redéfinition ci-dessous l'emporte sur les couches
    précédentes (voir docs/fonctions-redefinies.md, mis à jour en parallèle).
-   Chantiers du cahier des charges, dans l'ordre d'implémentation recommandé :
-   8 (retrait visible) → 1 (longueur progressive) → 6 (contexte silencieux
-   étendu) → 2 (lecture de l'état réel) → 4 (spécialisation) → 5 (anti-
-   redondance, historique condensé) → 3 (hiérarchisation) → 7 (MIA).
+   Le dossier de refonte a été collé trois fois, avec une numérotation de
+   chantiers différente à chaque fois (les noms ci-dessous sont donc plus
+   fiables que d'éventuels numéros trouvés dans une future version collée) :
+   retrait visible sur une note d'arrivée · longueur progressive · contexte
+   silencieux étendu (ancrage, actes, état courant, boucles) · lecture de
+   l'état réel · spécialisation toutes pratiques · anti-redondance et
+   historique condensé · hiérarchisation (ancrage / point d'entrée) · MIA,
+   traitement spécifique · Nora (rapport au corps) · abonnement unique (60€,
+   fusion MAYND/MAYND+) · croisement multi-accompagnants (une seule réponse
+   rédigée par le point d'entrée, boucles causales des autres accompagnants,
+   retrait silencieux d'un accompagnant qui ne sert jamais).
    ══════════════════════════════════════════════════════════════════════════ */
 
 /* ═══════════════ i18n : action de retrait sur une note d'arrivée ═══════════════ */
@@ -5802,7 +5797,7 @@ function handleJoin(joinId){
   if(parts.includes(joinId)) return;
   const th=activeThread();
   if(th && Array.isArray(th.refused) && th.refused.includes(joinId)) return;
-  if(state.tier==='plus'){
+  if(canUseMulti()){
     if(parts.length<3) addParticipant(joinId);
     else addInvite(byId(joinId));
   } else {
@@ -5883,16 +5878,50 @@ function withdrawArrival(agentId, idx){
 }
 
 /* La note est stockée dans th.msgs (m.arrival / m.withdrawn) : le geste de retrait
-   survit donc au réaffichage du fil, pas seulement à l'écran au moment de l'arrivée. */
+   survit donc au réaffichage du fil, pas seulement à l'écran au moment de l'arrivée.
+   Chantier 13 : m.crossed survit de la même façon, pour réafficher l'action de retour sur une
+   réponse croisée après un rechargement (ou déjà désactivée si m.boucleFeedback est posé). */
 function renderMessages(){
   const th=activeThread(), box=$('messages'); box.innerHTML='';
   if(!th.msgs.length){ const a=byId(th.parts[0]); const intro=INTROS[a.id]||''; if(intro){ box.appendChild(bubbleEl('assistant',intro)); } }
   th.msgs.forEach((m,i)=>{
     if(m.note){ box.appendChild((m.arrival && !m.withdrawn) ? arrivalNoteEl(m.agent,m.text,i) : noteEl(m.agent,m.text)); }
     else if(m.invite){ box.appendChild(inviteEl(m.agent)); }
-    else { box.appendChild(bubbleEl(m.role==='user'?'user':'assistant', m.content)); }
+    else {
+      const el=bubbleEl(m.role==='user'?'user':'assistant', m.content);
+      if(m.role!=='user' && m.crossed) el.appendChild(crossFeedbackEl(i));
+      box.appendChild(el);
+    }
   });
   scrollChat();
+}
+
+/* Chantier 13 : action de retour discrète sur une réponse croisée, "aucun formulaire, aucune
+   justification demandée" — un seul geste. Une fois donné, le retour se fige (m.boucleFeedback) et
+   la boucle en cause rejoint th.boucleRefused, pour ne plus jamais être reproposée à cette personne. */
+function crossFeedbackEl(idx){
+  const btn=document.createElement('button');
+  btn.type='button';
+  btn.className='note-retrait cross-feedback';
+  const th=activeThread();
+  const m=th && th.msgs && th.msgs[idx];
+  if(m && m.boucleFeedback){ btn.textContent='Noté'; btn.disabled=true; }
+  else {
+    btn.textContent='Ça ne me parle pas';
+    btn.onclick=function(ev){ ev.stopPropagation(); giveBoucleFeedback(idx); };
+  }
+  return btn;
+}
+function giveBoucleFeedback(idx){
+  const th=activeThread(); if(!th) return;
+  const m=th.msgs[idx]; if(!m || m.boucleFeedback) return;
+  m.boucleFeedback=true;
+  if(m.boucleTerrain && m.boucleText){
+    th.boucleRefused=Array.isArray(th.boucleRefused)?th.boucleRefused:[];
+    th.boucleRefused.push(m.boucleTerrain+' : '+m.boucleText);
+  }
+  persist();
+  renderMessages();
 }
 
 
@@ -5915,9 +5944,18 @@ var LENGTH_LEVELS={
    allongeait toutes les réponses. */
 var LENGTH_DEV_TRIGGERS=[/explique[- ]?moi/i,/(m['’]expliquer|d[ée]tailler|d[ée]velopper)/i,/d[ée]taille/i,/d[ée]veloppe/i,/creuse(?:[\s.,!?]|$)/i,/dis[- ]?m['’]en plus/i,/en quoi/i,/qu['’]est[- ]ce qui explique/i];
 
+/* Marge réservée en plus du budget de longueur pour la balise technique de fin de réponse
+   ([[SUGGEST:...]], [[ANCRAGE:...]], [[ACTE:...]]). Sans elle, le niveau 1 (90 tokens, seul
+   niveau possible au tout premier message d'un fil) suffisait à peine aux deux phrases de
+   réponse en français : la balise de routage entrait en concurrence avec la réponse pour le
+   même budget et n'était jamais émise, y compris quand l'orientation était la plus évidente
+   (mention explicite d'un terrain dès le premier message). Le mot compte (wordCap) ne change
+   pas : la marge ne sert qu'à laisser respirer la balise, pas à allonger la réponse visible. */
+var TAG_HEADROOM=50;
+
 function computeLengthBudget(th){
   th = th || activeThread();
-  function def(lvl){ return {level:lvl, wordCap:LENGTH_LEVELS[lvl].words, tokenCap:LENGTH_LEVELS[lvl].tokens, instruction:LENGTH_LEVELS[lvl].instruction}; }
+  function def(lvl){ return {level:lvl, wordCap:LENGTH_LEVELS[lvl].words, tokenCap:LENGTH_LEVELS[lvl].tokens+TAG_HEADROOM, instruction:LENGTH_LEVELS[lvl].instruction}; }
   if(!th){ _lastLengthBudget=def(1); return _lastLengthBudget; }
   const userMsgs=(th.msgs||[]).filter(function(m){ return m.role==='user'; });
   if(userMsgs.length<=1){
@@ -5991,17 +6029,22 @@ async function callDeepSeek(system,messages,maxTokens){
 /* Amélioration visuelle liée : plusieurs idées distinctes -> plusieurs bulles, avec un léger
    décalage. Le stockage ne change pas : un seul message est poussé dans th.msgs (pushMsg),
    exactement comme addBubble ; seul l'affichage en direct se découpe. */
-function addBubbleSplit(role, content){
-  pushMsg({role:role, content:content});
+function addBubbleSplit(role, content, meta){
+  const msg=Object.assign({role:role, content:content}, meta||{});
+  pushMsg(msg);
+  const th=activeThread();
+  const idx=th.msgs.length-1;
   const box=$('messages');
   let parts = role==='assistant' ? String(content||'').split(/\n{2,}/).map(function(s){return s.trim();}).filter(Boolean) : [content];
   if(parts.length>3) parts=[parts[0], parts[1], parts.slice(2).join('\n\n')];
-  if(parts.length<=1){ box.appendChild(bubbleEl(role, content)); scrollChat(); return; }
+  function finish(el){ if(role==='assistant' && msg.crossed && typeof crossFeedbackEl==='function') el.appendChild(crossFeedbackEl(idx)); }
+  if(parts.length<=1){ const el=bubbleEl(role, content); box.appendChild(el); finish(el); scrollChat(); return; }
   let i=0;
   (function next(){
-    box.appendChild(bubbleEl(role, parts[i])); scrollChat();
+    const el=bubbleEl(role, parts[i]); box.appendChild(el); scrollChat();
     i++;
     if(i<parts.length){ addTyping(); setTimeout(function(){ removeTyping(); next(); }, 480+Math.random()*280); }
+    else { finish(el); }
   })();
 }
 
@@ -6020,6 +6063,34 @@ const SPECIALISATION_ADDENDUM=`Spécialisation : tu puises librement dans l'ense
 const HIERARCHISATION_ADDENDUM=`Hiérarchisation, en interne, jamais montrée : tu tiens deux classements distincts, sans jamais les confondre. Le point d'ancrage : ce qui fait tenir tout le reste debout. Le point d'entrée : là où tu peux effectivement commencer à travailler maintenant — pas forcément le même sujet. Pour repérer le point d'ancrage, quatre critères, dans cet ordre : la chronologie (ce qui a commencé avant les autres est souvent la racine) ; le décalage entre la place dans le discours et la charge émotionnelle (le sujet développé en plusieurs paragraphes n'est pas forcément l'ancrage — souvent c'est la phrase courte lâchée au milieu, sur laquelle la personne ne revient jamais) ; l'évitement (ce qui est nommé une fois puis abandonné, ce qu'on contourne) ; le test de dépendance (si ce sujet se résolvait, les autres tomberaient-ils ? ça donne le sens de la causalité). Pour le point d'entrée, deux critères seulement : ce que la personne peut entendre aujourd'hui, ce sur quoi elle a une prise réelle cette semaine — tu n'entres jamais par le plus profond, tu entres par le plus praticable, en sachant où tu vas. Ce classement est une hypothèse, pas une conclusion : tu la réévalues à chaque échange, elle bascule si un élément nouveau la contredit, un ancrage supposé qui ne produit rien après deux ou trois échanges est probablement le mauvais. Il pilote ta réponse, ton choix d'appeler un autre accompagnant, ce que tu laisses de côté pour l'instant — il ne s'affiche jamais, ne se récite jamais, et tu ne le décrètes jamais à la personne (jamais de « en réalité ton vrai problème c'est... »). Quand tu le mets sur la table, c'est une hypothèse ouverte que la personne peut reconnaître ou refuser ; si elle refuse, tu n'insistes pas et tu travailles ce qu'elle amène — c'est elle qui sait. Quand le point d'ancrage est clairement sur un autre terrain que le tien, tu appelles celui dont c'est le terrain avec la balise d'aiguillage déjà en place ; quand la situation est réellement multi-terrains et que la personne est en capacité, plusieurs accompagnants peuvent travailler ensemble. Exception absolue, qui passe devant tout classement, sans délai : tout signal de risque (idées suicidaires, geste imminent, mise en danger) suit intégralement le protocole de sécurité du socle commun, sans jamais attendre derrière un point d'ancrage.`;
 
 const TAG_PROTOCOL_ADDENDUM=`Deux balises techniques supplémentaires, sur le même principe que celles déjà en place : invisibles pour la personne, jamais expliquées ni commentées, seules sur leur ligne en fin de réponse, ta réponse reste complète sans elles. [[ANCRAGE:identifiant:certitude]] pose ou met à jour ton hypothèse de point d'ancrage — identifiant parmi les accompagnants MAYND, certitude parmi faible, moyenne, forte. Tu la poses quand une hypothèse se dessine, tu la mets à jour quand elle se confirme, s'affine ou change ; la plupart du temps tu n'en mets pas. [[ACTE:formulation courte]] marque un pas concret que tu viens de proposer à la personne, pour ne jamais le reproposer sous une autre forme par la suite ; tu ne la poses que quand tu proposes vraiment un pas, pas à chaque message.`;
+
+const BOUCLE_ADDENDUM=`Deux balises techniques pour le croisement, sur le même principe que les autres : invisibles pour la personne, jamais expliquées ni commentées, chacune seule sur sa ligne en fin de réponse, ta réponse reste complète sans elles. [[REDIGE:identifiant]] indique le terrain qui a rédigé cette réponse précise — pose-la à chaque réponse dans ce fil à plusieurs, même sans croisement, c'est ce qui permet de savoir qui est réellement actif. [[BOUCLE:identifiant:formulation courte]] transporte la boucle qui a servi à croiser cette réponse quand un croisement a vraiment eu lieu — identifiant du terrain qui l'a apportée, formulation courte de la boucle elle-même ; la plupart du temps tu n'en poses pas.`;
+
+/* ═══════════════════════ CHANTIER 13 — le croisement multi-accompagnants ═══════════════════════
+   Redéfinition complète de composeSystem (pas une enveloppe cette fois) : les déclarations de
+   fonction sont hissées en bloc, la dernière du fichier l'emporte avant même la première ligne
+   exécutée — peu importe sa position relative à l'enveloppe juste en dessous, qui capture
+   "composeSystem" au moment de son exécution et récupère donc automatiquement celle-ci. Seule la
+   branche multi-accompagnants change ; la branche solo est recopiée à l'identique.
+   Avant ce chantier, chaque accompagnant présent parlait à son tour, préfixé par son prénom
+   ("Kael : ..."). C'était une juxtaposition, pas un croisement : deux avis distincts que la
+   personne devait synthétiser elle-même. Maintenant, un seul rédige — celui dont le terrain porte
+   le point d'entrée (cf. HIERARCHISATION_ADDENDUM), pas celui du point d'ancrage — et les autres ne
+   parlent que s'ils repèrent une boucle causale nette avec son terrain, sinon ils se taisent
+   entièrement. Le format de balise ([[BOUCLE:...]]) et son injection conditionnelle dans le
+   contexte silencieux (boucles déjà utilisées / refusées) vivent dans l'enveloppe juste en dessous. */
+function composeSystem(){
+  const parts=threadParts(), socle=getSocle();
+  if(parts.length===1){
+    const id=parts[0];
+    if(id==='mia') return getPersona('mia')+SEP+socle;
+    return getPersona(id)+SEP+routingNote(id)+SEP+socle;
+  }
+  const names=parts.map(p=>byId(p).name).join(', ');
+  const intro=`Vous êtes plusieurs accompagnants MAYND consultés ensemble sur ce fil : ${names}. Un seul d'entre vous rédige la réponse finale : celui dont le terrain porte le point d'entrée (là où on peut concrètement commencer maintenant), pas forcément celui du point d'ancrage. Les autres restent en retrait et ne prennent la parole que s'ils repèrent une boucle nette avec le terrain de qui rédige : un enchaînement où chaque terme est à la fois conséquence et cause de la continuation de l'autre — jamais un avis supplémentaire sur le même sujet, jamais un complément général, jamais une nuance. Le seuil est haut : sans boucle nette, les autres se taisent entièrement, et ce silence n'est pas un échec, c'est ce qui donne du poids à leurs prises de parole quand ils la prennent. Vous ne parlez jamais chacun votre tour et vous ne préfixez jamais par un prénom : une seule réponse, écrite par qui rédige, à son compte. Un croisement ne se produit pas à chaque message, seulement quand une boucle vient vraiment de se dessiner ; le reste du temps, une réponse ordinaire d'un seul accompagnant, sans aucune mention des autres. Quand un croisement a vraiment lieu, ouvrez par une phrase courte du type « J'en ai parlé avec {Prénom}. » avant la réponse elle-même. Une boucle se propose toujours comme une hypothèse ouverte, jamais comme un fait (jamais « ton vrai problème c'est ») ; si la personne ne la reconnaît pas, abandonnez-la immédiatement, sans la reformuler ni y revenir plus tard.`;
+  const blocks=parts.map(p=>'### '+byId(p).name+'\n'+getPersona(p)).join(SEP);
+  return intro+SEP+blocks+SEP+socle;
+}
 
 (function(){
   var base=composeSystem;
@@ -6041,7 +6112,11 @@ const TAG_PROTOCOL_ADDENDUM=`Deux balises techniques supplémentaires, sur le m�
       }
       var budget=(typeof computeLengthBudget==='function') ? computeLengthBudget(th) : null;
       if(budget && budget.instruction) extra.push('longueur attendue pour cette réponse : '+budget.instruction);
-      if(th && th.parts && th.parts.length>1) extra.push('les accompagnants réunis ici héritent tous de ce qui est déjà compris (ancrage, état courant) : ne recommencez pas le tour de la question, ne faites pas revivre à la personne ce qu’elle a déjà raconté');
+      if(th && th.parts && th.parts.length>1){
+        extra.push('les accompagnants réunis ici héritent tous de ce qui est déjà compris (ancrage, état courant) : ne recommencez pas le tour de la question, ne faites pas revivre à la personne ce qu’elle a déjà raconté');
+        if(Array.isArray(th.boucles) && th.boucles.length) extra.push('boucles de croisement déjà utilisées dans ce fil, à ne jamais reproposer telles quelles : '+th.boucles.slice(-5).join(' ; '));
+        if(Array.isArray(th.boucleRefused) && th.boucleRefused.length) extra.push('boucles que la personne a signalées comme ne lui parlant pas, à ne jamais reproposer sous aucune forme : '+th.boucleRefused.slice(-5).join(' ; '));
+      }
 
       var marker='Contexte silencieux, jamais à mentionner tel quel : ';
       var idx=sys.indexOf(marker);
@@ -6055,6 +6130,7 @@ const TAG_PROTOCOL_ADDENDUM=`Deux balises techniques supplémentaires, sur le m�
       }
 
       sys += SEP + ETAT_REEL_ADDENDUM + SEP + SPECIALISATION_ADDENDUM + SEP + HIERARCHISATION_ADDENDUM + SEP + TAG_PROTOCOL_ADDENDUM;
+      if(th && th.parts && th.parts.length>1) sys += SEP + BOUCLE_ADDENDUM;
 
       /* La consigne de longueur est répétée ici, en tête de prompt, en directive courte et
          impérative plutôt que noyée dans le bloc de contexte silencieux : une seule ligne au
@@ -6074,14 +6150,22 @@ const TAG_PROTOCOL_ADDENDUM=`Deux balises techniques supplémentaires, sur le m�
 /* ═══════════════════════ CHANTIER 5 — historique condensé et anti-redondance ═══════════════════════ */
 
 /* parseSignals redéfinie en entier : capture, en plus de SUGGEST/HANDOFF déjà gérés,
-   [[ANCRAGE:terrain:certitude]] (chantier 3) et [[ACTE:formulation courte]] (chantier 5). */
+   [[ANCRAGE:terrain:certitude]] (chantier 3) et [[ACTE:formulation courte]] (chantier 5).
+   Bug corrigé : le budget de longueur (chantier 1) coupe la réponse à max_tokens, parfois
+   en plein milieu d'une balise (ex. niveau 1 = 90 tokens). Une balise tronquée n'a jamais de
+   "]]" fermant, donc aucun des remplacements ci-dessus ne la retire, et son texte brut
+   ([[ACTE:aller au CCAS ou) fuitait tel quel dans la bulle affichée à la personne. On retire
+   en plus toute balise connue restée ouverte en toute fin de texte (signe de troncature). */
 function parseSignals(raw){
-  let joinId=null, ancrage=null, actes=[];
+  let joinId=null, ancrage=null, actes=[], boucle=null, redige=null;
   let clean = String(raw||'').replace(/\[\[(?:SUGGEST|HANDOFF):\s*([a-z]+)(?::[^\]]*)?\]\]/gi,(_,id)=>{ if(!joinId&&agentById(id.toLowerCase())) joinId=id.toLowerCase(); return ''; });
   clean = clean.replace(/\[\[ANCRAGE:\s*([a-z]+)\s*:\s*(faible|moyenne|forte)\s*\]\]/gi,(_,id,cert)=>{ const idl=id.toLowerCase(); if(agentById(idl)) ancrage={terrain:idl, certitude:cert.toLowerCase()}; return ''; });
   clean = clean.replace(/\[\[ACTE:\s*([^\]]{1,140})\]\]/gi,(_,txt)=>{ actes.push(txt.trim()); return ''; });
+  clean = clean.replace(/\[\[BOUCLE:\s*([a-z]+)\s*:\s*([^\]]{1,140})\]\]/gi,(_,id,txt)=>{ const idl=id.toLowerCase(); if(agentById(idl)) boucle={terrain:idl, texte:txt.trim()}; return ''; });
+  clean = clean.replace(/\[\[REDIGE:\s*([a-z]+)\s*\]\]/gi,(_,id)=>{ const idl=id.toLowerCase(); if(agentById(idl)||idl==='mia') redige=idl; return ''; });
+  clean = clean.replace(/\[\[(?:SUGGEST|HANDOFF|ANCRAGE|ACTE|BOUCLE|REDIGE)\b[^\]]*$/i,'');
   clean = clean.replace(/\n{3,}/g,'\n\n').trim();
-  return {clean, joinId, ancrage, actes};
+  return {clean, joinId, ancrage, actes, boucle, redige};
 }
 
 const KEEP_RAW=14, REGEN_EVERY=10;
@@ -6111,6 +6195,24 @@ async function regenerateEtatCourant(th){
    reste porté par l'état courant condensé injecté dans composeSystem), la capture des balises
    ANCRAGE/ACTE, le découpage visuel en plusieurs bulles, et le déclenchement en tâche de fond
    de la condensation quand le fil dépasse le seuil. */
+const SILENCE_LIMIT=3;
+function applyBoucleOutcome(th, r){
+  if(!th || !th.parts || th.parts.length<=1) return;
+  th.silence = (th.silence && typeof th.silence==='object') ? th.silence : {};
+  const ancrageTerrain = th.ancrage && th.ancrage.terrain;
+  [r.redige, ancrageTerrain].forEach(function(id){ if(id && th.silence[id]!==undefined) th.silence[id]=0; });
+  const companions = th.parts.filter(function(id){ return id!=='mia' && id!==r.redige && id!==ancrageTerrain; });
+  companions.forEach(function(id){
+    if(r.boucle && r.boucle.terrain===id){ th.silence[id]=0; }
+    else { th.silence[id]=(th.silence[id]||0)+1; }
+  });
+  const toRemove=Object.keys(th.silence).filter(function(id){ return th.silence[id]>=SILENCE_LIMIT && th.parts.indexOf(id)>=0; });
+  toRemove.forEach(function(id){
+    delete th.silence[id];
+    if(th.parts.length>1) removeParticipant(id);
+  });
+}
+
 async function send(){
   const inp=$('chat-input'); const text=(inp.value||'').trim(); if(!text) return;
   if(state.tier==='free'){ ensureFreeDay(); if(state.freeCount>=5){ openUpsell('limit'); return; } }
@@ -6129,7 +6231,8 @@ async function send(){
     removeTyping();
     const r=parseSignals(out||'');
     const capped = r.clean ? enforceLengthCap(r.clean, budget.wordCap) : r.clean;
-    if(capped) addBubbleSplit('assistant',capped); else addBubbleSplit('assistant','…');
+    const meta = r.boucle ? {crossed:true, boucleTerrain:r.boucle.terrain, boucleText:r.boucle.texte} : null;
+    if(capped) addBubbleSplit('assistant',capped,meta); else addBubbleSplit('assistant','…',meta);
     if(r.ancrage){
       th.ancrage={terrain:r.ancrage.terrain, certitude:r.ancrage.certitude, atMsgCount:(th.msgs||[]).filter(m=>m.role).length};
       persist();
@@ -6138,6 +6241,12 @@ async function send(){
       th.actes=(th.actes||[]).concat(r.actes).slice(-8);
       persist();
     }
+    if(r.boucle){
+      th.boucles=(th.boucles||[]).concat([r.boucle.terrain+' : '+r.boucle.texte]).slice(-8);
+      persist();
+    }
+    applyBoucleOutcome(th, r);
+    persist();
     handleJoin(r.joinId);
     const freshCount=(th.msgs||[]).filter(m=>m.role).length;
     if(freshCount>KEEP_RAW && (freshCount-(th.etatCourantAt||0))>=REGEN_EVERY){
@@ -6155,6 +6264,65 @@ async function send(){
 const MIA_ADDENDUM=`Un point sur la hiérarchisation : c'est d'abord ton travail à toi. Un accompagnant spécialisé voit son bout de la situation ; toi tu vois tout. Quand plusieurs sujets s'emmêlent, c'est toi qui cherches le point d'ancrage et qui décides vers qui orienter — c'est donc toi qui poses le plus souvent la balise [[ANCRAGE:...]]. Un point sur la longueur : c'est sur tes premiers messages que se joue la barrière d'entrée, plus que pour n'importe quel accompagnant spécialisé — ton niveau d'ouverture doit être particulièrement tenu, deux phrases, pas trois. Un point pour résoudre ta propre tension entre aider et orienter : aider ne veut pas dire développer, une phrase qui touche juste aide davantage qu'un paragraphe qui explique. Tu peux aider et orienter dans le même souffle, à condition que ce que tu dis d'abord soit vraiment pour la personne, pas une politesse avant l'aiguillage. Tu n'orientes jamais dans ta toute première réponse d'un fil, sauf risque. Un point sur ce que tu transmets : quand tu fais venir un accompagnant, il hérite de ce que tu as compris par le contexte silencieux (ancrage, état courant) — il ne repart pas de zéro et ne fait pas revivre à la personne le tour de la question. Tu restes présente après son arrivée : tu ne disparais pas, tu gardes la vue d'ensemble pendant qu'il travaille son terrain.`;
 if(typeof DEFAULT_PERSONAS!=='undefined' && DEFAULT_PERSONAS.mia){
   DEFAULT_PERSONAS.mia = DEFAULT_PERSONAS.mia + SEP + MIA_ADDENDUM;
+}
+
+
+/* ═══════════════════════ CHANTIER 1 (dossier voix) — Nora, rapport au corps ═══════════════════════
+   Seizième accompagnant, exclusif MAYND+. AGENTS et ALL sont posés une fois pour toutes plus haut
+   dans la chaîne (00-noyau.js) : on ne les réassigne pas, on y ajoute Nora par push, ce qui est sûr
+   tant que rien ensuite n'en dépend avant ce point. AG_ORDER et PLUS_IDS sont dans le même cas.
+   DECK_IDS, en revanche, est un tableau figé au chargement (.concat() recopie les valeurs, il ne
+   garde aucun lien vers AG_ORDER) : il faut l'étendre séparément, sinon Nora resterait invisible
+   dans la présentation détaillée malgré sa présence partout ailleurs.
+   La couleur de Nora est posée ici directement sur l'objet, plutôt que via AGENT_COLORS : ce
+   mécanisme (16-palette-finale.js) s'applique à ALL au chargement de CE fichier-là, qui s'exécute
+   avant celui-ci — y ajouter Nora n'aurait aucun effet puisqu'elle n'existerait pas encore dans ALL
+   à ce moment. #BF5B2E (terracotta) est distincte de sa voisine dans la liste MAYND+ (neo, violet
+   profond) et passe le même test de contraste que les autres (lettre blanche lisible). */
+var NORA_AGENT={id:'nora', name:'Nora', domain:'Rapport au corps', color:'#BF5B2E', plus:true};
+if(typeof AGENTS!=='undefined' && typeof ALL!=='undefined' && !agentById('nora')){
+  AGENTS.push(NORA_AGENT);
+  ALL.push(NORA_AGENT);
+  if(typeof AG_ORDER!=='undefined') AG_ORDER.push('nora');
+  if(typeof DECK_IDS!=='undefined') DECK_IDS.push('nora');
+  if(typeof PLUS_IDS!=='undefined') PLUS_IDS.push('nora');
+}
+
+DEFAULT_PERSONAS.nora=`Tu es Nora, l'accompagnante rapport au corps de MAYND. Ton terrain : comment on habite son corps, comment on s'y sent, ce qu'on en pense, et ce qui se joue dans les moments où l'on mange. Tu ne donnes jamais aucun conseil alimentaire, aucun plan, aucun menu, aucun chiffre, ni aucun objectif de poids : le titre de diététicien est réglementé en France, ce n'est pas ton rôle. Tu bannis tout vocabulaire de restriction, de contrôle, de privation ou de compensation, et tu ne suggères jamais de sauter un repas, de réduire, ni de se passer de quelque chose. Tu ne juges aucun corps, dans aucun sens, ni trop ni pas assez, et tu n'évoques jamais de norme, de poids idéal, d'indice ou de mesure. Ton terrain attire mécaniquement les personnes concernées par un trouble du comportement alimentaire, que MAYND exclut explicitement de son accompagnement : dès qu'apparaît une privation marquée, un contrôle serré, une compensation ou une souffrance importante liée au corps, tu n'insistes pas sur ce terrain, tu orientes calmement vers un accompagnement humain, sans alerte ni dramatisation, et le signal remonte à son professionnel référent certifié.`;
+
+if(typeof AGENT_INFO!=='undefined'){
+  AGENT_INFO.nora={tag:"Elle travaille ton rapport au corps, jamais ton assiette ni la balance.",
+   does:["Comprendre comment tu habites ton corps","Repérer ce qui se joue vraiment dans les moments où tu manges","Déconstruire un jugement sur ton corps, dans un sens comme dans l'autre","Reconnaître les limites de son terrain et orienter si besoin"],
+   when:["Ton rapport à ton corps te pèse","Manger devient compliqué dans ta tête","Tu te juges sans arriver à t'arrêter"]};
+}
+
+
+/* ═══════════════════════ CHANTIER 12 (dossier voix) — l'abonnement unique ═══════════════════════
+   Les deux paliers payants (MAYND 49€, MAYND+ 69€) fusionnent en un seul, à 60€. Recensement des
+   conditions qui testaient l'ancien palier, et traitement appliqué à chacune (voir aussi le
+   commentaire en tête de 01-freemium-et-crise.js pour le choix de garder 'plus' comme valeur
+   interne) :
+   - isUnlocked(id) : ne teste plus a.plus du tout. Un accompagnant n'est plus jamais réservé.
+     Tout palier non gratuit (nouveau 'plus' comme l'ancien 'maynd', conservé en lecture pour ne
+     pas casser un état déjà persisté) déverrouille tout, MIA restant toujours accessible.
+   - Accès à un accompagnant précis (startWithAgent, agentRowHTML, partRowHTML, la fiche de
+     présentation) : condition supprimée, elle découle uniquement d'isUnlocked ci-dessus.
+   - Multi-accompagnants (addParticipant au-delà du premier participant, handleJoin) : ne teste
+     plus le palier mais canUseMulti() ci-dessous, qui s'appuie sur state.multiUnlocked — un
+     indicateur unique et réglable (bascule dans le profil, section Démonstration) qui tient lieu
+     de progression tant que ce chantier séparé n'existe pas.
+   - Modèle de voix (chantier 10, table des voix) : pas encore de code à modifier, la voix n'existe
+     pas encore dans ce dépôt ; quand elle sera construite, elle devra choisir le modèle par
+     accompagnant, jamais par palier.
+   - Vocabulaire : plus aucune occurrence de « débloquer »/« déblocage » nulle part dans
+     l'interface (paywall, présentation, suivi, supervision) — un accompagnant se découvre ou se
+     rencontre, il n'est jamais retenu. */
+function isUnlocked(id){ return id==='mia' || (typeof state!=='undefined' && state.tier && state.tier!=='free'); }
+
+function canUseMulti(){ return !!(typeof state!=='undefined' && state.multiUnlocked); }
+function toggleMultiUnlocked(){
+  state.multiUnlocked=!state.multiUnlocked; persist();
+  if(typeof renderProfile==='function' && typeof isOpen==='function' && isOpen('profile-sheet')) renderProfile();
 }
 </script>
 </body>
