@@ -9,10 +9,10 @@ MAYND est une application de développement personnel et de performance mentale.
 Trois couches, dans cet ordre :
 
 - **MIA** — orchestratrice. Elle répond toujours en premier, comprend la situation, et n'oriente vers un accompagnant que si ça apporte vraiment quelque chose. Co-pilote, jamais standardiste.
-- **Quinze accompagnants** — dix inclus, cinq exclusifs MAYND+.
+- **Seize accompagnants** — tous inclus dans l'abonnement, aucun n'est réservé (dont Nora, rapport au corps, ajoutée le 25/09/2026).
 - **Supervision** — un professionnel référent certifié suit le parcours, signe la feuille de route en début de mois et le bilan en fin de mois, et intervient sur signal.
 
-Formules : gratuit (MIA seule), MAYND 49 €, MAYND+ 69 € (multi-accompagnants jusqu'à trois).
+Formules (depuis le 25/09/2026, chantier « abonnement unique ») : gratuit (MIA seule, 5 messages/jour) et MAYND à 60 € par mois (les seize accompagnants, la voix, la supervision, 700 messages/mois). Les deux anciens paliers payants (MAYND 49 €, MAYND+ 69 €) ont fusionné. Le multi-accompagnants (jusqu'à trois) et le mode vocal ne sont plus liés au prix : ils se gagnent par la progression dans le parcours — un chantier séparé, pas encore livré. En attendant, une bascule de test dans le profil (section Démonstration, `state.multiUnlocked`) permet de basculer entre les deux comportements. Vocabulaire : un accompagnant ne se « débloque » jamais, il se découvre ou se rencontre — ce mot est proscrit partout dans l'interface.
 
 ## 2. Règles absolues
 
@@ -41,6 +41,7 @@ Elles ne se discutent pas. Une seule violation suffit à casser le positionnemen
 | Ava | Aucune étape imposée au deuil, jamais de « cinq étapes » |
 | Soren | Dit « l'autre parent », jamais « le père » ni « la mère » |
 | Leo | Ne se prononce jamais sur le partenaire absent |
+| Nora | Aucun conseil alimentaire, aucun chiffre, aucun jugement sur un corps ; oriente sans dramatiser au signal d'un trouble du comportement alimentaire |
 
 Tous partagent le protocole de crise : 3114, SOS Amitié, SAMU.
 
@@ -87,7 +88,9 @@ Palette des questionnaires, avec la teinte de réponse associée :
 Plus aucun rectangle blanc sur fond coloré. Une réponse, une carte, un champ prennent une teinte claire de leur fond.
 
 Couleurs des accompagnants, choisies par thème :
-`mia` violet MAYND · `naoki` violet profond · `felix` jaune · `atlas` violet clair · `ava` bleu profond · `leo` rouge corail · `otis` vert · `kael` orange · `miro` indigo · `sol` bleu ciel · `mateo` bleu franc · `soren` orange chaud · `iris` vert · `eden` rose · `vince` émeraude · `neo` violet profond
+`mia` violet MAYND · `naoki` violet profond · `felix` jaune · `atlas` violet clair · `ava` bleu profond · `leo` rouge corail · `otis` vert · `kael` orange · `miro` indigo · `sol` bleu ciel · `mateo` bleu franc · `soren` orange chaud · `iris` vert · `eden` rose · `vince` émeraude · `neo` violet profond · `nora` terracotta
+
+> Note : la couleur de `nora` est posée directement sur son objet dans `17-refonte-intelligence.js`, pas via la table `AGENT_COLORS` de `16-palette-finale.js` — ce fichier s'exécute avant que Nora n'existe dans `ALL`, l'y ajouter n'aurait aucun effet. Voir le commentaire à cet endroit du fichier.
 
 Deux contraintes tenues par les tests : jamais deux couleurs identiques côte à côte dans la liste affichée, et contraste suffisant pour une lettre blanche. Seul le jaune de Felix passe en lettre noire, via `LIGHT_AGENTS`.
 

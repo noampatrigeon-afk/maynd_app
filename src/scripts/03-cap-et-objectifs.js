@@ -43,7 +43,7 @@ function renderObjectives(){
   h+='<div class="cap-zone">'+renderCapCard()+renderWeekCard()+'</div>';
   if(state.tier==='free'){
     h+='<div class="section-head"><h2>Ton suivi</h2></div>';
-    h+='<div class="track-lock"><div class="tl-ico">'+lockSVG()+'</div><div class="tl-t">Ton suivi complet</div><div class="tl-s">Boussole, jalons, objectifs et progression. Réservé aux abonnés.</div><button class="btn full" onclick="openUpsell(\'agent\')">Débloquer mon suivi</button></div>';
+    h+='<div class="track-lock"><div class="tl-ico">'+lockSVG()+'</div><div class="tl-t">Ton suivi complet</div><div class="tl-s">Boussole, jalons, objectifs et progression. Réservé aux abonnés.</div><button class="btn full" onclick="openUpsell(\'agent\')">Découvrir mon suivi</button></div>';
     $('obj-pad').innerHTML=h; return;
   }
   const lvl=levelOf(), inl=xpInLevel(), frac=inl/100; const r=36,C=2*Math.PI*r,off=C*(1-frac); const streak=state.streak||0;

@@ -135,7 +135,7 @@ function addSecondaryFromCap(agentId){
   var base=openUpsell;
   if(typeof base!=='function') return;
   window.openUpsell=function(reason){
-    if(reason==='objectives'){ showPaywall('maynd','Objectifs secondaires réservés aux abonnés','Passe à MAYND pour ajouter des objectifs secondaires en plus de ton objectif principal.'); return; }
+    if(reason==='objectives'){ showPaywall('Objectifs secondaires réservés aux abonnés','Passe à MAYND pour ajouter des objectifs secondaires en plus de ton objectif principal.'); return; }
     return base.apply(this, arguments);
   };
 })();

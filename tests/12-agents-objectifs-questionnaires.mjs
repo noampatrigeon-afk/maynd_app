@@ -35,13 +35,13 @@ ok(/agx-row/.test(w.$('parts-body').innerHTML),'participants : rangées unifiée
 ok(/agx-tgl/.test(w.$('parts-body').innerHTML),'participants : interrupteur présent');
 ok(/agx-star/.test(w.$('drawer-body').innerHTML) && /agx-star/.test(w.$('agent-strip').innerHTML) && /agx-star/.test(w.$('parts-body').innerHTML),'étoile présente sur les 3 écrans');
 
-// ── 3. mise en valeur MAYND+ ──
-console.log('\n=== 3. mise en valeur des 5 MAYND+ ===');
+// ── 3. abonnement unique : plus d'exclusivité (chantier 12) ──
+console.log('\n=== 3. seize accompagnants, tous dans la même liste ===');
 const dr=w.$('drawer-body').innerHTML;
-ok(dr.includes('Exclusifs MAYND+'),'section Exclusifs MAYND+');
-['Soren','Iris','Eden','Vince','Neo'].forEach(n=>ok(dr.includes(n),'MAYND+ : '+n+' présent'));
+ok(!dr.includes('Exclusifs MAYND+'),'plus de section à part pour d\'anciens exclusifs');
+['Soren','Iris','Eden','Vince','Neo','Nora'].forEach(n=>ok(dr.includes(n),'toujours présent dans la liste unifiée : '+n));
 const sorenRow=w.agentRowHTML('soren','browse');
-ok(sorenRow.includes('agx-row plus') && sorenRow.includes('agx-badge'),'agent MAYND+ : liseré + badge');
+ok(!sorenRow.includes('agx-row plus') && !sorenRow.includes('agx-badge'),'plus de liseré ni de badge MAYND+ sur un ancien exclusif');
 
 // ── 4. étoile fonctionne depuis le chat ──
 console.log('\n=== 4. favori activable partout ===');

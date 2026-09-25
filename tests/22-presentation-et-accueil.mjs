@@ -20,9 +20,9 @@ ok(w.eval("JCARDS[3].go")==="openAgentDeck()",'la carte "Avec qui" ouvre la pré
 w.openAgentDeck(); await wait(60);
 ok(w.$('deck').classList.contains('show'),'écran plein ouvert');
 const pages=[...w.document.querySelectorAll('#deck-track .deck-page')];
-ok(pages.length===16,'16 fiches, une par accompagnant');
+ok(pages.length===17,'17 fiches, une par accompagnant');
 const dots=[...w.document.querySelectorAll('#deck-dots .deck-dot')];
-ok(dots.length===16,'16 repères de navigation');
+ok(dots.length===17,'17 repères de navigation');
 ok(dots[0].classList.contains('on'),'première fiche active');
 const p0=pages[0].innerHTML;
 ok(p0.includes('MIA') && p0.includes('Ce qu'),'fiche MIA détaillée');
@@ -32,7 +32,7 @@ ok(atlas.includes('qui tu es, et vers quoi tu vas'),'présentation développée,
 ok((atlas.match(/<li>/g)||[]).length===7,'4 actions + 3 situations détaillées');
 ok(atlas.includes('Inclus dans MAYND'),'niveau d\'accès indiqué');
 const eden=pages.find(p=>p.getAttribute('data-id')==='eden').innerHTML;
-ok(eden.includes('Exclusif MAYND+'),'les exclusifs sont signalés');
+ok(eden.includes('Inclus dans MAYND') && !eden.includes('Exclusif'),'plus d\'accompagnant exclusif, abonnement unique (chantier 12)');
 ok(eden.includes('consentement n')&&eden.includes('gociable'),'calibrage Eden respecté');
 const neo=pages.find(p=>p.getAttribute('data-id')==='neo').innerHTML;
 ok(neo.includes('Aucune étiquette'),'calibrage Neo respecté');
@@ -66,9 +66,10 @@ const qcols=w.eval("QTHEME.map(function(t){return t.bg})");
 ok(qcols.length===7,'7 couleurs de questionnaire');
 ok(qcols.includes('#E8467F'),'le rose entre dans la palette des questionnaires');
 const acols=w.eval("ALL.map(function(a){return a.color})");
-const allowed=['#974AF0','#6F2FC0','#FFC400','#8B5CF6','#16389E','#E5484D','#00A862','#FE6601','#3B2FA8','#0C96C7','#224CF2','#E07C00','#E8467F','#00875A'];
+const allowed=['#974AF0','#6F2FC0','#FFC400','#8B5CF6','#16389E','#E5484D','#00A862','#FE6601','#3B2FA8','#0C96C7','#224CF2','#E07C00','#E8467F','#00875A','#BF5B2E'];
 ok(acols.every(c=>allowed.includes(c)),'les accompagnants n\'utilisent que la palette');
-// ordre réellement affiché : agents de base puis exclusifs MAYND+
+// ordre réellement affiché : agents de base puis anciens exclusifs (regroupement interne par a.plus,
+// même si l'abonnement unique du chantier 12 ne montre plus cette distinction à l'écran)
 const shown=[].concat(w.eval("ALL.filter(function(a){return a.id!=='mia' && !a.plus}).map(function(a){return a.color})"),
                       w.eval("ALL.filter(function(a){return !!a.plus}).map(function(a){return a.color})"));
 ok(!shown.some((c,i)=>i>0 && c===shown[i-1]),'jamais deux couleurs identiques côte à côte dans la liste affichée');

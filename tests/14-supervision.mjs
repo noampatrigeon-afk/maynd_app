@@ -19,7 +19,7 @@ let pad=w.$('obj-pad').innerHTML;
 ok(pad.includes('Ta supervision'),'section supervision présente en gratuit');
 ok(pad.includes('Professionnel référent certifié'),'terme exact du business plan');
 ok(pad.includes('Sans rendez-vous'),'mention sans rendez-vous');
-ok(pad.includes('Débloquer ma supervision'),'levier d\'abonnement');
+ok(pad.includes('Découvrir ma supervision'),'levier d\'abonnement');
 ok(!/openPro\(\)/.test(pad),'espace de suivi non accessible en gratuit');
 
 console.log('\n=== 2. abonné sans questionnaire : feuille en préparation ===');

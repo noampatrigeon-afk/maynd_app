@@ -74,7 +74,7 @@ ok(pairs.includes('#00A862|#FFC400'),'la paire vert et jaune est conservée');
 console.log('\n=== 5. COULEURS DES ACCOMPAGNANTS ===');
 const cols=w.eval("ALL.map(function(a){return a.id+':'+a.color}).join(',')").split(',');
 const hexes=cols.map(c=>c.split(':')[1]);
-ok(hexes.length===16,'16 accompagnants');
+ok(hexes.length===17,'17 accompagnants');
 ok(new Set(hexes).size>=8,'palette variée : '+new Set(hexes).size+' couleurs');
 ok(w.eval("byId('mia').color")==='#974AF0','MIA en violet MAYND');
 ok(w.eval("byId('kael').color")==='#FE6601','Kael en orange, le sport');

@@ -91,7 +91,7 @@ ok(w.$('drawer-body').innerHTML.includes('Présenter les accompagnants'),'libell
 w.document.querySelector('#drawer-body .deck-btn').click(); await wait(70);
 ok(w.$('deck').classList.contains('show'),'le bouton ouvre la présentation');
 const pages=[...w.document.querySelectorAll('#deck-track .deck-page')];
-ok(pages.length===16,'16 fiches complètes');
+ok(pages.length===17,'17 fiches complètes');
 ok(pages.every(p=>(p.innerHTML.match(/<li>/g)||[]).length===7),'chaque fiche est complète');
 w.closeDeck();
 

@@ -22,6 +22,15 @@ rien puisque la mutation n'a lieu qu'une fois, avant toute interaction. `getPers
 touchée : le Studio des accompagnants continue de lire/écrire `DEFAULT_PERSONAS.mia` (déjà
 augmenté) sans rien de spécial à gérer côté édition.
 
+**Cas particulier : `composeSystem`.** Deux déclarations, dans deux fichiers différents (pas une
+redéfinition classique dans le même fichier). `17-refonte-intelligence.js` déclare son propre
+`function composeSystem(){...}` (chantier du croisement multi-accompagnants), qui remplace celle
+de `00-noyau.js` au moment du hissage — les déclarations de fonction sont toutes hissées avant la
+première ligne exécutée, et entre deux déclarations de même nom, la dernière du fichier l'emporte
+déjà à cet instant, quelle que soit sa position relative aux enveloppes. L'enveloppe de
+`composeSystem` (un peu plus bas dans le même fichier) capture donc automatiquement cette nouvelle
+version comme `base`, sans rien à changer de son côté.
+
 | Fonction | Déclarations | Enveloppes | Version qui s'applique | Fichiers concernés |
 |---|---|---|---|---|
 | `obShow` | 1 | 7 | 15-presentation-accompagnants.js (enveloppe) | 00-noyau.js |
@@ -64,7 +73,7 @@ augmenté) sans rien de spécial à gérer côté édition.
 | `deleteObjective` | 1 | 1 | 14-palette-et-accueil.js (enveloppe) | 00-noyau.js |
 | `feat` | 2 | 0 | 00-noyau.js | 00-noyau.js |
 | `init` | 2 | 0 | 00-noyau.js | 00-noyau.js |
-| `isUnlocked` | 2 | 0 | 00-noyau.js | 00-noyau.js |
+| `isUnlocked` | 3 | 0 | 17-refonte-intelligence.js | 00-noyau.js (x2), 17-refonte-intelligence.js |
 | `newConversation` | 1 | 1 | 11-palette-enregistree.js (enveloppe) | 00-noyau.js |
 | `addSecondaryFromCap` | 1 | 0 | 16-palette-finale.js | 16-palette-finale.js |
 | `getPrincipalObjective` | 1 | 0 | 16-palette-finale.js | 16-palette-finale.js |
@@ -110,7 +119,7 @@ augmenté) sans rien de spécial à gérer côté édition.
 | `draftBilanText` | 1 | 0 | 16-palette-finale.js | 16-palette-finale.js |
 | `signBilan` | 1 | 0 | 16-palette-finale.js | 16-palette-finale.js |
 | `renderProDashboard` | 1 | 0 | 16-palette-finale.js | 16-palette-finale.js |
-| `composeSystem` | 1 | 2 | 17-refonte-intelligence.js (enveloppe) | 00-noyau.js, 16-palette-finale.js |
+| `composeSystem` | 2 | 2 | 17-refonte-intelligence.js (enveloppe) | 00-noyau.js, 16-palette-finale.js, 17-refonte-intelligence.js |
 | `openDeepSheet` | 1 | 0 | 16-palette-finale.js | 16-palette-finale.js |
 | `renderDeepStep` | 1 | 0 | 16-palette-finale.js | 16-palette-finale.js |
 | `deepNext` | 1 | 0 | 16-palette-finale.js | 16-palette-finale.js |

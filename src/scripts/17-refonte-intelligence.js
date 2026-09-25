@@ -2,10 +2,17 @@
    REFONTE DE L'INTELLIGENCE — MIA et les accompagnants
    Fichier tardif : toute redéfinition ci-dessous l'emporte sur les couches
    précédentes (voir docs/fonctions-redefinies.md, mis à jour en parallèle).
-   Chantiers du cahier des charges, dans l'ordre d'implémentation recommandé :
-   8 (retrait visible) → 1 (longueur progressive) → 6 (contexte silencieux
-   étendu) → 2 (lecture de l'état réel) → 4 (spécialisation) → 5 (anti-
-   redondance, historique condensé) → 3 (hiérarchisation) → 7 (MIA).
+   Le dossier de refonte a été collé trois fois, avec une numérotation de
+   chantiers différente à chaque fois (les noms ci-dessous sont donc plus
+   fiables que d'éventuels numéros trouvés dans une future version collée) :
+   retrait visible sur une note d'arrivée · longueur progressive · contexte
+   silencieux étendu (ancrage, actes, état courant, boucles) · lecture de
+   l'état réel · spécialisation toutes pratiques · anti-redondance et
+   historique condensé · hiérarchisation (ancrage / point d'entrée) · MIA,
+   traitement spécifique · Nora (rapport au corps) · abonnement unique (60€,
+   fusion MAYND/MAYND+) · croisement multi-accompagnants (une seule réponse
+   rédigée par le point d'entrée, boucles causales des autres accompagnants,
+   retrait silencieux d'un accompagnant qui ne sert jamais).
    ══════════════════════════════════════════════════════════════════════════ */
 
 /* ═══════════════ i18n : action de retrait sur une note d'arrivée ═══════════════ */
@@ -26,7 +33,7 @@ function handleJoin(joinId){
   if(parts.includes(joinId)) return;
   const th=activeThread();
   if(th && Array.isArray(th.refused) && th.refused.includes(joinId)) return;
-  if(state.tier==='plus'){
+  if(canUseMulti()){
     if(parts.length<3) addParticipant(joinId);
     else addInvite(byId(joinId));
   } else {
@@ -107,16 +114,50 @@ function withdrawArrival(agentId, idx){
 }
 
 /* La note est stockée dans th.msgs (m.arrival / m.withdrawn) : le geste de retrait
-   survit donc au réaffichage du fil, pas seulement à l'écran au moment de l'arrivée. */
+   survit donc au réaffichage du fil, pas seulement à l'écran au moment de l'arrivée.
+   Chantier 13 : m.crossed survit de la même façon, pour réafficher l'action de retour sur une
+   réponse croisée après un rechargement (ou déjà désactivée si m.boucleFeedback est posé). */
 function renderMessages(){
   const th=activeThread(), box=$('messages'); box.innerHTML='';
   if(!th.msgs.length){ const a=byId(th.parts[0]); const intro=INTROS[a.id]||''; if(intro){ box.appendChild(bubbleEl('assistant',intro)); } }
   th.msgs.forEach((m,i)=>{
     if(m.note){ box.appendChild((m.arrival && !m.withdrawn) ? arrivalNoteEl(m.agent,m.text,i) : noteEl(m.agent,m.text)); }
     else if(m.invite){ box.appendChild(inviteEl(m.agent)); }
-    else { box.appendChild(bubbleEl(m.role==='user'?'user':'assistant', m.content)); }
+    else {
+      const el=bubbleEl(m.role==='user'?'user':'assistant', m.content);
+      if(m.role!=='user' && m.crossed) el.appendChild(crossFeedbackEl(i));
+      box.appendChild(el);
+    }
   });
   scrollChat();
+}
+
+/* Chantier 13 : action de retour discrète sur une réponse croisée, "aucun formulaire, aucune
+   justification demandée" — un seul geste. Une fois donné, le retour se fige (m.boucleFeedback) et
+   la boucle en cause rejoint th.boucleRefused, pour ne plus jamais être reproposée à cette personne. */
+function crossFeedbackEl(idx){
+  const btn=document.createElement('button');
+  btn.type='button';
+  btn.className='note-retrait cross-feedback';
+  const th=activeThread();
+  const m=th && th.msgs && th.msgs[idx];
+  if(m && m.boucleFeedback){ btn.textContent='Noté'; btn.disabled=true; }
+  else {
+    btn.textContent='Ça ne me parle pas';
+    btn.onclick=function(ev){ ev.stopPropagation(); giveBoucleFeedback(idx); };
+  }
+  return btn;
+}
+function giveBoucleFeedback(idx){
+  const th=activeThread(); if(!th) return;
+  const m=th.msgs[idx]; if(!m || m.boucleFeedback) return;
+  m.boucleFeedback=true;
+  if(m.boucleTerrain && m.boucleText){
+    th.boucleRefused=Array.isArray(th.boucleRefused)?th.boucleRefused:[];
+    th.boucleRefused.push(m.boucleTerrain+' : '+m.boucleText);
+  }
+  persist();
+  renderMessages();
 }
 
 
@@ -139,9 +180,18 @@ var LENGTH_LEVELS={
    allongeait toutes les réponses. */
 var LENGTH_DEV_TRIGGERS=[/explique[- ]?moi/i,/(m['’]expliquer|d[ée]tailler|d[ée]velopper)/i,/d[ée]taille/i,/d[ée]veloppe/i,/creuse(?:[\s.,!?]|$)/i,/dis[- ]?m['’]en plus/i,/en quoi/i,/qu['’]est[- ]ce qui explique/i];
 
+/* Marge réservée en plus du budget de longueur pour la balise technique de fin de réponse
+   ([[SUGGEST:...]], [[ANCRAGE:...]], [[ACTE:...]]). Sans elle, le niveau 1 (90 tokens, seul
+   niveau possible au tout premier message d'un fil) suffisait à peine aux deux phrases de
+   réponse en français : la balise de routage entrait en concurrence avec la réponse pour le
+   même budget et n'était jamais émise, y compris quand l'orientation était la plus évidente
+   (mention explicite d'un terrain dès le premier message). Le mot compte (wordCap) ne change
+   pas : la marge ne sert qu'à laisser respirer la balise, pas à allonger la réponse visible. */
+var TAG_HEADROOM=50;
+
 function computeLengthBudget(th){
   th = th || activeThread();
-  function def(lvl){ return {level:lvl, wordCap:LENGTH_LEVELS[lvl].words, tokenCap:LENGTH_LEVELS[lvl].tokens, instruction:LENGTH_LEVELS[lvl].instruction}; }
+  function def(lvl){ return {level:lvl, wordCap:LENGTH_LEVELS[lvl].words, tokenCap:LENGTH_LEVELS[lvl].tokens+TAG_HEADROOM, instruction:LENGTH_LEVELS[lvl].instruction}; }
   if(!th){ _lastLengthBudget=def(1); return _lastLengthBudget; }
   const userMsgs=(th.msgs||[]).filter(function(m){ return m.role==='user'; });
   if(userMsgs.length<=1){
@@ -214,18 +264,27 @@ async function callDeepSeek(system,messages,maxTokens){
 
 /* Amélioration visuelle liée : plusieurs idées distinctes -> plusieurs bulles, avec un léger
    décalage. Le stockage ne change pas : un seul message est poussé dans th.msgs (pushMsg),
-   exactement comme addBubble ; seul l'affichage en direct se découpe. */
-function addBubbleSplit(role, content){
-  pushMsg({role:role, content:content});
+   exactement comme addBubble ; seul l'affichage en direct se découpe.
+   Chantier 13 : troisième paramètre optionnel meta ({crossed, boucleTerrain, boucleText}), fusionné
+   dans le message stocké pour survivre au réaffichage (comme m.arrival/m.withdrawn au chantier 8).
+   L'action de retour ("Ça ne me parle pas") s'accroche à la dernière bulle affichée, quel que soit
+   le nombre de bulles issues du découpage — un seul message stocké, un seul geste de retour possible. */
+function addBubbleSplit(role, content, meta){
+  const msg=Object.assign({role:role, content:content}, meta||{});
+  pushMsg(msg);
+  const th=activeThread();
+  const idx=th.msgs.length-1;
   const box=$('messages');
   let parts = role==='assistant' ? String(content||'').split(/\n{2,}/).map(function(s){return s.trim();}).filter(Boolean) : [content];
   if(parts.length>3) parts=[parts[0], parts[1], parts.slice(2).join('\n\n')];
-  if(parts.length<=1){ box.appendChild(bubbleEl(role, content)); scrollChat(); return; }
+  function finish(el){ if(role==='assistant' && msg.crossed && typeof crossFeedbackEl==='function') el.appendChild(crossFeedbackEl(idx)); }
+  if(parts.length<=1){ const el=bubbleEl(role, content); box.appendChild(el); finish(el); scrollChat(); return; }
   let i=0;
   (function next(){
-    box.appendChild(bubbleEl(role, parts[i])); scrollChat();
+    const el=bubbleEl(role, parts[i]); box.appendChild(el); scrollChat();
     i++;
     if(i<parts.length){ addTyping(); setTimeout(function(){ removeTyping(); next(); }, 480+Math.random()*280); }
+    else { finish(el); }
   })();
 }
 
@@ -244,6 +303,34 @@ const SPECIALISATION_ADDENDUM=`Spécialisation : tu puises librement dans l'ense
 const HIERARCHISATION_ADDENDUM=`Hiérarchisation, en interne, jamais montrée : tu tiens deux classements distincts, sans jamais les confondre. Le point d'ancrage : ce qui fait tenir tout le reste debout. Le point d'entrée : là où tu peux effectivement commencer à travailler maintenant — pas forcément le même sujet. Pour repérer le point d'ancrage, quatre critères, dans cet ordre : la chronologie (ce qui a commencé avant les autres est souvent la racine) ; le décalage entre la place dans le discours et la charge émotionnelle (le sujet développé en plusieurs paragraphes n'est pas forcément l'ancrage — souvent c'est la phrase courte lâchée au milieu, sur laquelle la personne ne revient jamais) ; l'évitement (ce qui est nommé une fois puis abandonné, ce qu'on contourne) ; le test de dépendance (si ce sujet se résolvait, les autres tomberaient-ils ? ça donne le sens de la causalité). Pour le point d'entrée, deux critères seulement : ce que la personne peut entendre aujourd'hui, ce sur quoi elle a une prise réelle cette semaine — tu n'entres jamais par le plus profond, tu entres par le plus praticable, en sachant où tu vas. Ce classement est une hypothèse, pas une conclusion : tu la réévalues à chaque échange, elle bascule si un élément nouveau la contredit, un ancrage supposé qui ne produit rien après deux ou trois échanges est probablement le mauvais. Il pilote ta réponse, ton choix d'appeler un autre accompagnant, ce que tu laisses de côté pour l'instant — il ne s'affiche jamais, ne se récite jamais, et tu ne le décrètes jamais à la personne (jamais de « en réalité ton vrai problème c'est... »). Quand tu le mets sur la table, c'est une hypothèse ouverte que la personne peut reconnaître ou refuser ; si elle refuse, tu n'insistes pas et tu travailles ce qu'elle amène — c'est elle qui sait. Quand le point d'ancrage est clairement sur un autre terrain que le tien, tu appelles celui dont c'est le terrain avec la balise d'aiguillage déjà en place ; quand la situation est réellement multi-terrains et que la personne est en capacité, plusieurs accompagnants peuvent travailler ensemble. Exception absolue, qui passe devant tout classement, sans délai : tout signal de risque (idées suicidaires, geste imminent, mise en danger) suit intégralement le protocole de sécurité du socle commun, sans jamais attendre derrière un point d'ancrage.`;
 
 const TAG_PROTOCOL_ADDENDUM=`Deux balises techniques supplémentaires, sur le même principe que celles déjà en place : invisibles pour la personne, jamais expliquées ni commentées, seules sur leur ligne en fin de réponse, ta réponse reste complète sans elles. [[ANCRAGE:identifiant:certitude]] pose ou met à jour ton hypothèse de point d'ancrage — identifiant parmi les accompagnants MAYND, certitude parmi faible, moyenne, forte. Tu la poses quand une hypothèse se dessine, tu la mets à jour quand elle se confirme, s'affine ou change ; la plupart du temps tu n'en mets pas. [[ACTE:formulation courte]] marque un pas concret que tu viens de proposer à la personne, pour ne jamais le reproposer sous une autre forme par la suite ; tu ne la poses que quand tu proposes vraiment un pas, pas à chaque message.`;
+
+const BOUCLE_ADDENDUM=`Deux balises techniques pour le croisement, sur le même principe que les autres : invisibles pour la personne, jamais expliquées ni commentées, chacune seule sur sa ligne en fin de réponse, ta réponse reste complète sans elles. [[REDIGE:identifiant]] indique le terrain qui a rédigé cette réponse précise — pose-la à chaque réponse dans ce fil à plusieurs, même sans croisement, c'est ce qui permet de savoir qui est réellement actif. [[BOUCLE:identifiant:formulation courte]] transporte la boucle qui a servi à croiser cette réponse quand un croisement a vraiment eu lieu — identifiant du terrain qui l'a apportée, formulation courte de la boucle elle-même ; la plupart du temps tu n'en poses pas.`;
+
+/* ═══════════════════════ CHANTIER 13 — le croisement multi-accompagnants ═══════════════════════
+   Redéfinition complète de composeSystem (pas une enveloppe cette fois) : les déclarations de
+   fonction sont hissées en bloc, la dernière du fichier l'emporte avant même la première ligne
+   exécutée — peu importe sa position relative à l'enveloppe juste en dessous, qui capture
+   "composeSystem" au moment de son exécution et récupère donc automatiquement celle-ci. Seule la
+   branche multi-accompagnants change ; la branche solo est recopiée à l'identique.
+   Avant ce chantier, chaque accompagnant présent parlait à son tour, préfixé par son prénom
+   ("Kael : ..."). C'était une juxtaposition, pas un croisement : deux avis distincts que la
+   personne devait synthétiser elle-même. Maintenant, un seul rédige — celui dont le terrain porte
+   le point d'entrée (cf. HIERARCHISATION_ADDENDUM), pas celui du point d'ancrage — et les autres ne
+   parlent que s'ils repèrent une boucle causale nette avec son terrain, sinon ils se taisent
+   entièrement. Le format de balise ([[BOUCLE:...]]) et son injection conditionnelle dans le
+   contexte silencieux (boucles déjà utilisées / refusées) vivent dans l'enveloppe juste en dessous. */
+function composeSystem(){
+  const parts=threadParts(), socle=getSocle();
+  if(parts.length===1){
+    const id=parts[0];
+    if(id==='mia') return getPersona('mia')+SEP+socle;
+    return getPersona(id)+SEP+routingNote(id)+SEP+socle;
+  }
+  const names=parts.map(p=>byId(p).name).join(', ');
+  const intro=`Vous êtes plusieurs accompagnants MAYND consultés ensemble sur ce fil : ${names}. Un seul d'entre vous rédige la réponse finale : celui dont le terrain porte le point d'entrée (là où on peut concrètement commencer maintenant), pas forcément celui du point d'ancrage. Les autres restent en retrait et ne prennent la parole que s'ils repèrent une boucle nette avec le terrain de qui rédige : un enchaînement où chaque terme est à la fois conséquence et cause de la continuation de l'autre — jamais un avis supplémentaire sur le même sujet, jamais un complément général, jamais une nuance. Le seuil est haut : sans boucle nette, les autres se taisent entièrement, et ce silence n'est pas un échec, c'est ce qui donne du poids à leurs prises de parole quand ils la prennent. Vous ne parlez jamais chacun votre tour et vous ne préfixez jamais par un prénom : une seule réponse, écrite par qui rédige, à son compte. Un croisement ne se produit pas à chaque message, seulement quand une boucle vient vraiment de se dessiner ; le reste du temps, une réponse ordinaire d'un seul accompagnant, sans aucune mention des autres. Quand un croisement a vraiment lieu, ouvrez par une phrase courte du type « J'en ai parlé avec {Prénom}. » avant la réponse elle-même. Une boucle se propose toujours comme une hypothèse ouverte, jamais comme un fait (jamais « ton vrai problème c'est ») ; si la personne ne la reconnaît pas, abandonnez-la immédiatement, sans la reformuler ni y revenir plus tard.`;
+  const blocks=parts.map(p=>'### '+byId(p).name+'\n'+getPersona(p)).join(SEP);
+  return intro+SEP+blocks+SEP+socle;
+}
 
 (function(){
   var base=composeSystem;
@@ -265,7 +352,11 @@ const TAG_PROTOCOL_ADDENDUM=`Deux balises techniques supplémentaires, sur le m�
       }
       var budget=(typeof computeLengthBudget==='function') ? computeLengthBudget(th) : null;
       if(budget && budget.instruction) extra.push('longueur attendue pour cette réponse : '+budget.instruction);
-      if(th && th.parts && th.parts.length>1) extra.push('les accompagnants réunis ici héritent tous de ce qui est déjà compris (ancrage, état courant) : ne recommencez pas le tour de la question, ne faites pas revivre à la personne ce qu’elle a déjà raconté');
+      if(th && th.parts && th.parts.length>1){
+        extra.push('les accompagnants réunis ici héritent tous de ce qui est déjà compris (ancrage, état courant) : ne recommencez pas le tour de la question, ne faites pas revivre à la personne ce qu’elle a déjà raconté');
+        if(Array.isArray(th.boucles) && th.boucles.length) extra.push('boucles de croisement déjà utilisées dans ce fil, à ne jamais reproposer telles quelles : '+th.boucles.slice(-5).join(' ; '));
+        if(Array.isArray(th.boucleRefused) && th.boucleRefused.length) extra.push('boucles que la personne a signalées comme ne lui parlant pas, à ne jamais reproposer sous aucune forme : '+th.boucleRefused.slice(-5).join(' ; '));
+      }
 
       var marker='Contexte silencieux, jamais à mentionner tel quel : ';
       var idx=sys.indexOf(marker);
@@ -279,6 +370,7 @@ const TAG_PROTOCOL_ADDENDUM=`Deux balises techniques supplémentaires, sur le m�
       }
 
       sys += SEP + ETAT_REEL_ADDENDUM + SEP + SPECIALISATION_ADDENDUM + SEP + HIERARCHISATION_ADDENDUM + SEP + TAG_PROTOCOL_ADDENDUM;
+      if(th && th.parts && th.parts.length>1) sys += SEP + BOUCLE_ADDENDUM;
 
       /* La consigne de longueur est répétée ici, en tête de prompt, en directive courte et
          impérative plutôt que noyée dans le bloc de contexte silencieux : une seule ligne au
@@ -298,14 +390,23 @@ const TAG_PROTOCOL_ADDENDUM=`Deux balises techniques supplémentaires, sur le m�
 /* ═══════════════════════ CHANTIER 5 — historique condensé et anti-redondance ═══════════════════════ */
 
 /* parseSignals redéfinie en entier : capture, en plus de SUGGEST/HANDOFF déjà gérés,
-   [[ANCRAGE:terrain:certitude]] (chantier 3) et [[ACTE:formulation courte]] (chantier 5). */
+   [[ANCRAGE:terrain:certitude]] (chantier 3), [[ACTE:formulation courte]] (chantier 5) et
+   [[BOUCLE:terrain:formulation courte]] (chantier 13, croisement multi-accompagnants).
+   Bug corrigé : le budget de longueur (chantier 1) coupe la réponse à max_tokens, parfois
+   en plein milieu d'une balise (ex. niveau 1 = 90 tokens). Une balise tronquée n'a jamais de
+   "]]" fermant, donc aucun des remplacements ci-dessus ne la retire, et son texte brut
+   ([[ACTE:aller au CCAS ou) fuitait tel quel dans la bulle affichée à la personne. On retire
+   en plus toute balise connue restée ouverte en toute fin de texte (signe de troncature). */
 function parseSignals(raw){
-  let joinId=null, ancrage=null, actes=[];
+  let joinId=null, ancrage=null, actes=[], boucle=null, redige=null;
   let clean = String(raw||'').replace(/\[\[(?:SUGGEST|HANDOFF):\s*([a-z]+)(?::[^\]]*)?\]\]/gi,(_,id)=>{ if(!joinId&&agentById(id.toLowerCase())) joinId=id.toLowerCase(); return ''; });
   clean = clean.replace(/\[\[ANCRAGE:\s*([a-z]+)\s*:\s*(faible|moyenne|forte)\s*\]\]/gi,(_,id,cert)=>{ const idl=id.toLowerCase(); if(agentById(idl)) ancrage={terrain:idl, certitude:cert.toLowerCase()}; return ''; });
   clean = clean.replace(/\[\[ACTE:\s*([^\]]{1,140})\]\]/gi,(_,txt)=>{ actes.push(txt.trim()); return ''; });
+  clean = clean.replace(/\[\[BOUCLE:\s*([a-z]+)\s*:\s*([^\]]{1,140})\]\]/gi,(_,id,txt)=>{ const idl=id.toLowerCase(); if(agentById(idl)) boucle={terrain:idl, texte:txt.trim()}; return ''; });
+  clean = clean.replace(/\[\[REDIGE:\s*([a-z]+)\s*\]\]/gi,(_,id)=>{ const idl=id.toLowerCase(); if(agentById(idl)||idl==='mia') redige=idl; return ''; });
+  clean = clean.replace(/\[\[(?:SUGGEST|HANDOFF|ANCRAGE|ACTE|BOUCLE|REDIGE)\b[^\]]*$/i,'');
   clean = clean.replace(/\n{3,}/g,'\n\n').trim();
-  return {clean, joinId, ancrage, actes};
+  return {clean, joinId, ancrage, actes, boucle, redige};
 }
 
 const KEEP_RAW=14, REGEN_EVERY=10;
@@ -329,12 +430,39 @@ async function regenerateEtatCourant(th){
 }
 
 
-/* ═══ CHANTIERS 1 + 3 + 5 — send() (3e redéfinition de cette fonction dans le dépôt) ═══
+/* Chantier 13 : un accompagnant présent qui ne rédige jamais et ne remonte jamais de boucle sur
+   plusieurs échanges consécutifs n'a pas sa place dans ce fil — l'application le retire d'elle-
+   même, discrètement, comme le demande le dossier. SILENCE_LIMIT est un choix arbitraire (pas de
+   nombre donné par le dossier), aligné sur les autres seuils du fichier (ex. REGEN_EVERY).
+   Deux exclusions du décompte, par prudence : qui rédige (r.redige, balise du chantier 13) et qui
+   porte le point d'ancrage (th.ancrage.terrain, chantier 3, mécanisme déjà éprouvé). Sans elles,
+   un accompagnant actif mais qui oublierait de poser [[REDIGE:...]] un tour se ferait compter comme
+   silencieux alors qu'il est le plus présent du fil — mieux vaut sous-retirer que retirer à tort. */
+const SILENCE_LIMIT=3;
+function applyBoucleOutcome(th, r){
+  if(!th || !th.parts || th.parts.length<=1) return;
+  th.silence = (th.silence && typeof th.silence==='object') ? th.silence : {};
+  const ancrageTerrain = th.ancrage && th.ancrage.terrain;
+  [r.redige, ancrageTerrain].forEach(function(id){ if(id && th.silence[id]!==undefined) th.silence[id]=0; });
+  const companions = th.parts.filter(function(id){ return id!=='mia' && id!==r.redige && id!==ancrageTerrain; });
+  companions.forEach(function(id){
+    if(r.boucle && r.boucle.terrain===id){ th.silence[id]=0; }
+    else { th.silence[id]=(th.silence[id]||0)+1; }
+  });
+  const toRemove=Object.keys(th.silence).filter(function(id){ return th.silence[id]>=SILENCE_LIMIT && th.parts.indexOf(id)>=0; });
+  toRemove.forEach(function(id){
+    delete th.silence[id];
+    if(th.parts.length>1) removeParticipant(id);
+  });
+}
+
+/* ═══ CHANTIERS 1 + 3 + 5 + 13 — send() (3e et dernière déclaration, éditée en place) ═══
    Reprend la structure V6 (limite freemium) et y ajoute : le budget de longueur (max_tokens
    suit le niveau calculé), l'historique tronqué (les REGEN_EVERY derniers messages bruts, le
    reste porté par l'état courant condensé injecté dans composeSystem), la capture des balises
-   ANCRAGE/ACTE, le découpage visuel en plusieurs bulles, et le déclenchement en tâche de fond
-   de la condensation quand le fil dépasse le seuil. */
+   ANCRAGE/ACTE/BOUCLE/REDIGE, le découpage visuel en plusieurs bulles, l'action de retour sur une
+   réponse croisée, le retrait silencieux d'un accompagnant qui ne sert jamais, et le déclenchement
+   en tâche de fond de la condensation quand le fil dépasse le seuil. */
 async function send(){
   const inp=$('chat-input'); const text=(inp.value||'').trim(); if(!text) return;
   if(state.tier==='free'){ ensureFreeDay(); if(state.freeCount>=5){ openUpsell('limit'); return; } }
@@ -353,7 +481,8 @@ async function send(){
     removeTyping();
     const r=parseSignals(out||'');
     const capped = r.clean ? enforceLengthCap(r.clean, budget.wordCap) : r.clean;
-    if(capped) addBubbleSplit('assistant',capped); else addBubbleSplit('assistant','…');
+    const meta = r.boucle ? {crossed:true, boucleTerrain:r.boucle.terrain, boucleText:r.boucle.texte} : null;
+    if(capped) addBubbleSplit('assistant',capped,meta); else addBubbleSplit('assistant','…',meta);
     if(r.ancrage){
       th.ancrage={terrain:r.ancrage.terrain, certitude:r.ancrage.certitude, atMsgCount:(th.msgs||[]).filter(m=>m.role).length};
       persist();
@@ -362,6 +491,12 @@ async function send(){
       th.actes=(th.actes||[]).concat(r.actes).slice(-8);
       persist();
     }
+    if(r.boucle){
+      th.boucles=(th.boucles||[]).concat([r.boucle.terrain+' : '+r.boucle.texte]).slice(-8);
+      persist();
+    }
+    applyBoucleOutcome(th, r);
+    persist();
     handleJoin(r.joinId);
     const freshCount=(th.msgs||[]).filter(m=>m.role).length;
     if(freshCount>KEEP_RAW && (freshCount-(th.etatCourantAt||0))>=REGEN_EVERY){
@@ -379,4 +514,63 @@ async function send(){
 const MIA_ADDENDUM=`Un point sur la hiérarchisation : c'est d'abord ton travail à toi. Un accompagnant spécialisé voit son bout de la situation ; toi tu vois tout. Quand plusieurs sujets s'emmêlent, c'est toi qui cherches le point d'ancrage et qui décides vers qui orienter — c'est donc toi qui poses le plus souvent la balise [[ANCRAGE:...]]. Un point sur la longueur : c'est sur tes premiers messages que se joue la barrière d'entrée, plus que pour n'importe quel accompagnant spécialisé — ton niveau d'ouverture doit être particulièrement tenu, deux phrases, pas trois. Un point pour résoudre ta propre tension entre aider et orienter : aider ne veut pas dire développer, une phrase qui touche juste aide davantage qu'un paragraphe qui explique. Tu peux aider et orienter dans le même souffle, à condition que ce que tu dis d'abord soit vraiment pour la personne, pas une politesse avant l'aiguillage. Tu n'orientes jamais dans ta toute première réponse d'un fil, sauf risque. Un point sur ce que tu transmets : quand tu fais venir un accompagnant, il hérite de ce que tu as compris par le contexte silencieux (ancrage, état courant) — il ne repart pas de zéro et ne fait pas revivre à la personne le tour de la question. Tu restes présente après son arrivée : tu ne disparais pas, tu gardes la vue d'ensemble pendant qu'il travaille son terrain.`;
 if(typeof DEFAULT_PERSONAS!=='undefined' && DEFAULT_PERSONAS.mia){
   DEFAULT_PERSONAS.mia = DEFAULT_PERSONAS.mia + SEP + MIA_ADDENDUM;
+}
+
+
+/* ═══════════════════════ CHANTIER 1 (dossier voix) — Nora, rapport au corps ═══════════════════════
+   Seizième accompagnant, exclusif MAYND+. AGENTS et ALL sont posés une fois pour toutes plus haut
+   dans la chaîne (00-noyau.js) : on ne les réassigne pas, on y ajoute Nora par push, ce qui est sûr
+   tant que rien ensuite n'en dépend avant ce point. AG_ORDER et PLUS_IDS sont dans le même cas.
+   DECK_IDS, en revanche, est un tableau figé au chargement (.concat() recopie les valeurs, il ne
+   garde aucun lien vers AG_ORDER) : il faut l'étendre séparément, sinon Nora resterait invisible
+   dans la présentation détaillée malgré sa présence partout ailleurs.
+   La couleur de Nora est posée ici directement sur l'objet, plutôt que via AGENT_COLORS : ce
+   mécanisme (16-palette-finale.js) s'applique à ALL au chargement de CE fichier-là, qui s'exécute
+   avant celui-ci — y ajouter Nora n'aurait aucun effet puisqu'elle n'existerait pas encore dans ALL
+   à ce moment. #BF5B2E (terracotta) est distincte de sa voisine dans la liste MAYND+ (neo, violet
+   profond) et passe le même test de contraste que les autres (lettre blanche lisible). */
+var NORA_AGENT={id:'nora', name:'Nora', domain:'Rapport au corps', color:'#BF5B2E', plus:true};
+if(typeof AGENTS!=='undefined' && typeof ALL!=='undefined' && !agentById('nora')){
+  AGENTS.push(NORA_AGENT);
+  ALL.push(NORA_AGENT);
+  if(typeof AG_ORDER!=='undefined') AG_ORDER.push('nora');
+  if(typeof DECK_IDS!=='undefined') DECK_IDS.push('nora');
+  if(typeof PLUS_IDS!=='undefined') PLUS_IDS.push('nora');
+}
+
+DEFAULT_PERSONAS.nora=`Tu es Nora, l'accompagnante rapport au corps de MAYND. Ton terrain : comment on habite son corps, comment on s'y sent, ce qu'on en pense, et ce qui se joue dans les moments où l'on mange. Tu ne donnes jamais aucun conseil alimentaire, aucun plan, aucun menu, aucun chiffre, ni aucun objectif de poids : le titre de diététicien est réglementé en France, ce n'est pas ton rôle. Tu bannis tout vocabulaire de restriction, de contrôle, de privation ou de compensation, et tu ne suggères jamais de sauter un repas, de réduire, ni de se passer de quelque chose. Tu ne juges aucun corps, dans aucun sens, ni trop ni pas assez, et tu n'évoques jamais de norme, de poids idéal, d'indice ou de mesure. Ton terrain attire mécaniquement les personnes concernées par un trouble du comportement alimentaire, que MAYND exclut explicitement de son accompagnement : dès qu'apparaît une privation marquée, un contrôle serré, une compensation ou une souffrance importante liée au corps, tu n'insistes pas sur ce terrain, tu orientes calmement vers un accompagnement humain, sans alerte ni dramatisation, et le signal remonte à son professionnel référent certifié.`;
+
+if(typeof AGENT_INFO!=='undefined'){
+  AGENT_INFO.nora={tag:"Elle travaille ton rapport au corps, jamais ton assiette ni la balance.",
+   does:["Comprendre comment tu habites ton corps","Repérer ce qui se joue vraiment dans les moments où tu manges","Déconstruire un jugement sur ton corps, dans un sens comme dans l'autre","Reconnaître les limites de son terrain et orienter si besoin"],
+   when:["Ton rapport à ton corps te pèse","Manger devient compliqué dans ta tête","Tu te juges sans arriver à t'arrêter"]};
+}
+
+
+/* ═══════════════════════ CHANTIER 12 (dossier voix) — l'abonnement unique ═══════════════════════
+   Les deux paliers payants (MAYND 49€, MAYND+ 69€) fusionnent en un seul, à 60€. Recensement des
+   conditions qui testaient l'ancien palier, et traitement appliqué à chacune (voir aussi le
+   commentaire en tête de 01-freemium-et-crise.js pour le choix de garder 'plus' comme valeur
+   interne) :
+   - isUnlocked(id) : ne teste plus a.plus du tout. Un accompagnant n'est plus jamais réservé.
+     Tout palier non gratuit (nouveau 'plus' comme l'ancien 'maynd', conservé en lecture pour ne
+     pas casser un état déjà persisté) déverrouille tout, MIA restant toujours accessible.
+   - Accès à un accompagnant précis (startWithAgent, agentRowHTML, partRowHTML, la fiche de
+     présentation) : condition supprimée, elle découle uniquement d'isUnlocked ci-dessus.
+   - Multi-accompagnants (addParticipant au-delà du premier participant, handleJoin) : ne teste
+     plus le palier mais canUseMulti() ci-dessous, qui s'appuie sur state.multiUnlocked — un
+     indicateur unique et réglable (bascule dans le profil, section Démonstration) qui tient lieu
+     de progression tant que ce chantier séparé n'existe pas.
+   - Modèle de voix (chantier 10, table des voix) : pas encore de code à modifier, la voix n'existe
+     pas encore dans ce dépôt ; quand elle sera construite, elle devra choisir le modèle par
+     accompagnant, jamais par palier.
+   - Vocabulaire : plus aucune occurrence de « débloquer »/« déblocage » nulle part dans
+     l'interface (paywall, présentation, suivi, supervision) — un accompagnant se découvre ou se
+     rencontre, il n'est jamais retenu. */
+function isUnlocked(id){ return id==='mia' || (typeof state!=='undefined' && state.tier && state.tier!=='free'); }
+
+function canUseMulti(){ return !!(typeof state!=='undefined' && state.multiUnlocked); }
+function toggleMultiUnlocked(){
+  state.multiUnlocked=!state.multiUnlocked; persist();
+  if(typeof renderProfile==='function' && typeof isOpen==='function' && isOpen('profile-sheet')) renderProfile();
 }

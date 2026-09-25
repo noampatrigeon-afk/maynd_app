@@ -53,11 +53,11 @@ ok(S().tier==='free','toujours freemium après entrée');
 console.log('\n=== 4. verrous freemium (message d\'erreur payant) ===');
 w.startWithAgent('naoki'); await wait(10);
 ok(w.$('paywall-sheet').classList.contains('show'),'accompagnant verrouillé -> paywall');
-ok(w.$('pw-badge').textContent==='MAYND','paywall accompagnant standard -> badge MAYND');
+ok(w.$('pw-badge').textContent==='MAYND','paywall -> badge MAYND (abonnement unique, chantier 12)');
 w.closeSheet('paywall-backdrop','paywall-sheet');
-w.startWithAgent('soren'); await wait(10); // soren = MAYND+
-ok(w.$('pw-badge').textContent==='MAYND+','accompagnant MAYND+ -> badge MAYND+');
-ok(/3 accompagnants|MAYND\+/.test(w.$('pw-sub').textContent),'message paywall pertinent');
+w.startWithAgent('soren'); await wait(10); // ancien exclusif MAYND+ : plus de traitement à part depuis le chantier 12
+ok(w.$('pw-badge').textContent==='MAYND','soren n\'est plus un cas particulier, même paywall unique pour tous');
+ok(/seize accompagnants/i.test(w.$('pw-sub').textContent),'message paywall pertinent');
 w.closeSheet('paywall-backdrop','paywall-sheet');
 // limite 5 messages/jour
 const s4=S(); s4.tier='free'; s4.freeDay=w.eval('todayKey()'); s4.freeCount=5;
@@ -72,17 +72,17 @@ ok(w.isUnlocked('mia')===true && w.isUnlocked('naoki')===false,'MIA déverrouill
 
 // ══════ 5. UPGRADE : paywall -> paiement -> tier appliqué ══════
 console.log('\n=== 5. parcours d\'upgrade ===');
-w.showPaywall('plus','Test','Test sub'); await wait(5);
+w.showPaywall('Test','Test sub'); await wait(5);
 w.pwGo(); await wait(20); // -> startUpgrade('plus') -> paiement
 ok(!w.$('onboarding').classList.contains('done') && w.$('ob-payment').classList.contains('on'),'upgrade -> écran de paiement');
-ok(w.$('pay-name').textContent==='MAYND+','paiement configuré pour MAYND+');
+ok(w.$('pay-name').textContent==='MAYND','paiement configuré pour l\'abonnement unique MAYND');
 w.obPay(); await wait(20);
-ok(S().tier==='plus','après paiement -> tier MAYND+');
+ok(S().tier==='plus','après paiement -> tier payant');
 ok(w.$('onboarding').classList.contains('done'),'retour dans l\'app après paiement');
 ok(w.isUnlocked('naoki')===true,'accompagnants déverrouillés après upgrade');
 // annulation d'upgrade revient à l'app
-w.startUpgrade('maynd'); await wait(10);
-ok(w.$('ob-payment').classList.contains('on'),'upgrade MAYND -> paiement');
+w.startUpgrade('plus'); await wait(10);
+ok(w.$('ob-payment').classList.contains('on'),'upgrade -> paiement');
 w.payCancel(); await wait(10);
 ok(w.$('onboarding').classList.contains('done'),'annulation paiement -> retour app');
 

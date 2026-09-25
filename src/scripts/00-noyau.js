@@ -43,7 +43,7 @@ const I18N = {
   needKey:'Pour me parler, ajoute ta clé API Anthropic.', openProfileLink:'Ouvrir le profil',
   partsSub:'Choisis qui t\u2019accompagne ici.', partsActive:'actif', partsActives:'actifs',
   partsNote:'Un accompagnant peut rejoindre tout seul quand un sujet le concerne. Tu peux l\u2019ajouter ou le retirer ici à tout moment.',
-  max3:'Trois accompagnants au maximum', mixPlus:'Le multi-accompagnants est réservé à MAYND+',
+  max3:'Trois accompagnants au maximum', mixPlus:'Le multi-accompagnants se découvre au fil du parcours.',
   keepOne:'Il faut au moins un accompagnant',
   you:'Toi', firstName:'Prénom', yourFirstName:'Ton prénom', connection:'Connexion',
   apiKey:'Clé API Anthropic', apiKeyDesc:'Elle reste sur cet appareil et sert à parler aux accompagnants.',
@@ -96,7 +96,7 @@ I18N.en={
   needKey:'To talk with me, add your Anthropic API key.', openProfileLink:'Open profile',
   partsSub:'Choose who supports you here.', partsActive:'active', partsActives:'active',
   partsNote:'A companion can join on its own when a topic calls for it. You can add or remove anyone here, anytime.',
-  max3:'Three companions maximum', mixPlus:'Multiple companions is a MAYND+ feature',
+  max3:'Three companions maximum', mixPlus:'Multiple companions unlock as you progress.',
   keepOne:'You need at least one companion',
   you:'You', firstName:'First name', yourFirstName:'Your first name', connection:'Connection',
   apiKey:'Anthropic API key', apiKeyDesc:'It stays on this device and is used to talk to the companions.',
@@ -148,7 +148,7 @@ I18N.es={
   needKey:'Para hablar conmigo, añade tu clave API de Anthropic.', openProfileLink:'Abrir el perfil',
   partsSub:'Elige quién te acompaña aquí.', partsActive:'activo', partsActives:'activos',
   partsNote:'Un acompañante puede unirse solo cuando un tema lo requiere. Puedes añadir o quitar a quien quieras aquí, cuando quieras.',
-  max3:'Tres acompañantes como máximo', mixPlus:'Varios acompañantes es una función de MAYND+',
+  max3:'Tres acompañantes como máximo', mixPlus:'Varios acompañantes se descubren a lo largo del recorrido.',
   keepOne:'Necesitas al menos un acompañante',
   you:'Tú', firstName:'Nombre', yourFirstName:'Tu nombre', connection:'Conexión',
   apiKey:'Clave API de Anthropic', apiKeyDesc:'Se queda en este dispositivo y sirve para hablar con los acompañantes.',
@@ -206,9 +206,9 @@ mia:`Tu es MIA, hôte et co-pilote de MAYND. Tu n'es pas une standardiste : tu n
 
 Tu écoutes sur trois niveaux en même temps : ce qui est dit, ce qui est demandé, et ce qui est porté émotionnellement en dessous. Tu réponds à la personne réelle, pas au mot-clé.
 
-Tu connais les quinze accompagnants de MAYND et leur terrain. Dix sont inclus dans MAYND : naoki (discipline, habitudes), felix (confiance, dialogue intérieur), atlas (identité, sens), ava (émotions, deuil), leo (couple, attachement), otis (communication, affirmation de soi), kael (sport, performance), miro (sommeil), sol (anxiété, respiration), mateo (travail, carrière). Cinq sont exclusifs à MAYND+ : soren (parentalité), iris (lien social, solitude), eden (sexualité, intimité), vince (argent), neo (addictions).
+Tu connais les seize accompagnants de MAYND et leur terrain. Dix sont inclus dans MAYND : naoki (discipline, habitudes), felix (confiance, dialogue intérieur), atlas (identité, sens), ava (émotions, deuil), leo (couple, attachement), otis (communication, affirmation de soi), kael (sport, performance), miro (sommeil), sol (anxiété, respiration), mateo (travail, carrière). Six sont exclusifs à MAYND+ : soren (parentalité), iris (lien social, solitude), eden (sexualité, intimité), vince (argent), neo (addictions), nora (rapport au corps).
 
-En formule MAYND, un seul accompagnant est actif à la fois dans un fil : en faire venir un autre remplace le précédent. En formule MAYND+, jusqu'à trois peuvent être actifs ensemble. Si le terrain le plus utile pour la personne est un accompagnant exclusif MAYND+ alors qu'elle est en formule MAYND, tu ne le caches jamais : tu nommes simplement ce qui aiderait, sans dramatiser ni insister lourdement.
+MAYND est un abonnement unique : les seize accompagnants sont tous accessibles, aucun n'est réservé. Un seul accompagnant est actif à la fois dans un fil tant que la personne n'a pas encore atteint, dans son parcours, la possibilité d'en réunir plusieurs ensemble (jusqu'à trois) — cela se gagne par la progression, ce n'est jamais une question de prix. Si le terrain le plus utile pour la personne est un accompagnant qu'elle n'a pas encore rencontré, tu ne le caches jamais : tu nommes simplement ce qui aiderait, sans dramatiser ni insister lourdement.
 
 Quand, et seulement quand, passer la main à un accompagnant apporterait vraiment quelque chose, tu termines ta réponse par une balise technique seule sur sa ligne, au format [[SUGGEST:identifiant]] (un seul identifiant parmi la liste). Cette balise est invisible pour la personne : tu ne l'expliques jamais, tu ne la commentes jamais. Ta réponse reste complète et utile même si on l'enlève. La plupart du temps, tu n'en mets pas : tu restes avec la personne. Si un objectif actif t'est donné en contexte, ce qui aiderait vraiment se juge d'abord par rapport à cet objectif, pas seulement par rapport au sujet du message : un accompagnant peut coller au sujet immédiat sans faire avancer l'objectif, et inversement.
 
@@ -822,7 +822,7 @@ function openProfile(){ renderProfile(); openSheet('profile-backdrop','profile-s
 function closeProfile(){ closeSheet('profile-backdrop','profile-sheet'); }
 function chev(){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>'; }
 function renderProfile(){
-  const tier=state.tier==='free'?'Freemium':(state.tier==='plus'?'MAYND+':'MAYND');
+  const tier=state.tier==='free'?'Freemium':'MAYND';
   const av=state.name?state.name[0].toUpperCase():'N';
   const lang=LANGS.find(l=>l.code===state.lang)||LANGS[0];
   const hasKey=!!state.apiKey;
@@ -856,7 +856,8 @@ function renderProfile(){
     +'<button class="row-btn" onclick="openExport()"><div class="rt"><div class="rl">'+t('exportR')+'</div><div class="rd">'+t('exportD')+'</div></div><span class="chev">'+chev()+'</span></button>'
     +'<button class="row-btn" onclick="openImport()"><div class="rt"><div class="rl">'+t('importR')+'</div><div class="rd">'+t('importD')+'</div></div><span class="chev">'+chev()+'</span></button></div>';
   h+='<div class="block-title">Démonstration</div><div class="block">'
-    +'<button class="row-btn" onclick="openProDashboard()"><div class="rt"><div class="rl">Vue professionnel</div><div class="rd">Aperçu de ce que verrait ton professionnel référent</div></div><span class="chev">'+chev()+'</span></button></div>';
+    +'<button class="row-btn" onclick="openProDashboard()"><div class="rt"><div class="rl">Vue professionnel</div><div class="rd">Aperçu de ce que verrait ton professionnel référent</div></div><span class="chev">'+chev()+'</span></button>'
+    +'<div class="row-btn snd-row"><div class="rt"><div class="rl">Multi-accompagnants</div><div class="rd">Remplace la progression, pas encore livrée, pour tester le multi-accompagnants</div></div><span class="agx-tgl'+(state.multiUnlocked?' on':'')+'" onclick="toggleMultiUnlocked()"><span class="agx-knob"></span></span></div></div>';
   h+='<div class="block-title">'+t('privacy')+'</div><div class="block">'
     +'<button class="row-btn" onclick="clearConvos()"><div class="rt"><div class="rl">'+t('clearC')+'</div><div class="rd">'+t('clearCD')+'</div></div><span class="chev">'+chev()+'</span></button>'
     +'<button class="row-btn" onclick="resetAll()"><div class="rt"><div class="rl">'+t('resetAll')+'</div><div class="rd">'+t('resetAllD')+'</div></div><span class="chev">'+chev()+'</span></button></div>';
@@ -890,9 +891,9 @@ function closeFormules(){ closeSheet('formules-backdrop','formules-sheet'); }
 function openUpgrade(){ openFormules(); }
 function renderFormules(){
   const F={
-   fr:{a10:'10 accompagnants + MIA',a15:'15 accompagnants + MIA',multi:'Plusieurs accompagnants ensemble (jusqu\u2019à 3)',voice:'Voix incluse',sup:'Supervision par un professionnel',mem:'Mémoire et personnalisation',vol:'Volume d\u2019échanges confortable',volp:'Volume d\u2019échanges étendu',plusHead:'Tout MAYND, et en plus :',inc:'/ mois'},
-   en:{a10:'10 companions + MIA',a15:'15 companions + MIA',multi:'Several companions together (up to 3)',voice:'Voice included',sup:'Supervised by a professional',mem:'Memory and personalization',vol:'Comfortable message volume',volp:'Extended message volume',plusHead:'Everything in MAYND, plus:',inc:'/ month'},
-   es:{a10:'10 acompañantes + MIA',a15:'15 acompañantes + MIA',multi:'Varios acompañantes juntos (hasta 3)',voice:'Voz incluida',sup:'Supervisado por un profesional',mem:'Memoria y personalización',vol:'Volumen de mensajes cómodo',volp:'Volumen de mensajes ampliado',plusHead:'Todo MAYND, y además:',inc:'/ mes'}
+   fr:{a10:'10 accompagnants + MIA',a15:'Les seize accompagnants + MIA',multi:'Plusieurs accompagnants ensemble (jusqu\u2019à 3)',voice:'Voix incluse',sup:'Supervision par un professionnel',mem:'Mémoire et personnalisation',vol:'Volume d\u2019échanges confortable',volp:'Volume d\u2019échanges étendu',plusHead:'Tout MAYND, et en plus :',inc:'/ mois'},
+   en:{a10:'10 companions + MIA',a15:'The sixteen companions + MIA',multi:'Several companions together (up to 3)',voice:'Voice included',sup:'Supervised by a professional',mem:'Memory and personalization',vol:'Comfortable message volume',volp:'Extended message volume',plusHead:'Everything in MAYND, plus:',inc:'/ month'},
+   es:{a10:'10 acompañantes + MIA',a15:'Los dieciséis acompañantes + MIA',multi:'Varios acompañantes juntos (hasta 3)',voice:'Voz incluida',sup:'Supervisado por un profesional',mem:'Memoria y personalización',vol:'Volumen de mensajes cómodo',volp:'Volumen de mensajes ampliado',plusHead:'Todo MAYND, y además:',inc:'/ mes'}
   }[state.lang]||{};
   const tick='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
   function feat(x){ return '<div class="feat">'+tick+'<span>'+x+'</span></div>'; }
@@ -1049,25 +1050,20 @@ function openUpgrade(){ openFormules(); }
 function openUpsell(r){ _upsell=r||null; openFormulesRaw(); }
 function renderFormules(){
   const F={
-   fr:{a10:'10 accompagnants + MIA',a15:'15 accompagnants + MIA',multi:'Plusieurs accompagnants ensemble (jusqu\u2019à 3)',voice:'Voix incluse',sup:'Supervision par un professionnel',mem:'Mémoire et personnalisation',vol:'Volume d\u2019échanges confortable',volp:'Volume d\u2019échanges étendu',plusHead:'Tout MAYND, et en plus :',inc:'/ mois'},
-   en:{a10:'10 companions + MIA',a15:'15 companions + MIA',multi:'Several companions together (up to 3)',voice:'Voice included',sup:'Supervised by a professional',mem:'Memory and personalization',vol:'Comfortable message volume',volp:'Extended message volume',plusHead:'Everything in MAYND, plus:',inc:'/ month'},
-   es:{a10:'10 acompañantes + MIA',a15:'15 acompañantes + MIA',multi:'Varios acompañantes juntos (hasta 3)',voice:'Voz incluida',sup:'Supervisado por un profesional',mem:'Memoria y personalización',vol:'Volumen de mensajes cómodo',volp:'Volumen de mensajes ampliado',plusHead:'Todo MAYND, y además:',inc:'/ mes'}
+   fr:{a10:'10 accompagnants + MIA',a15:'Les seize accompagnants + MIA',multi:'Plusieurs accompagnants ensemble (jusqu\u2019à 3)',voice:'Voix incluse',sup:'Supervision par un professionnel',mem:'Mémoire et personnalisation',vol:'Volume d\u2019échanges confortable',volp:'Volume d\u2019échanges étendu',plusHead:'Tout MAYND, et en plus :',inc:'/ mois'},
+   en:{a10:'10 companions + MIA',a15:'The sixteen companions + MIA',multi:'Several companions together (up to 3)',voice:'Voice included',sup:'Supervised by a professional',mem:'Memory and personalization',vol:'Comfortable message volume',volp:'Extended message volume',plusHead:'Everything in MAYND, plus:',inc:'/ month'},
+   es:{a10:'10 acompañantes + MIA',a15:'Los dieciséis acompañantes + MIA',multi:'Varios acompañantes juntos (hasta 3)',voice:'Voz incluida',sup:'Supervisado por un profesional',mem:'Memoria y personalización',vol:'Volumen de mensajes cómodo',volp:'Volumen de mensajes ampliado',plusHead:'Todo MAYND, y además:',inc:'/ mes'}
   }[state.lang]||{};
   const tick='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
   function feat(x){ return '<div class="feat">'+tick+'<span>'+x+'</span></div>'; }
   let h='';
   if(_upsell){ const U={agent:{t:t('upAgentT'),s:t('upAgentS')},limit:{t:t('upLimitT'),s:t('upLimitS')},mix:{t:t('upMixT'),s:t('upMixS')}}[_upsell]; if(U) h+='<div class="up-head"><div class="ut">'+U.t+'</div><div class="us">'+U.s+'</div></div>'; }
   if(state.tier==='free'){ h+='<div style="display:flex;align-items:center;justify-content:space-between;background:var(--paper-2);border-radius:14px;padding:12px 15px;margin-bottom:14px"><div><div style="font-family:Poppins;font-weight:700;font-size:14px">Freemium</div><div style="font-size:12px;color:var(--mist)">'+t('freeNowDesc')+'</div></div></div>'; }
-  const curM=state.tier==='maynd', curP=state.tier==='plus';
-  h+='<div class="formula">'+(curM?'<span class="badge-now">'+t('current')+'</span>':'')
-    +'<div class="fname">MAYND</div><div class="fprice"><b>49&nbsp;€</b> <span>'+F.inc+'</span></div>'
-    +feat(F.a10)+feat(F.voice)+feat(F.sup)+feat(F.mem)+feat(F.vol)
-    +'<button class="btn full fcta'+(curM?' ghost':'')+'" onclick="pickPlan(\'maynd\')">'+(curM?t('current'):t('chooseM'))+'</button></div>';
+  const curP=state.tier!=='free';
   h+='<div class="formula plus">'+(curP?'<span class="badge-now">'+t('current')+'</span>':'')
-    +'<span class="ribbon">MAYND+</span><div class="fname">MAYND+</div><div class="fprice"><b>69&nbsp;€</b> <span>'+F.inc+'</span></div>'
-    +'<div class="feat head">'+F.plusHead+'</div>'
-    +feat(F.a15)+feat(F.multi)+feat(F.volp)
-    +'<button class="btn full fcta light" onclick="pickPlan(\'plus\')">'+(curP?t('current'):t('goPlus'))+'</button>'
+    +'<div class="fname">MAYND</div><div class="fprice"><b>60&nbsp;€</b> <span>'+F.inc+'</span></div>'
+    +feat(F.a15)+feat(F.voice)+feat(F.sup)+feat(F.mem)
+    +'<button class="btn full fcta light" onclick="pickPlan(\'plus\')">'+(curP?t('current'):t('chooseM'))+'</button>'
     +'<div style="text-align:center;font-size:11px;color:rgba(251,250,247,.6);margin-top:10px">'+t('noEngage')+'</div></div>';
   $('formules-body').innerHTML=h;
 }
@@ -1097,7 +1093,7 @@ function setTier(tier,silent){
   if(activeScreen()==='tab-chat'){ renderChatHeader(); renderPartsCount(); }
   if(isOpen('parts-sheet')) renderParts();
   closeFormules();
-  if(!silent) toast(tier==='free'?'Freemium':(tier==='plus'?'MAYND+':'MAYND'));
+  if(!silent) toast(tier==='free'?'Freemium':'MAYND');
 }
 
 /* ---- envoi avec limite freemium ---- */
@@ -1265,8 +1261,7 @@ function obPlanList(){
   function pf(x){ return '<div class="pf">'+tick+'<span>'+x+'</span></div>'; }
   let h='';
   h+='<button class="ob-plan" onclick="obChoosePlan(\'free\')"><div class="pn">Freemium</div><div class="pp"><b>0&nbsp;€</b> <span>pour découvrir</span></div><div class="pt">Faire un premier pas, sans payer.</div>'+pf('MIA, ton co-pilote')+pf('5 messages par jour')+pf('Échanges en texte')+'<div class="pcta btn ghost full" style="pointer-events:none;margin-top:14px;display:flex;align-items:center;justify-content:center">Commencer gratuitement</div></button>';
-  h+='<button class="ob-plan" onclick="obChoosePlan(\'maynd\')"><div class="pn">MAYND</div><div class="pp"><b>49&nbsp;€</b> <span>/ mois</span></div><div class="pt">L\u2019accompagnement complet.</div>'+pf('10 accompagnants + MIA')+pf('Voix incluse')+pf('Supervision par un professionnel')+'<div class="pcta btn full" style="pointer-events:none;margin-top:14px;display:flex;align-items:center;justify-content:center">Choisir MAYND</div></button>';
-  h+='<button class="ob-plan dark" onclick="obChoosePlan(\'plus\')"><span class="pribbon">le + complet</span><div class="pn">MAYND+</div><div class="pp"><b>69&nbsp;€</b> <span>/ mois</span></div><div class="pt">Tout MAYND, et le multi-accompagnants.</div>'+pf('15 accompagnants + MIA')+pf('Plusieurs accompagnants ensemble (jusqu\u2019à 3)')+pf('Volume d\u2019échanges étendu')+'<div class="pcta btn full light" style="pointer-events:none;margin-top:14px;display:flex;align-items:center;justify-content:center">Choisir MAYND+</div></button>';
+  h+='<button class="ob-plan" onclick="obChoosePlan(\'plus\')"><div class="pn">MAYND</div><div class="pp"><b>60&nbsp;€</b> <span>/ mois</span></div><div class="pt">L\u2019accompagnement complet.</div>'+pf('Les seize accompagnants + MIA')+pf('Voix incluse')+pf('Supervision par un professionnel')+'<div class="pcta btn full" style="pointer-events:none;margin-top:14px;display:flex;align-items:center;justify-content:center">Choisir MAYND</div></button>';
   $('ob-plan-list').innerHTML=h;
 }
 var _payPlan='plus';
@@ -1276,14 +1271,13 @@ function obChoosePlan(plan){
   _payPlan=plan; obFillPay(); obShow('ob-payment'); payTab('card');
 }
 function obFillPay(){
-  const isPlus=_payPlan==='plus';
-  $('pay-name').textContent=isPlus?'MAYND+':'MAYND';
-  $('pay-price').innerHTML=isPlus?'69&nbsp;€':'49&nbsp;€';
-  $('pay-tag').textContent=isPlus?'Tout MAYND, et le multi-accompagnants.':'L\u2019accompagnement complet.';
+  $('pay-name').textContent='MAYND';
+  $('pay-price').innerHTML='60&nbsp;€';
+  $('pay-tag').textContent='L’accompagnement complet.';
   const tick='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
-  const feats=isPlus?['15 accompagnants + MIA','Multi-accompagnants (jusqu\u2019à 3)','Voix et supervision incluses']:['10 accompagnants + MIA','Voix incluse','Supervision par un professionnel'];
+  const feats=['Les seize accompagnants + MIA','Voix incluse','Supervision par un professionnel'];
   $('pay-feats').innerHTML=feats.map(f=>'<div class="pr-feat">'+tick+'<span>'+f+'</span></div>').join('');
-  $('pay-cta-label').textContent='Payer '+(isPlus?'69':'49')+' €';
+  $('pay-cta-label').textContent='Payer 60 €';
 }
 function payTab(m){ document.querySelectorAll('#ob-payment .pay-tab').forEach(b=>b.classList.toggle('active', b.getAttribute('data-m')===m)); ['card','apple','google','paypal'].forEach(k=>{ const f=$('pay-form-'+k); if(f) f.style.display=k===m?'':'none'; }); }
 function payFmtNum(el){ let v=el.value.replace(/\D/g,'').slice(0,16); el.value=v.replace(/(.{4})/g,'$1 ').trim(); }

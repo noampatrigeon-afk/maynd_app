@@ -42,7 +42,7 @@ function renderProBlock(){
     return h+'<div class="pro-card pro-lock"><div class="pro-head"><span class="pro-ava">'+proBadgeSVG()+'</span>'
       +'<span class="pro-id"><span class="pro-nm">Professionnel référent certifié</span><span class="pro-rl">Inclus dès l\u2019abonnement</span></span></div>'
       +'<div class="pro-note">Un professionnel certifié suit ton parcours, signe ta feuille de route chaque mois et ton bilan. Il intervient sur signal. Sans rendez-vous.</div>'
-      +'<button class="btn full" onclick="openUpsell(\'agent\')">Débloquer ma supervision</button></div>';
+      +'<button class="btn full" onclick="openUpsell(\'agent\')">Découvrir ma supervision</button></div>';
   }
   var ready=proReady();
   var axes=proAxes();

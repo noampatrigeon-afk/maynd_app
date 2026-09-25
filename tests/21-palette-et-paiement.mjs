@@ -56,7 +56,7 @@ w.enterApp(false); await wait(30);
 w.eval("state.tier='free'");
 w.showTab('objectifs'); await wait(30);
 ok(w.$('obj-pad').innerHTML.includes('track-lock'),'en gratuit : suivi verrouillé');
-ok(w.$('obj-pad').innerHTML.includes('Débloquer ma supervision'),'en gratuit : supervision verrouillée');
+ok(w.$('obj-pad').innerHTML.includes('Découvrir ma supervision'),'en gratuit : supervision verrouillée');
 w.eval("_upgrading=true; _payPlan='maynd'");
 w.obPay(); await wait(60);
 ok(S().tier==='maynd','la formule est appliquée');

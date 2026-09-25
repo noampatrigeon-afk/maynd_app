@@ -59,7 +59,7 @@ function openAgentDeck(startId){
     var info=AGENT_INFO[id]||{tag:'',does:[],when:[]};
     var lock=!isUnlocked(id);
     var fav=isFav(id);
-    var acc = id==='mia' ? 'Toujours disponible' : (a.plus ? 'Exclusif MAYND+' : 'Inclus dans MAYND');
+    var acc = id==='mia' ? 'Toujours disponible' : 'Inclus dans MAYND';
     var ava = id==='mia' ? '<span class="deck-ava mia">'+brainSVG()+'</span>' : '<span class="deck-ava">'+a.name[0]+'</span>';
     return '<section class="deck-page" data-id="'+id+'" style="--dc:'+a.color+'">'
       +'<div class="deck-inner">'
@@ -68,13 +68,13 @@ function openAgentDeck(startId){
       +'</div>'
       +'<div class="deck-name">'+a.name+'</div>'
       +'<div class="deck-dom">'+(id==='mia'?t('miaStatus'):a.domain)+'</div>'
-      +'<div class="deck-acc'+(a.plus?' plus':'')+'">'+acc+'</div>'
+      +'<div class="deck-acc">'+acc+'</div>'
       +'<div class="deck-tag">'+escapeHtml(info.tag)+'</div>'
       +'<div class="deck-sec">Ce qu\u2019il fait avec toi</div>'
       +'<ul class="deck-list">'+info.does.map(function(x){return '<li>'+escapeHtml(x)+'</li>';}).join('')+'</ul>'
       +'<div class="deck-sec">Quand l\u2019appeler</div>'
       +'<ul class="deck-list dot">'+info.when.map(function(x){return '<li>'+escapeHtml(x)+'</li>';}).join('')+'</ul>'
-      +'<button class="deck-cta" onclick="deckStart(\''+id+'\')">'+(lock?'Débloquer '+a.name:'Parler à '+a.name)+'</button>'
+      +'<button class="deck-cta" onclick="deckStart(\''+id+'\')">'+(lock?'Découvrir '+a.name:'Parler à '+a.name)+'</button>'
       +'</div></section>';
   }).join('');
   $('deck-dots').innerHTML=DECK_IDS.map(function(id,i){ return '<span class="deck-dot'+(i===0?' on':'')+'" onclick="deckGo('+i+')"></span>'; }).join('');
@@ -178,8 +178,7 @@ var OB_SOFT={
 /* ═══════════════ BOUTON DE PRÉSENTATION DANS LA LISTE ═══════════════ */
 function renderAgentList(mode){
   var favs=(state.favorites||[]).filter(function(id){return byId(id);});
-  var base=ALL.filter(function(a){return a.id!=='mia' && !a.plus;}).map(function(a){return a.id;});
-  var plusA=ALL.filter(function(a){return !!a.plus;}).map(function(a){return a.id;});
+  var base=ALL.filter(function(a){return a.id!=='mia';}).map(function(a){return a.id;});
   var h='<button class="deck-btn" onclick="openAgentDeck()">'
     +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M8 9h8M8 13h5"/></svg>'
     +'<span>Présenter les accompagnants</span>'
@@ -187,8 +186,6 @@ function renderAgentList(mode){
   if(favs.length){ h+='<div class="agx-sec">Tes accompagnants</div>'+favs.map(function(id){return agentRowHTML(id,mode);}).join(''); }
   var baseShown=['mia'].concat(base).filter(function(id){return favs.indexOf(id)<0;});
   h+='<div class="agx-sec">Tous les accompagnants</div>'+baseShown.map(function(id){return agentRowHTML(id,mode);}).join('');
-  var plusShown=plusA.filter(function(id){return favs.indexOf(id)<0;});
-  if(plusShown.length){ h+='<div class="agx-sec plus">Exclusifs MAYND+</div>'+plusShown.map(function(id){return agentRowHTML(id,mode);}).join(''); }
   return h;
 }
 

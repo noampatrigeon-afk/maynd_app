@@ -74,16 +74,16 @@ function agentRowHTML(id, mode){
   var a=byId(id); var plus=!!a.plus; var fav=isFav(id); var lock=!isUnlocked(id);
   var inConv = mode==='chat' && typeof threadParts==='function' && threadParts().indexOf(id)>=0;
   var ava = id==='mia' ? '<span class="agx-ava mia">'+brainSVG()+'</span>' : '<span class="agx-ava" style="background:'+a.color+'">'+a.name[0]+'</span>';
-  var badge = plus ? '<span class="agx-badge">MAYND+</span>' : '';
+  var badge = '';
   var star = id==='mia' ? '' : '<button class="agx-star'+(fav?' on':'')+'" onclick="toggleFav(\''+id+'\',event)" aria-label="Favori">'+starSVG(fav)+'</button>';
   var right='';
   if(mode==='chat'){
     if(id==='mia'){ right='<span class="agx-lock" style="color:var(--mist);background:rgba(0,0,0,.06)">Toujours là</span>'; }
-    else if(lock && !inConv){ right='<span class="agx-lock">MAYND+</span>'; }
+    else if(lock && !inConv){ right='<span class="agx-lock">Abonnement</span>'; }
     else { right='<span class="agx-tgl'+(inConv?' on':'')+'" onclick="togglePartRow(\''+id+'\',event)"><span class="agx-knob"></span></span>'; }
   }
   var rowClick = mode==='chat' ? ' onclick="togglePartRow(\''+id+'\',event)"' : ' onclick="startWithAgent(\''+id+'\')"';
-  return '<div class="agx-row'+(plus?' plus':'')+'" style="--agt:'+tintOf(a.color,0.90)+'">'
+  return '<div class="agx-row" style="--agt:'+tintOf(a.color,0.90)+'">'
     +'<button class="agx-open"'+rowClick+'>'+ava
     +'<span class="agx-tx"><span class="agx-nm">'+a.name+badge+'</span><span class="agx-dm">'+(id==='mia'?t('miaStatus'):a.domain)+'</span></span></button>'
     +star+right+'</div>';
@@ -149,7 +149,7 @@ function renderProBlock(){
       +'<div class="pro-lock-t">Professionnel référent certifié</div>'
       +'<div class="pro-lock-s">Inclus dès l\u2019abonnement</div>'
       +'<div class="pro-note">Il suit ton parcours, signe ta feuille de route chaque mois et ton bilan. Il intervient sur signal. Sans rendez-vous.</div>'
-      +'<button class="btn full" onclick="openUpsell(\'agent\')">Débloquer ma supervision</button></div>';
+      +'<button class="btn full" onclick="openUpsell(\'agent\')">Découvrir ma supervision</button></div>';
   }
   var ready=proReady();
   var axes=proAxes();
