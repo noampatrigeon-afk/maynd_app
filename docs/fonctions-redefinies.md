@@ -43,19 +43,29 @@ objectifs) ; puis `14-palette-et-accueil.js` ajoute « Ton suivi » (humeur) en 
 `09-couleur-questionnaires.js` sont des enveloppes sans effet visuel sur l'ordre (animation
 d'apparition et couleur des titres de section).
 
+**Cas particulier : `gameRenderQuestion`.** Deux déclarations dans deux fichiers différents
+(comme `composeSystem`) : `20-ecrans-jeu-refonte.js` redéfinit en entier le gabarit visuel des
+deux écrans d'un jeu (réflexion, réponses), en gardant volontairement le même id `#game-opts` et
+la même mécanique `display:none`→`''` que la version de `18-moteur-des-jeux.js`, pour ne rien
+casser de `tests/30-moteur-des-jeux.mjs`. Les autres fonctions du moteur (`gameQuestionDef`,
+`gameOptionsHTML`, `gamePick`, `gameAdvance`, `gameAbandon`) restent celles de `18` ; seules
+`gameRenderQuestion`, `gameShowOptions`, `gameRenderRestitution` et `gameRenderSortie` sont
+touchées par ce chantier (les deux dernières par simple enveloppe, pour retirer la teinte de
+fond en quittant les deux écrans concernés).
+
 | Fonction | Déclarations | Enveloppes | Version qui s'applique | Fichiers concernés |
 |---|---|---|---|---|
 | `obShow` | 1 | 7 | 15-presentation-accompagnants.js (enveloppe) | 00-noyau.js |
 | `renderObjectives` | 4 | 5 | 18-moteur-des-jeux.js (enveloppe) | 00-noyau.js (x2), 03-cap-et-objectifs.js, 05-objectifs-refonte.js |
 | `qzRenderCrisis` | 2 | 3 | 10-couleurs-pleines.js (enveloppe) | 00-noyau.js, 01-freemium-et-crise.js |
 | `showTab` | 1 | 4 | 14-palette-et-accueil.js (enveloppe) | 00-noyau.js |
-| `addParticipant` | 3 | 2 | 17-refonte-intelligence.js (enveloppe) | 00-noyau.js, 01-freemium-et-crise.js, 11-palette-enregistree.js |
+| `addParticipant` | 3 | 3 | 19-carte-entourage.js (enveloppe) | 00-noyau.js, 01-freemium-et-crise.js, 11-palette-enregistree.js, 17-refonte-intelligence.js |
 | `enterApp` | 1 | 3 | 14-palette-et-accueil.js (enveloppe) | 00-noyau.js |
 | `obPay` | 2 | 2 | 13-teintes-calculees.js (enveloppe) | 00-noyau.js, 01-freemium-et-crise.js |
 | `objqRenderQ` | 4 | 0 | 10-couleurs-pleines.js | 05-objectifs-refonte.js, 09-couleur-questionnaires.js, 10-couleurs-pleines.js |
 | `qzRenderQuestion` | 4 | 0 | 10-couleurs-pleines.js | 00-noyau.js, 09-couleur-questionnaires.js, 10-couleurs-pleines.js |
 | `startObrient` | 5 | 0 | 16-palette-finale.js | 03-cap-et-objectifs.js, 05-objectifs-refonte.js, 09-couleur-questionnaires.js, 13-teintes-calculees.js |
-| `startWithAgent` | 3 | 1 | 11-palette-enregistree.js (enveloppe) | 00-noyau.js, 01-freemium-et-crise.js |
+| `startWithAgent` | 3 | 2 | 19-carte-entourage.js (enveloppe) | 00-noyau.js, 01-freemium-et-crise.js, 11-palette-enregistree.js |
 | `addObjective` | 2 | 2 | 16-palette-finale.js (enveloppe) | 00-noyau.js |
 | `agentRowHTML` | 3 | 0 | 13-teintes-calculees.js | 02-favoris-et-focus.js, 04-composant-agents.js |
 | `objqAdvance` | 2 | 1 | 11-palette-enregistree.js (enveloppe) | 05-objectifs-refonte.js, 09-couleur-questionnaires.js |
@@ -114,7 +124,7 @@ d'apparition et couleur des titres de section).
 | `qzHeadHTML` | 2 | 0 | 10-couleurs-pleines.js | 09-couleur-questionnaires.js |
 | `qzPaint` | 2 | 0 | 12-teintes-de-reponse.js | 10-couleurs-pleines.js |
 | `qzPick` | 1 | 1 | 11-palette-enregistree.js (enveloppe) | 00-noyau.js |
-| `renderAgentList` | 2 | 0 | 15-presentation-accompagnants.js | 04-composant-agents.js |
+| `renderAgentList` | 2 | 1 | 19-carte-entourage.js (enveloppe) | 04-composant-agents.js, 15-presentation-accompagnants.js |
 | `renderBadges` | 2 | 0 | 05-objectifs-refonte.js | 00-noyau.js |
 | `renderChatHeader` | 1 | 1 | 11-palette-enregistree.js (enveloppe) | 00-noyau.js |
 | `renderFormules` | 2 | 0 | 00-noyau.js | 00-noyau.js |
@@ -142,3 +152,7 @@ d'apparition et couleur des titres de section).
 | `renameObjective` | 1 | 0 | 16-palette-finale.js | 16-palette-finale.js |
 | `toggleFav` | 2 | 0 | 13-teintes-calculees.js | 02-favoris-et-focus.js |
 | `togglePart` | 1 | 1 | 11-palette-enregistree.js (enveloppe) | 00-noyau.js |
+| `gameRenderQuestion` | 2 | 0 | 20-ecrans-jeu-refonte.js | 18-moteur-des-jeux.js, 20-ecrans-jeu-refonte.js |
+| `gameShowOptions` | 1 | 1 | 20-ecrans-jeu-refonte.js (enveloppe) | 18-moteur-des-jeux.js |
+| `gameRenderRestitution` | 1 | 1 | 20-ecrans-jeu-refonte.js (enveloppe) | 18-moteur-des-jeux.js |
+| `gameRenderSortie` | 1 | 1 | 20-ecrans-jeu-refonte.js (enveloppe) | 18-moteur-des-jeux.js |

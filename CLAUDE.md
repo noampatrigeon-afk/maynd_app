@@ -69,7 +69,11 @@ Ne jamais faire de remplacement de texte sur une ancre présente plusieurs fois.
 
 **Direction artistique**
 - Zéro dégradé. Aplats uniquement. Deux `mask-image` de fondu sont tolérés, ce ne sont pas des dégradés de couleur.
+
+  > **Exception posée le 28/09/2026 :** le chantier « écrans du parcours » (voir section 5) introduit deux vrais dégradés de couleur, demandés tels quels par le porteur du projet malgré cette règle : le bloc de remplissage de l'écran de réflexion d'un jeu (`lave(couleur,.91)` en haut vers `lave(couleur,.74)` en bas) et le fond de l'écran des réponses (`lave(couleur,.94)` en haut vers `lave(couleur,.78)` en bas), tous deux dans `13-ecrans-jeu-refonte.css`/`20-ecrans-jeu-refonte.js`. Ce sont les deux seuls dégradés tolérés en dehors des deux `mask-image` ; ne pas en généraliser l'usage ailleurs sans en reparler.
 - Écrans montrés par opacité, jamais `display:none`.
+
+  > **Précision du 28/09/2026 :** `#entourage` et `#recap` (chantier « écrans du parcours », section 5) suivent bien cette règle (opacité + `pointer-events`), comme le reste de la direction artistique. Seul `#game` y déroge, en `display:none`/`.show` — une exception posée avant ce chantier-ci (voir le commentaire en tête de `11-moteur-des-jeux.css`, qui renvoyait déjà ici sans qu'elle soit consignée) ; ce chantier n'y touche pas et ne l'étend pas.
 - Polices : Poppins pour les titres, DM Sans pour le corps.
 - Titres d'onglet : Poppins 800, 24 px.
 

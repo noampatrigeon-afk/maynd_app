@@ -51,7 +51,7 @@
           <span data-i="reassure">Un espace à toi, confidentiel. Tes échanges restent sur cet appareil.</span>
         </div>
         <div class="slogan" id="slogan"></div>
-        <div class="build-tag" id="build-tag">Version 25/09 19:30</div>
+        <div class="build-tag" id="build-tag">Version 28/09 16:45</div>
       </div></div>
     </section>
 
@@ -202,6 +202,14 @@
     <div class="sheet-grip"></div>
     <div class="sheet-head"><div><h2 id="obj-sheet-title">Nouvel objectif</h2></div><button class="sheet-close" aria-label="Fermer" onclick="closeObjSheet()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
     <div class="sheet-body" id="obj-sheet-body"></div>
+  </aside>
+
+  <!-- FICHE D'UN ACCOMPAGNANT ENDORMI -->
+  <div class="backdrop" id="sleep-backdrop" onclick="closeSleepFiche()"></div>
+  <aside class="sheet" id="sleep-sheet" role="dialog" aria-label="Accompagnant endormi">
+    <div class="sheet-grip"></div>
+    <div class="sheet-head"><div></div><button class="sheet-close" aria-label="Fermer" onclick="closeSleepFiche()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div class="sheet-body" id="sleep-body"></div>
   </aside>
 
   <!-- ESPACE DE SUIVI (supervision) -->
@@ -464,6 +472,45 @@
 
   <!-- ══════════ JEUX (moteur générique, thème de test : sommeil) ══════════ -->
   <div id="game"><div class="game-inner" id="game-inner"></div></div>
+
+  <!-- ══════════ CARTE DE L'ENTOURAGE ══════════ -->
+  <div id="entourage">
+    <div class="ent-top">
+      <div class="ent-head"><h1>Ton entourage</h1><p id="ent-sub"></p></div>
+      <button class="ent-x" onclick="closeEntourage()" aria-label="Fermer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="ent-card" id="ent-card">
+      <div class="ent-world" id="ent-world">
+        <svg class="ent-links" id="ent-links"></svg>
+        <div class="ent-agents" id="ent-agents"></div>
+      </div>
+      <div class="ent-controls">
+        <button class="ent-btn" onclick="entZoomBtn(1)" aria-label="Zoomer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3M11 8v6M8 11h6"/></svg></button>
+        <button class="ent-btn" onclick="entZoomBtn(-1)" aria-label="Dézoomer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3M8 11h6"/></svg></button>
+        <button class="ent-btn" onclick="entRecenter()" aria-label="Recentrer sur MIA"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg></button>
+      </div>
+    </div>
+    <div class="ent-fiche" id="ent-fiche"></div>
+    <button class="ent-entry-recap" onclick="openRecap()">Voir le récapitulatif</button>
+  </div>
+
+  <!-- ══════════ RÉCAPITULATIF (carte figée, portrait) ══════════ -->
+  <div id="recap">
+    <div class="recap-top">
+      <div><h1 id="recap-title"></h1><p id="recap-sub"></p></div>
+      <button class="recap-x" onclick="closeRecap()" aria-label="Fermer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="recap-card">
+      <div class="recap-world" id="recap-world">
+        <svg class="recap-links" id="recap-links"></svg>
+        <div class="recap-agents" id="recap-agents"></div>
+      </div>
+    </div>
+    <div class="recap-legend">
+      <span class="rl-item"><span class="rl-dot on"></span>Rencontré</span>
+      <span class="rl-item"><span class="rl-dot off"></span>Il dort</span>
+    </div>
+  </div>
 
 </div>
 <script>/* @inject:scripts */</script>

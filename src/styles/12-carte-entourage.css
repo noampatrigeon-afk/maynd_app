@@ -1,0 +1,56 @@
+/* ══════════════════════════════════════════════════════════════════════════
+   CARTE DE L'ENTOURAGE — plein écran, entre #game (87) et #pro-dashboard (89).
+   Écran montré par opacité comme le reste de la direction artistique, sauf
+   qu'ici la carte elle-même vit dans un monde transformé en dur (translate3d
+   + scale) pour le geste : aucune transition dessus pendant un geste, cf. JS.
+   ══════════════════════════════════════════════════════════════════════════ */
+#entourage{position:absolute;inset:0;z-index:88;background:var(--paper);display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity .35s ease}
+#entourage.show{opacity:1;pointer-events:auto}
+.ent-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:20px 20px 14px}
+.ent-head h1{font-family:'Poppins',sans-serif;font-weight:600;font-size:25px;color:var(--ink);margin:0}
+.ent-head p{font-size:13px;color:var(--mist);margin:4px 0 0}
+.ent-x{width:38px;height:38px;border-radius:50%;background:rgba(15,15,20,.06);border:none;color:var(--ink);display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer}
+.ent-x svg{width:16px;height:16px}
+
+.ent-card{position:relative;flex:1;margin:0 20px;border-radius:28px;background:#FBF9FF;border:1px solid #F0EAFC;overflow:hidden;touch-action:none}
+.ent-world{position:absolute;left:0;top:0;width:900px;height:900px;transform-origin:0 0;will-change:transform}
+.ent-links{position:absolute;left:0;top:0;width:900px;height:900px;overflow:visible;pointer-events:none}
+.ent-link{stroke-width:1.5;stroke-dasharray:6 7;stroke-dashoffset:80;opacity:.35;animation:ent-dash .8s cubic-bezier(.22,1,.36,1) both;animation-delay:var(--stagger)}
+.ent-link.awake{opacity:.55}
+@keyframes ent-dash{from{stroke-dashoffset:80}to{stroke-dashoffset:0}}
+
+.ent-agents{position:absolute;left:0;top:0;width:900px;height:900px}
+.ent-slot{position:absolute;transform:translate(-50%,-50%)}
+.ent-ava{position:relative;width:100%;height:100%;border-radius:50%;border:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:4px;cursor:pointer;overflow:hidden;
+  animation:ent-pop .5s cubic-bezier(.22,1,.36,1) both, ent-float 3.8s ease-in-out infinite;
+  animation-delay:var(--stagger), calc(var(--stagger) + .5s);}
+.ent-ava-init{font-family:'Poppins',sans-serif;font-weight:800;font-size:19px;line-height:1}
+.ent-mia .ent-ava-init{font-size:24px}
+.ent-ava-name{font-family:'Poppins',sans-serif;font-weight:700;font-size:9.5px;letter-spacing:.01em;white-space:nowrap}
+.ent-ava.awake{background:var(--ac);border:3px solid #FFFFFF;box-shadow:0 10px 22px rgba(151,74,240,.35)}
+.ent-ava.awake .ent-ava-init,.ent-ava.awake .ent-ava-name{color:#FFFFFF}
+.ent-ava.asleep{background:#F3ECFF;border:2px solid #E7DAFF;animation:ent-pop .5s cubic-bezier(.22,1,.36,1) both, ent-float 3.8s ease-in-out infinite, ent-breathe 6.5s ease-in-out infinite;animation-delay:var(--stagger), calc(var(--stagger) + .5s), var(--stagger)}
+.ent-ava.asleep .ent-ava-init,.ent-ava.asleep .ent-ava-name{color:#A79CBC}
+.ent-ava.sel::after{content:'';position:absolute;inset:0;border-radius:50%;pointer-events:none;animation:ent-halo 2.4s ease-out infinite}
+
+@keyframes ent-pop{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.1);opacity:1}100%{transform:scale(1);opacity:1}}
+@keyframes ent-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes ent-breathe{0%,100%{opacity:1}50%{opacity:.72}}
+@keyframes ent-halo{0%{box-shadow:0 0 0 0 rgba(151,74,240,.45)}100%{box-shadow:0 0 0 18px rgba(151,74,240,0)}}
+
+.ent-controls{position:absolute;top:14px;right:14px;display:flex;flex-direction:column;gap:8px;z-index:2}
+.ent-btn{width:44px;height:44px;border-radius:16px;background:rgba(255,255,255,.94);border:none;box-shadow:0 4px 14px rgba(20,12,40,.12);display:flex;align-items:center;justify-content:center;color:var(--ink);cursor:pointer}
+.ent-btn svg{width:19px;height:19px}
+
+.ent-fiche{margin:14px 20px 20px;background:var(--card);border-radius:28px;box-shadow:0 -4px 18px rgba(20,12,40,.06);padding:16px 18px}
+.ent-fiche-inner{display:flex;align-items:center;gap:13px;flex-wrap:wrap}
+.ent-fiche-ava{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-weight:800;font-size:18px;flex-shrink:0}
+.ent-fiche-tx{display:flex;flex-direction:column;gap:1px;flex:1;min-width:120px}
+.ent-fiche-tx b{font-family:'Poppins',sans-serif;font-weight:700;font-size:16px;color:var(--ink)}
+.ent-fiche-tx span{font-size:12.5px;color:var(--mist)}
+.ent-fiche-actions{display:flex;gap:8px;width:100%}
+.ent-fiche-actions .btn{flex:1;padding:11px 14px;font-size:13.5px}
+
+@media (prefers-reduced-motion: reduce){
+  .ent-ava,.ent-link{animation:none!important}
+}
