@@ -31,10 +31,22 @@ déjà à cet instant, quelle que soit sa position relative aux enveloppes. L'en
 `composeSystem` (un peu plus bas dans le même fichier) capture donc automatiquement cette nouvelle
 version comme `base`, sans rien à changer de son côté.
 
+**Cas particulier : `renderObjectives`.** Cinq enveloppes empilées, chacune ajoutant son propre
+bloc à `#obj-pad` après avoir appelé sa `base` — la base la plus profonde reconstruit tout le pad
+(`$('obj-pad').innerHTML=h`, pas d'ajout incrémental), donc chaque enveloppe réinjecte son bloc à
+chaque appel plutôt que de vérifier une seule fois s'il existe déjà. Ordre d'exécution donc ordre
+visuel final (du haut vers le bas de l'onglet Parcours) : `18-moteur-des-jeux.js` insère « Jeux »
+tout en haut (`insertAdjacentHTML('afterbegin', ...)`, après que tout le reste a déjà été construit
+par les couches en dessous) ; puis le contenu de la base (cap, profil, boussole, niveau, défis,
+objectifs) ; puis `14-palette-et-accueil.js` ajoute « Ton suivi » (humeur) en bas ; puis
+`16-palette-finale.js` ajoute « Chemin parcouru » tout en bas. `06-roulette-et-animations.js` et
+`09-couleur-questionnaires.js` sont des enveloppes sans effet visuel sur l'ordre (animation
+d'apparition et couleur des titres de section).
+
 | Fonction | Déclarations | Enveloppes | Version qui s'applique | Fichiers concernés |
 |---|---|---|---|---|
 | `obShow` | 1 | 7 | 15-presentation-accompagnants.js (enveloppe) | 00-noyau.js |
-| `renderObjectives` | 4 | 3 | 16-palette-finale.js (enveloppe) | 00-noyau.js, 03-cap-et-objectifs.js, 05-objectifs-refonte.js |
+| `renderObjectives` | 4 | 5 | 18-moteur-des-jeux.js (enveloppe) | 00-noyau.js (x2), 03-cap-et-objectifs.js, 05-objectifs-refonte.js |
 | `qzRenderCrisis` | 2 | 3 | 10-couleurs-pleines.js (enveloppe) | 00-noyau.js, 01-freemium-et-crise.js |
 | `showTab` | 1 | 4 | 14-palette-et-accueil.js (enveloppe) | 00-noyau.js |
 | `addParticipant` | 3 | 2 | 17-refonte-intelligence.js (enveloppe) | 00-noyau.js, 01-freemium-et-crise.js, 11-palette-enregistree.js |
