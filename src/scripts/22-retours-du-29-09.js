@@ -161,8 +161,10 @@ function gameRenderSortie(){
   var g=GAMES[_game.theme];
   var exitId = _game.branch==='short' ? null : (_game.answers.q3 ? _game.answers.q3.exit : null);
   var target = (exitId && byId(exitId)) ? exitId : g.agent;
-  /* second accompagnant proposé (lot 2) : porté par la réponse préalable ou par la sortie */
-  var second=(_game.answers.q0 && _game.answers.q0.second) || (_game.branch!=='short' && _game.answers.q3 && _game.answers.q3.second) || null;
+  /* second accompagnant proposé (lots 2 et 3) : porté par la réponse préalable (Leo), par
+     la question 2 (Vince) ou par la sortie de question 3 (Kael, Eden) — le premier trouvé */
+  var second=null;
+  ['q0','q2','q3'].forEach(function(k){ var a=_game.answers[k]; if(!second && a && a.second && !(k==='q3' && _game.branch==='short')) second=a.second; });
   if(second===target || !byId(second)) second=null;
   var theme=_game.theme;
   if(typeof isUnlocked!=='function' || isUnlocked(g.agent)) wakeAgent(g.agent);

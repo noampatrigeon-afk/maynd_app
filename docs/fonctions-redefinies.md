@@ -22,6 +22,8 @@ rien puisque la mutation n'a lieu qu'une fois, avant toute interaction. `getPers
 touchée : le Studio des accompagnants continue de lire/écrire `DEFAULT_PERSONAS.mia` (déjà
 augmenté) sans rien de spécial à gérer côté édition.
 
+**Même cas pour `DEFAULT_PERSONAS.soren` (29/09/2026).** `26-jeux-lot-3.js` y ajoute une phrase, une seule fois au chargement : « aucun conseil d'éducation », demandé par le dossier du lot 3 des jeux.
+
 **Cas particulier : `composeSystem`.** Deux déclarations, dans deux fichiers différents (pas une
 redéfinition classique dans le même fichier). `17-refonte-intelligence.js` déclare son propre
 `function composeSystem(){...}` (chantier du croisement multi-accompagnants), qui remplace celle
