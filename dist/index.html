@@ -1632,6 +1632,15 @@ button:active,.btn:active,.agx-open:active,.conv-item:active,.quest:active,.chal
 .sv-legend{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:10px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--mist)}
 .sv-lg{display:inline-block;width:18px;height:0;border-top:2.4px solid #974AF0;margin-left:8px}
 .sv-lg.prev{border-top:1.6px dashed #A79CBC}
+.sv-lg.avg{height:10px;border:1.2px solid #C7ABFA;border-radius:3px;background:#DCC8FF}
+/* 29/09 : avec la moyenne en fond, le radar passe au-dessus des axes, en grand */
+.sv-wheel{flex-direction:column;align-items:stretch;gap:6px}
+.sv-radar-box{flex:none;display:flex;justify-content:center}
+.sv-radar-box .sv-radar{width:210px;height:210px}
+.sv-axes{display:grid;grid-template-columns:1fr 1fr;column-gap:14px}
+@media (max-width:360px){ .sv-radar-box .sv-radar{width:180px;height:180px} .sv-axes{grid-template-columns:1fr} }
+.sv-avg-note{text-align:center;margin-top:4px;font-family:'DM Sans',sans-serif;font-size:11.5px;color:var(--mist)}
+.ci-legend{margin:0 0 8px}
 @media (max-width:360px){ .sv-radar-box{flex-basis:120px} .sv-radar-box .sv-radar{width:120px;height:120px} .sv-face{width:34px;height:34px;font-size:21px} }
 /* ══════════ FICHES DES ACCOMPAGNANTS SUR UN SEUL ÉCRAN — voir 25-fiches-compactes.js ══════════
    Toutes les tailles dépendent de --k (1 par défaut) : deckFit() le baisse par pas de 0,04
@@ -1726,7 +1735,7 @@ button:active,.btn:active,.agx-open:active,.conv-item:active,.quest:active,.chal
           <span data-i="reassure">Un espace à toi, confidentiel. Tes échanges restent sur cet appareil.</span>
         </div>
         <div class="slogan" id="slogan"></div>
-        <div class="build-tag" id="build-tag">Version 29/09 21:12</div>
+        <div class="build-tag" id="build-tag">Version 29/09 22:05</div>
       </div></div>
     </section>
 
@@ -7923,8 +7932,8 @@ function deckFav(id, ev){
       de la journée remplace les précédents). Absent de defaultState, comme
       state.gameRuns : créé au premier relevé.
    3. « Ton suivi », en bas de l'onglet Parcours, redessiné en deux onglets :
-      Humeur (la semaine en émojis) et Boussole (radar du jour superposé à celui
-      d'il y a une semaine, évolution de chaque axe). La section « Ta boussole »
+      Humeur (la semaine en émojis) et Boussole (radar du jour posé sur la forme
+      moyenne des 30 derniers jours, écart de chaque axe à la moyenne). La section « Ta boussole »
       du milieu de l'onglet est retirée : elle ferait doublon.
    ══════════════════════════════════════════════════════════════════════════ */
 
@@ -7939,15 +7948,21 @@ function logWheel(){
   persist();
 }
 function wheelTodayLogged(){ return (state.wheelLog||[]).some(function(e){ return e.day===todayKey(); }); }
-/* Relevé de comparaison : le plus récent datant d'au moins 6 jours, sinon le plus ancien
-   disponible avant aujourd'hui. null s'il n'y a rien d'antérieur à aujourd'hui. */
-function wheelCompareEntry(){
-  var log=(state.wheelLog||[]).filter(function(e){ return e.day!==todayKey(); });
+/* Moyenne de la boussole (demande du 29/09) : relevés des 30 derniers jours, aujourd'hui exclu,
+   pour que le jour se lise par rapport à l'habitude. null s'il n'y a aucun relevé antérieur. */
+var WHEEL_AVG_DAYS=30;
+function wheelAverage(){
+  var lim=new Date(); lim.setDate(lim.getDate()-WHEEL_AVG_DAYS); var limK=todayKey(lim), tk=todayKey();
+  var log=(state.wheelLog||[]).filter(function(e){ return e.day!==tk && e.day>=limK && e.v; });
   if(!log.length) return null;
-  var lim=new Date(); lim.setDate(lim.getDate()-6); var limK=todayKey(lim);
-  var older=log.filter(function(e){ return e.day<=limK; });
-  return older.length ? older[older.length-1] : log[0];
+  var v={};
+  WHEEL.forEach(function(a){
+    var s=0; log.forEach(function(e){ s+=(+e.v[a.k]||0); });
+    v[a.k]=Math.round(s/log.length*10)/10;
+  });
+  return {v:v, n:log.length};
 }
+function wheelFmt(x){ return String(x).replace('.',','); }
 /* Toute retouche depuis la feuille « Ajuster ma boussole » compte comme le relevé du jour. */
 (function(){
   var base=setWheel;
@@ -7956,15 +7971,17 @@ function wheelCompareEntry(){
 })();
 
 /* ─────────── radar ─────────── */
-function svRadarSVG(values, prev, size){
+/* avg : la moyenne, dessinée en fond en aplat teinté, sous la forme du jour. */
+function svRadarSVG(values, prev, size, avg){
   var cx=size/2, cy=size/2, R=size/2-12, n=WHEEL.length;
   function pt(i,rad){ var ang=(-90+i*(360/n))*Math.PI/180; return [cx+rad*Math.cos(ang), cy+rad*Math.sin(ang)]; }
   function poly(vals){ return WHEEL.map(function(a,i){ return pt(i,R*(vals[a.k]/10)).map(function(v){ return v.toFixed(1); }).join(','); }).join(' '); }
   var g='';
   [0.25,0.5,0.75,1].forEach(function(f){ g+='<polygon points="'+WHEEL.map(function(_,i){ return pt(i,R*f).map(function(v){ return v.toFixed(1); }).join(','); }).join(' ')+'" fill="none" stroke="#E7DAFF" stroke-width="1"/>'; });
   WHEEL.forEach(function(a,i){ var p=pt(i,R); g+='<line x1="'+cx+'" y1="'+cy+'" x2="'+p[0].toFixed(1)+'" y2="'+p[1].toFixed(1)+'" stroke="#E7DAFF" stroke-width="1"/>'; });
+  if(avg) g+='<polygon class="sv-avg" points="'+poly(avg)+'" fill="#DCC8FF" stroke="#C7ABFA" stroke-width="1.2" stroke-linejoin="round"/>';
   if(prev) g+='<polygon class="sv-prev" points="'+poly(prev)+'" fill="none" stroke="#A79CBC" stroke-width="1.6" stroke-dasharray="4 4" stroke-linejoin="round"/>';
-  g+='<polygon class="sv-now" points="'+poly(values)+'" fill="rgba(151,74,240,.18)" stroke="#974AF0" stroke-width="2.4" stroke-linejoin="round"/>';
+  g+='<polygon class="sv-now" points="'+poly(values)+'" fill="rgba(151,74,240,'+(avg?'.10':'.18')+')" stroke="#974AF0" stroke-width="2.6" stroke-linejoin="round"/>';
   WHEEL.forEach(function(a,i){ var p=pt(i,R*(values[a.k]/10)); g+='<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="4.2" fill="'+a.color+'" stroke="#fff" stroke-width="1.5"/>'; });
   return '<svg class="sv-radar" viewBox="0 0 '+size+' '+size+'" aria-hidden="true">'+g+'</svg>';
 }
@@ -7978,8 +7995,9 @@ function ciEnsureWheelBox(){
 }
 function ciRenderWheelStep(){
   var box=$('ms-wheel'); if(!box) return;
-  var prev=wheelCompareEntry();
-  box.innerHTML='<div class="ci-radar" id="ci-radar">'+svRadarSVG(_ciWheel, null, 170)+'</div>'
+  var avg=wheelAverage();
+  box.innerHTML='<div class="ci-radar" id="ci-radar">'+svRadarSVG(_ciWheel, null, 170, avg&&avg.v)+'</div>'
+    +(avg?'<div class="sv-legend ci-legend"><span class="sv-lg now"></span>Aujourd’hui <span class="sv-lg avg"></span>Ta moyenne</div>':'')
     +WHEEL.map(function(a){
       return '<div class="ci-row" style="--ac:'+a.color+'"><span class="ci-dot"></span><span class="ci-n">'+wLabel(a)+'</span>'
         +'<input type="range" min="1" max="10" value="'+_ciWheel[a.k]+'" oninput="ciSet(\''+a.k+'\',this.value)" aria-label="'+wLabel(a)+'">'
@@ -7989,7 +8007,7 @@ function ciRenderWheelStep(){
 function ciSet(k,v){
   _ciWheel[k]=parseInt(v,10)||1;
   var el=$('ci-v-'+k); if(el) el.textContent=_ciWheel[k];
-  var r=$('ci-radar'); if(r) r.innerHTML=svRadarSVG(_ciWheel, null, 170);
+  var r=$('ci-radar'), avg=wheelAverage(); if(r) r.innerHTML=svRadarSVG(_ciWheel, null, 170, avg&&avg.v);
 }
 function ciShowWheelStep(){
   ciEnsureWheelBox();
@@ -8074,16 +8092,19 @@ function svMoodPanelHTML(){
     +'<button class="cap-edit sv-act" onclick="openMoodScreen(true)">'+(todayMood()?'Changer mon humeur du jour':'Noter mon humeur')+'</button>';
 }
 function svWheelPanelHTML(){
-  var now=wheelSnapshot(), prevE=wheelCompareEntry(), prev=prevE?prevE.v:null;
+  /* Demande du 29/09 : la comparaison se fait à la moyenne des 30 derniers jours (forme teintée
+     en fond), plus au relevé d'il y a une semaine. Écart sous 0,5 : « = », dans l'habitude. */
+  var now=wheelSnapshot(), avgE=wheelAverage(), avg=avgE?avgE.v:null;
   var rows=WHEEL.map(function(a){
-    var d = prev ? now[a.k]-prev[a.k] : 0;
-    var chip = !prev ? '' : (d>0 ? '<span class="sv-delta up">+'+d+'</span>' : (d<0 ? '<span class="sv-delta down">'+d+'</span>' : '<span class="sv-delta eq">=</span>'));
+    var d = avg ? Math.round((now[a.k]-avg[a.k])*10)/10 : 0;
+    var chip = !avg ? '' : (d>=0.5 ? '<span class="sv-delta up">+'+wheelFmt(d)+'</span>' : (d<=-0.5 ? '<span class="sv-delta down">'+wheelFmt(d).replace('-','−')+'</span>' : '<span class="sv-delta eq">=</span>'));
     return '<div class="sv-axe"><span class="sv-ad" style="background:'+a.color+'"></span><span class="sv-an">'+wLabel(a)+'</span><span class="sv-av">'+now[a.k]+'</span>'+chip+'</div>';
   }).join('');
-  var foot = prevE
-    ? '<div class="sv-legend"><span class="sv-lg now"></span>Aujourd’hui <span class="sv-lg prev"></span>Le '+prevE.day.slice(8,10)+'/'+prevE.day.slice(5,7)+'</div>'
-    : '<div class="sv-sum">Ta boussole se compare d’un jour à l’autre dès ton deuxième relevé.</div>';
-  return '<div class="sv-wheel"><div class="sv-radar-box">'+svRadarSVG(now, prev, 190)+'</div><div class="sv-axes">'+rows+'</div></div>'+foot
+  var foot = avgE
+    ? '<div class="sv-legend"><span class="sv-lg now"></span>Aujourd’hui <span class="sv-lg avg"></span>Ta moyenne</div>'
+      +'<div class="sv-avg-note">Moyenne de '+avgE.n+' relevé'+(avgE.n>1?'s':'')+' sur les '+WHEEL_AVG_DAYS+' derniers jours</div>'
+    : '<div class="sv-sum">Ta moyenne apparaît en fond dès ton deuxième relevé.</div>';
+  return '<div class="sv-wheel"><div class="sv-radar-box">'+svRadarSVG(now, null, 190, avg)+'</div><div class="sv-axes">'+rows+'</div></div>'+foot
     +'<button class="cap-edit sv-act" onclick="openWheelSheet()">Ajuster ma boussole</button>';
 }
 function renderSuivi(){

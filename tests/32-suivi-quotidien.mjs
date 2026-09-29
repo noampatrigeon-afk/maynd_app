@@ -57,8 +57,31 @@ ok(w.document.querySelectorAll('#suivi .sv-face').length===7 && w.document.query
 ok(/le plus fréquent/.test(w.$('suivi').textContent),'humeur la plus fréquente quand il y a une vraie majorité');
 w.svSetTab('boussole'); await wait(10);
 ok(w.document.querySelector('#suivi .sv-card').getAttribute('data-tab')==='boussole','bascule vers l\'onglet Boussole');
-ok(!!w.document.querySelector('#suivi .sv-prev'),'le relevé d\'il y a une semaine est superposé en pointillés');
-ok(/\+2/.test(w.document.querySelector('#suivi .sv-p-boussole').textContent) && !!w.document.querySelector('#suivi .sv-delta.down'),'évolution de chaque axe (hausses et baisses)');
+ok(!!w.document.querySelector('#suivi .sv-avg') && !w.document.querySelector('#suivi .sv-prev'),'la moyenne est dessinée en fond (plus le relevé d\'il y a une semaine)');
+ok(/\+2/.test(w.document.querySelector('#suivi .sv-p-boussole').textContent) && !!w.document.querySelector('#suivi .sv-delta.down'),'écart de chaque axe à la moyenne (hausses et baisses)');
+ok(/Moyenne de 1 relevé sur les 30 derniers jours/.test(w.$('suivi').textContent),'la moyenne dit sur combien de relevés elle porte');
+
+console.log('\n=== 4. MOYENNE DE LA BOUSSOLE (29/09) ===');
+w.eval(`(function(){ var d=86400000; function dk(n){ return todayKey(new Date(Date.now()-n*d)); }
+  state.wheel={energie:8,serenite:5,confiance:5,lien:5,sens:5};
+  state.wheelLog=[{day:dk(40),v:{energie:1,serenite:1,confiance:1,lien:1,sens:1}},
+    {day:dk(3),v:{energie:4,serenite:5,confiance:5,lien:5,sens:5}},{day:dk(2),v:{energie:5,serenite:6,confiance:5,lien:5,sens:5}},
+    {day:dk(0),v:{energie:8,serenite:5,confiance:5,lien:5,sens:5}}]; })()`);
+const av=w.eval('wheelAverage()');
+ok(av.n===2 && av.v.energie===4.5 && av.v.serenite===5.5,'moyenne des 30 derniers jours, sans aujourd\'hui ni les relevés plus anciens');
+w.renderSuivi(); w.svSetTab('boussole'); await wait(10);
+const txt=w.document.querySelector('#suivi .sv-p-boussole').textContent;
+ok(/\+3,5/.test(txt) && /−0,5/.test(txt),'écarts décimaux à la virgule');
+ok(w.document.querySelectorAll('#suivi .sv-delta.eq').length===3,'un écart de moins de 0,5 compte comme dans la moyenne');
+const svg=w.document.querySelector('#suivi .sv-radar').innerHTML;
+ok(svg.indexOf('sv-avg')<svg.indexOf('sv-now'),'la forme du jour est dessinée par-dessus la moyenne');
+w.eval("state.moodSeen=''; state.moods=[]"); w.openMoodScreen(true); w.validateMood(); await wait(10);
+ok(!!w.document.querySelector('#ci-radar .sv-avg') && /Ta moyenne/.test(w.$('ms-wheel').textContent),'au point du jour, la moyenne apparaît aussi derrière les réglettes');
+w.ciSet('energie','2'); await wait(5);
+ok(!!w.document.querySelector('#ci-radar .sv-avg'),'et reste en fond pendant qu\'on bouge les réglettes');
+w.closeMoodScreen();
+w.eval("state.wheelLog=[]"); w.renderSuivi(); await wait(5);
+ok(!w.document.querySelector('#suivi .sv-avg') && /dès ton deuxième relevé/.test(w.$('suivi').textContent),'sans relevé antérieur, pas de moyenne et une phrase d\'attente');
 
 ok(w.__errs.length===0,'aucune erreur runtime'+(w.__errs.length?' : '+w.__errs.slice(0,3).join(' | '):''));
 console.log(`\n${pass} réussis, ${fail} échoués`);
