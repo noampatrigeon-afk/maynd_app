@@ -1,0 +1,46 @@
+name: Tests
+
+# Lance les suites de tests/ à chaque envoi sur main (et à la demande, bouton
+# « Run workflow » dans l'onglet Actions). Fichier séparé de pages.yml, exprès :
+# un test en échec affiche une croix rouge ici mais ne bloque PAS la mise en
+# ligne. Une fois toutes les suites au vert, on pourra rendre ce contrôle
+# bloquant (voir CLAUDE.md, section 4).
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install
+      - name: Lancer les tests
+        run: |
+          set -o pipefail
+          npm test 2>&1 | tee test-output.txt
+      - name: Résumé lisible
+        if: always()
+        run: |
+          {
+            echo '## Résultat des tests'
+            echo
+            echo "**$(tail -n 1 test-output.txt)**"
+            echo
+            echo '```'
+            cat test-output.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "::notice title=Bilan::$(tail -n 1 test-output.txt)"
+          if grep -qE 'ÉCHEC|✗' test-output.txt; then
+            msg=$(grep -E 'ÉCHEC|✗' test-output.txt | head -n 80 | sed 's/%/%25/g' | awk 'BEGIN{ORS="%0A"}1')
+            echo "::error title=Vérifications en échec::$msg"
+          fi

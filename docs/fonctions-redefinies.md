@@ -43,6 +43,13 @@ objectifs) ; puis `14-palette-et-accueil.js` ajoute « Ton suivi » (humeur) en 
 `09-couleur-questionnaires.js` sont des enveloppes sans effet visuel sur l'ordre (animation
 d'apparition et couleur des titres de section).
 
+> **Mise à jour du 29/09/2026 (`22-retours-du-29-09.js`) :** la section « Jeux » n'apparaît plus.
+> L'enveloppe de `18` est toujours là, mais elle appelle `renderGamesSectionHTML()` par son nom,
+> et `22` redéclare cette fonction pour qu'elle renvoie une chaîne vide. Une sixième enveloppe,
+> dans `22`, insère le bloc « Ton entourage » juste avant le titre « Ta supervision » (repéré par
+> son texte). Ordre visuel actuel : cap, profil et objectif de la semaine, Ton entourage, Ta
+> supervision, puis la suite inchangée.
+
 **Cas particulier : `gameRenderQuestion`.** Deux déclarations dans deux fichiers différents
 (comme `composeSystem`) : `20-ecrans-jeu-refonte.js` redéfinit en entier le gabarit visuel des
 deux écrans d'un jeu (réflexion, réponses), en gardant volontairement le même id `#game-opts` et
@@ -53,10 +60,15 @@ casser de `tests/30-moteur-des-jeux.mjs`. Les autres fonctions du moteur (`gameQ
 touchées par ce chantier (les deux dernières par simple enveloppe, pour retirer la teinte de
 fond en quittant les deux écrans concernés).
 
+> **Mise à jour du 29/09/2026 :** `22-retours-du-29-09.js` redéclare `gameRenderRestitution` (le
+> lien « Voir tes réponses du … » y remonte) et `gameRenderSortie` (plus d'écran de sortie : réveil
+> de l'accompagnant du jeu, fermeture, ouverture de la fiche de présentation). Les enveloppes de `20`
+> capturent ces nouvelles déclarations au hissage, sans rien à changer de leur côté.
+
 | Fonction | Déclarations | Enveloppes | Version qui s'applique | Fichiers concernés |
 |---|---|---|---|---|
 | `obShow` | 1 | 7 | 15-presentation-accompagnants.js (enveloppe) | 00-noyau.js |
-| `renderObjectives` | 4 | 5 | 18-moteur-des-jeux.js (enveloppe) | 00-noyau.js (x2), 03-cap-et-objectifs.js, 05-objectifs-refonte.js |
+| `renderObjectives` | 4 | 6 | 22-retours-du-29-09.js (enveloppe) | 00-noyau.js (x2), 03-cap-et-objectifs.js, 05-objectifs-refonte.js |
 | `qzRenderCrisis` | 2 | 3 | 10-couleurs-pleines.js (enveloppe) | 00-noyau.js, 01-freemium-et-crise.js |
 | `showTab` | 1 | 4 | 14-palette-et-accueil.js (enveloppe) | 00-noyau.js |
 | `addParticipant` | 3 | 3 | 19-carte-entourage.js (enveloppe) | 00-noyau.js, 01-freemium-et-crise.js, 11-palette-enregistree.js, 17-refonte-intelligence.js |
@@ -65,7 +77,7 @@ fond en quittant les deux écrans concernés).
 | `objqRenderQ` | 4 | 0 | 10-couleurs-pleines.js | 05-objectifs-refonte.js, 09-couleur-questionnaires.js, 10-couleurs-pleines.js |
 | `qzRenderQuestion` | 4 | 0 | 10-couleurs-pleines.js | 00-noyau.js, 09-couleur-questionnaires.js, 10-couleurs-pleines.js |
 | `startObrient` | 5 | 0 | 16-palette-finale.js | 03-cap-et-objectifs.js, 05-objectifs-refonte.js, 09-couleur-questionnaires.js, 13-teintes-calculees.js |
-| `startWithAgent` | 3 | 2 | 19-carte-entourage.js (enveloppe) | 00-noyau.js, 01-freemium-et-crise.js, 11-palette-enregistree.js |
+| `startWithAgent` | 3 | 3 | 22-retours-du-29-09.js (enveloppe) | 00-noyau.js, 01-freemium-et-crise.js, 11-palette-enregistree.js |
 | `addObjective` | 2 | 2 | 16-palette-finale.js (enveloppe) | 00-noyau.js |
 | `agentRowHTML` | 3 | 0 | 13-teintes-calculees.js | 02-favoris-et-focus.js, 04-composant-agents.js |
 | `objqAdvance` | 2 | 1 | 11-palette-enregistree.js (enveloppe) | 05-objectifs-refonte.js, 09-couleur-questionnaires.js |
@@ -73,7 +85,7 @@ fond en quittant les deux écrans concernés).
 | `objqPick` | 2 | 1 | 11-palette-enregistree.js (enveloppe) | 05-objectifs-refonte.js, 09-couleur-questionnaires.js |
 | `proBadgeSVG` | 3 | 0 | 13-teintes-calculees.js | 07-supervision.js, 12-teintes-de-reponse.js |
 | `qzShowResult` | 1 | 2 | 10-couleurs-pleines.js (enveloppe) | 00-noyau.js |
-| `renderDrawer` | 3 | 0 | 04-composant-agents.js | 00-noyau.js, 02-favoris-et-focus.js |
+| `renderDrawer` | 4 | 0 | 22-retours-du-29-09.js | 00-noyau.js, 02-favoris-et-focus.js, 04-composant-agents.js |
 | `renderParts` | 3 | 0 | 04-composant-agents.js | 00-noyau.js, 04-composant-agents.js |
 | `renderStrip` | 3 | 0 | 04-composant-agents.js | 00-noyau.js, 02-favoris-et-focus.js |
 | `startObjQuiz` | 3 | 0 | 13-teintes-calculees.js | 05-objectifs-refonte.js, 09-couleur-questionnaires.js |
@@ -91,7 +103,7 @@ fond en quittant les deux écrans concernés).
 | `regenerateEtatCourant` | 1 | 0 | 17-refonte-intelligence.js | 17-refonte-intelligence.js |
 | `arrivalNoteEl` / `withdrawArrival` | 1 | 0 | 17-refonte-intelligence.js | 17-refonte-intelligence.js |
 | `setProvider` | 1 | 0 | 00-noyau.js | 00-noyau.js |
-| `deckSync` | 1 | 1 | 16-palette-finale.js (enveloppe) | 15-presentation-accompagnants.js |
+| `deckSync` | 1 | 2 | 22-retours-du-29-09.js (enveloppe) | 15-presentation-accompagnants.js |
 | `deleteObjective` | 1 | 1 | 14-palette-et-accueil.js (enveloppe) | 00-noyau.js |
 | `feat` | 2 | 0 | 00-noyau.js | 00-noyau.js |
 | `init` | 2 | 0 | 00-noyau.js | 00-noyau.js |
@@ -103,7 +115,7 @@ fond en quittant les deux écrans concernés).
 | `obEnterSkipQuiz` | 1 | 0 | 16-palette-finale.js | 16-palette-finale.js |
 | `objqAfter` | 2 | 1 | 16-palette-finale.js (enveloppe) | 05-objectifs-refonte.js, 09-couleur-questionnaires.js |
 | `objqClose` | 2 | 0 | 09-couleur-questionnaires.js | 05-objectifs-refonte.js |
-| `openAgentDeck` | 1 | 1 | 16-palette-finale.js (enveloppe) | 15-presentation-accompagnants.js |
+| `openAgentDeck` | 1 | 2 | 22-retours-du-29-09.js (enveloppe) | 15-presentation-accompagnants.js |
 | `openChat` | 1 | 1 | 11-palette-enregistree.js (enveloppe) | 00-noyau.js |
 | `openFocusSheet` | 2 | 0 | 02-favoris-et-focus.js | 00-noyau.js |
 | `openFormules` | 2 | 0 | 00-noyau.js | 00-noyau.js |
@@ -154,5 +166,10 @@ fond en quittant les deux écrans concernés).
 | `togglePart` | 1 | 1 | 11-palette-enregistree.js (enveloppe) | 00-noyau.js |
 | `gameRenderQuestion` | 2 | 0 | 20-ecrans-jeu-refonte.js | 18-moteur-des-jeux.js, 20-ecrans-jeu-refonte.js |
 | `gameShowOptions` | 1 | 1 | 20-ecrans-jeu-refonte.js (enveloppe) | 18-moteur-des-jeux.js |
-| `gameRenderRestitution` | 1 | 1 | 20-ecrans-jeu-refonte.js (enveloppe) | 18-moteur-des-jeux.js |
-| `gameRenderSortie` | 1 | 1 | 20-ecrans-jeu-refonte.js (enveloppe) | 18-moteur-des-jeux.js |
+| `gameRenderRestitution` | 2 | 1 | 20-ecrans-jeu-refonte.js (enveloppe de la déclaration de 22) | 18-moteur-des-jeux.js, 22-retours-du-29-09.js |
+| `gameRenderSortie` | 2 | 1 | 20-ecrans-jeu-refonte.js (enveloppe de la déclaration de 22) | 18-moteur-des-jeux.js, 22-retours-du-29-09.js |
+| `deckFav` | 2 | 0 | 22-retours-du-29-09.js | 15-presentation-accompagnants.js |
+| `renderSleepFiche` | 2 | 0 | 22-retours-du-29-09.js | 21-fiche-recapitulatif.js |
+| `renderGamesSectionHTML` | 2 | 0 | 22-retours-du-29-09.js (renvoie une chaîne vide) | 18-moteur-des-jeux.js |
+| `entTap` | 1 | 1 | 22-retours-du-29-09.js (enveloppe) | 19-carte-entourage.js |
+| `closeRecap` | 1 | 1 | 22-retours-du-29-09.js (enveloppe : désarme « Endormir tout le monde ») | 21-fiche-recapitulatif.js |

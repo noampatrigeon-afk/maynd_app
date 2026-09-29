@@ -24,12 +24,23 @@ async function answer(label){
   b.click(); await wait(10);
 }
 
-console.log('\n=== 1. LE JEU N’EST VISIBLE QUE POUR UN COMPTE ABONNÉ ===');
+// Espion sur la fiche de présentation : depuis le 29/09, la fin d'un jeu ouvre la fiche de
+// l'accompagnant proposé au lieu d'un écran de sortie (22-retours-du-29-09.js). En JSDOM, la
+// position de défilement de la fiche reste à 0, on vérifie donc l'argument passé.
+const deckCalls=[];
+{ const orig=w.openAgentDeck; w.openAgentDeck=function(id){ deckCalls.push(id); return orig.apply(this, arguments); }; }
+
+console.log('\n=== 1. ONGLET PARCOURS : « TON ENTOURAGE » REMPLACE LA SECTION JEUX (29/09) ===');
 w.eval("state.tier='free'"); w.showTab('objectifs'); await wait(20);
-ok(!/class="games-row"/.test(w.$('obj-pad').innerHTML), "pas de section jeux en gratuit (le reste de l'onglet est déjà verrouillé)");
+ok(!/class="games-row"/.test(w.$('obj-pad').innerHTML), "pas de section jeux en gratuit");
 w.eval("state.tier='plus'"); w.showTab('objectifs'); await wait(20);
-ok(/class="games-row"/.test(w.$('obj-pad').innerHTML), "section jeux visible pour un compte abonné");
-ok(w.$('obj-pad').innerHTML.indexOf('games-row') < w.$('obj-pad').innerHTML.indexOf('cap-hero'), "les jeux sont bien en haut du pad, avant le cap");
+const padH=w.$('obj-pad').innerHTML;
+ok(!/class="games-row"/.test(padH), "plus de section jeux en haut de l'onglet");
+ok(/Découvrir mon entourage/.test(padH), "bloc Ton entourage avec son bouton");
+ok(padH.indexOf('cap-hero') < padH.indexOf('entp-card') && padH.indexOf('entp-card') < padH.indexOf('Ta supervision'), "Ton entourage entre le parcours et la supervision");
+w.document.querySelector('.entp-btn').click(); await wait(10);
+ok(w.$('recap').classList.contains('show'), "le bouton ouvre le récapitulatif");
+w.eval("closeRecap()");
 
 console.log('\n=== 2. BRANCHE NORMALE, DE BOUT EN BOUT ===');
 w.openGame('sommeil'); await wait(20);
@@ -43,12 +54,13 @@ await answer('Couper les écrans le soir');
 await answer('Essayer quelque chose de léger');
 const restit=w.document.querySelector('.game-restit p')?.textContent || '';
 ok(restit.includes('Cette année') && restit.includes('la nuit') && restit.includes('la tête') && restit.includes('écrans'), "la restitution assemble les réponses données, sans rien inventer ni conclure : "+restit);
-w.document.querySelector('.game-next')?.click(); await wait(10);
-ok(/Felix/.test(w.document.querySelector('.game-sortie-txt')?.textContent||''), "l'accompagnant proposé en sortie suit la table (tête qui tourne -> Felix)");
-ok(/Tu veux lui en parler/.test(w.document.querySelector('.game-sortie-txt')?.textContent||''), "l'invitation, jamais un verdict");
+w.document.querySelector('.game-next')?.click(); await wait(60);
+ok(!w.$('game').classList.contains('show'), "la fin du jeu ferme l'écran plein écran");
+ok(w.$('deck').classList.contains('show') && deckCalls[deckCalls.length-1]==='felix', "la fiche de présentation s'ouvre sur l'accompagnant proposé par la table (tête qui tourne -> Felix)");
+ok(w.eval("agentAwake('miro')"), "finir le jeu réveille l'accompagnant du jeu (Miro)");
 const runsA=w.eval("state.gameRuns.sommeil");
 ok(runsA.length===1 && runsA[0].completed===true && runsA[0].exitAgent==='felix', "la couche réponses enregistre la série complète, horodatée, avec le bon accompagnant de sortie");
-w.eval("gameClose()"); await wait(10);
+w.eval("closeDeck()"); await wait(10);
 
 console.log('\n=== 3. BRANCHE COURTE : ON CROIT LA PERSONNE ===');
 w.openGame('sommeil'); await wait(20);
@@ -59,10 +71,9 @@ await answer('Toujours');
 await answer('Mon activité physique');
 const shortHtml=w.document.querySelector('.game-restit')?.innerHTML || '';
 ok(!/mise en garde|mais|cependant|il faudrait/i.test(shortHtml), "aucune mise en garde ni suggestion d'amélioration dans la branche courte");
-w.document.querySelector('.game-next')?.click(); await wait(10);
-ok(!w.document.querySelector('.game-sortie-ava'), "pas d'accompagnant imposé en sortie de branche courte (question 3 jamais posée)");
-ok(/Retour au parcours/.test(w.$('game-inner').innerHTML), "une seule action de sortie, sans agent");
-w.eval("gameClose()"); await wait(10);
+w.document.querySelector('.game-next')?.click(); await wait(60);
+ok(deckCalls[deckCalls.length-1]==='miro', "branche courte : pas d'autre accompagnant imposé, la fiche s'ouvre sur celui du jeu (question 3 jamais posée)");
+w.eval("closeDeck()"); await wait(10);
 
 console.log('\n=== 4. BRANCHE IRRÉGULIÈRE : LA QUESTION 3 SE REFORMULE ===');
 w.openGame('sommeil'); await wait(20);
@@ -101,8 +112,7 @@ await answer("J'ai du mal à m'endormir");
 await answer("Ce qui m'entoure, bruit, lumière, quelqu'un");
 await answer('Bouger davantage dans la journée');
 await answer('Ne rien changer pour l’instant');
-w.document.querySelector('.game-next')?.click(); await wait(10);
-ok(/Voir tes réponses du/.test(w.$('game-inner').innerHTML), "après la restitution, un lien permet de consulter la série précédente");
+ok(/Voir tes réponses du/.test(w.$('game-inner').innerHTML), "sur la restitution, un lien permet de consulter la série précédente");
 w.document.querySelector('.game-prev-toggle')?.click(); await wait(10);
 // gamePreviousRun remonte la série complétée la plus récente AVANT celle qui vient d'être
 // jouée — pas forcément la toute première du test : ici, celle de la section 4 (branche

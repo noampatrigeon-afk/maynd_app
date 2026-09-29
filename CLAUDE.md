@@ -138,6 +138,10 @@ Si c'est un vrai bug, le corriger et ajouter une vérification qui l'aurait attr
 - Toucher à l'ordre des fichiers sans relancer les tests
 
 > **Contrainte d'environnement constatée le 21/07/2026 :** Node.js n'est pas installé sur cette machine de développement (introuvable dans `Program Files`, `AppData`, le registre Windows). `npm run build` et `npm test` ne peuvent donc pas être exécutés depuis l'environnement de l'assistant de code — le porteur du projet doit les lancer lui-même pour valider toute modification. En attendant, les changements sont répercutés à la main dans `dist/index.html` en parallèle de `src/`, ce qui est un pis-aller, pas le workflow prévu par ce document.
+>
+> **Précision du 29/09/2026 :** le site en ligne est construit par GitHub Actions (`.github/workflows/pages.yml` lance `npm run build`) à partir de `src/`. Le `dist/index.html` commité ne part donc pas en ligne. Seul `src/` fait foi. Pour tester en local sans Node, un équivalent PowerShell de `build.mjs` (concaténation dans l'ordre alphabétique, UTF-8 sans BOM) produit un fichier identique au site en ligne. La recopie à la main n'est plus nécessaire. Le `dist/index.html` reste versionné, parce qu'il permet d'ouvrir l'app sans Node (voir le README). Il faut simplement le régénérer après chaque modification de `src/`.
+>
+> **Tests sur GitHub (29/09/2026) :** `.github/workflows/tests.yml` lance `npm test` à chaque envoi sur `main`. Le résultat apparaît dans l'onglet Actions (workflow « Tests ») : bilan en clair dans le résumé, vérifications en échec en annotation. Ce contrôle ne bloque pas encore la mise en ligne. Il le deviendra une fois toutes les suites au vert.
 
 ## 5. Direction du projet
 
