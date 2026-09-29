@@ -1673,6 +1673,17 @@ button:active,.btn:active,.agx-open:active,.conv-item:active,.quest:active,.chal
 /* restitution : le second bloc, la comparaison, visuellement séparé du premier */
 .game-restit{flex-direction:column;justify-content:center;align-items:stretch}
 .game-restit .game-restit-cmp{margin-top:18px;padding-top:16px;border-top:1.5px dashed #C9B3F5;font-size:18px;color:var(--violet-deep,#6F2FC0)}
+/* ══════════ MASCULIN / FÉMININ — choix à l'inscription et dans le profil (30-genre.js) ══════════ */
+.gender-pick{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:6px auto 4px;max-width:340px}
+.gender-pick .gp{border:1.5px solid rgba(0,0,0,.12);background:rgba(255,255,255,.7);color:var(--ink);border-radius:99px;padding:9px 16px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:13.5px;cursor:pointer}
+.gender-pick .gp.on{background:#E8467F;border-color:#E8467F;color:#fff}
+#ob-firstname .gender-label{margin-top:14px}
+#profile-body .gender-pick{justify-content:flex-start;margin:4px 0 0;max-width:none}
+#profile-body .gender-pick .gp{background:var(--paper-2,#F6F1FF);border-color:transparent}
+#profile-body .gender-pick .gp.on{background:#974AF0;border-color:#974AF0;color:#fff}
+.gender-sub{font-size:13px;font-weight:600;margin:14px 0 6px}
+/* ══════════ JEU DE NORA — écran d'arrêt anticipé (31-jeu-nora-et-signaux.js) ══════════ */
+.game-stop-note{font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.5;color:var(--mist);margin:0 0 22px;max-width:320px}
 </style>
 </head>
 <body>
@@ -1715,7 +1726,7 @@ button:active,.btn:active,.agx-open:active,.conv-item:active,.quest:active,.chal
           <span data-i="reassure">Un espace à toi, confidentiel. Tes échanges restent sur cet appareil.</span>
         </div>
         <div class="slogan" id="slogan"></div>
-        <div class="build-tag" id="build-tag">Version 29/09 15:36</div>
+        <div class="build-tag" id="build-tag">Version 29/09 15:46</div>
       </div></div>
     </section>
 
@@ -10021,6 +10032,418 @@ GAMES.emotions = {
      attendue, jamais de vocabulaire de phase. La question 4 est restituée sans « ça n'a pas
      suffi » : ce qui a été fait face à une perte n'a pas à « suffire ». */
 };
+/* ══════════════════════════════════════════════════════════════════════════
+   MASCULIN / FÉMININ — décision du porteur du projet, 29/09/2026.
+
+   À l'inscription (écran du prénom) et dans le profil : « Homme · Femme · Je
+   préfère ne pas répondre ». state.gender vaut 'h', 'f' ou 'n' ; 'n' et
+   l'absence de réponse sont traités au masculin (choix explicite du porteur du
+   projet, maintenu après discussion). CLAUDE.md, section 2, a été mis à jour.
+
+   Trois couches :
+   1. Textes affichés : les contenus sont écrits au masculin ; accordFeminin()
+      les accorde au féminin selon des règles ciblées (chaque règle porte sur une
+      tournure précise, jamais sur un mot isolé : « c'est le plus dur », « du
+      temps seul », « tu t'es fixé un programme », « tu as senti que » ne
+      bougent pas). Appliquée automatiquement à tout texte ajouté à l'écran
+      (MutationObserver), SAUF le fil de discussion et les champs de saisie :
+      on ne réécrit jamais ce que la personne tape ni ce que l'IA répond.
+   2. L'IA : composeSystem() reçoit une consigne d'accord.
+   3. Les accompagnantes (MIA, Ava, Iris, Eden, Nora) : « Elle dort », « La
+      réveiller », « Ce qu'elle fait avec toi », quel que soit le genre de la
+      personne.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+function isFem(){ return state.gender==='f'; }
+function setGender(g){
+  state.gender = (g==='f'||g==='h') ? g : 'n';
+  persist();
+  try{ document.querySelectorAll('.gender-pick .gp').forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-g')===state.gender); }); }catch(e){}
+  /* textes déjà affichés : on relance les rendus des écrans ouverts */
+  try{ var sc=activeScreen(); if(sc && sc.indexOf('tab-')===0) showTab(sc.replace('tab-','')); }catch(e){}
+  try{ if(isFem()) accordNode(document.body); }catch(e){}
+}
+
+/* ─────────── 1. règles d'accord ─────────── */
+var FEM_RULES=[
+  /* participes après « tu t'es » (verbe pronominal, accord avec le sujet) — pas « fixé », suivi d'un complément */
+  [/(t['’]es(?:\s+(?:pas|jamais|vraiment|déjà|toujours))*\s+)(senti|réveillé|forcé|préparé|organisé|inscrit|informé|entraîné|dépensé|rempli|occupé)(?![\p{L}])/gu, '$1$2e'],
+  [/(réveillée(?:\s+vraiment)?\s+)reposé(?![\p{L}])/gu, '$1reposée'],
+  [/((?:te|me)\s+sens(?:\s+(?:pas|plus))?\s+|d['’]être\s+)prêt(?![\p{L}])/gu, '$1prête'],
+  [/((?:te|me)\s+sens(?:\s+(?:pas|plus))?\s+)(obligé|soutenu)(?![\p{L}])/gu, '$1$2e'],
+  [/((?:suis|es|sens|tout,)\s+)seul(?![\p{L}])/gu, '$1seule'],
+  [/(?<![\p{L}])Seul(\s+depuis)/gu, 'Seule$1'],
+  [/(même\s+)entouré(?![\p{L}])/gu, '$1entourée'],
+  [/((?:suis|es)\s+plus\s+)dur(?![\p{L}])/gu, '$1dure'],
+  [/((?:suis|es)\s+)(épuisé|fatigué|sorti)(?![\p{L}])/gu, '$1$2e'],
+  [/(journée\s+)satisfait(?![\p{L}])/gu, '$1satisfaite'],
+  [/(fois\s+)lancé(?![\p{L}])/gu, '$1lancée'],
+  [/(été\s+)fier(?![\p{L}])/gu, '$1fière'],
+  [/(?<![\p{L}])tel(\s+que\s+(?:je\s+suis|tu\s+es))/gu, 'telle$1'],
+  [/(?<![\p{L}])Séparé(?![\p{L}])/gu, 'Séparée'],
+  /* profils du questionnaire (« Le Moteur », « L'Ancre », « Le Pilier » sont des choses : inchangés) */
+  [/Le Relieur/g, 'La Relieuse'], [/Le Stratège/g, 'La Stratège'], [/Le Fédérateur/g, 'La Fédératrice'],
+  [/Le Bâtisseur/g, 'La Bâtisseuse'], [/Le Tacticien/g, 'La Tacticienne'], [/Le Médiateur/g, 'La Médiatrice'],
+  [/L['’]Observateur/g, 'L’Observatrice']
+];
+function accordFeminin(str){
+  if(typeof str!=='string' || !str) return str;
+  var out=str;
+  FEM_RULES.forEach(function(r){ out=out.replace(r[0], r[1]); });
+  return out;
+}
+/* zones jamais réécrites : fil de discussion, saisies, éditeur de consignes */
+function accordExcluded(el){
+  return !!(el && el.closest && el.closest('#messages, textarea, input, [contenteditable], script, style, .no-accord'));
+}
+function accordNode(root){
+  if(!isFem() || !root) return;
+  if(root.nodeType===3){
+    if(!accordExcluded(root.parentElement)){ var v=accordFeminin(root.nodeValue); if(v!==root.nodeValue) root.nodeValue=v; }
+    return;
+  }
+  if(root.nodeType!==1 || accordExcluded(root)) return;
+  var w=document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null), n, list=[];
+  while((n=w.nextNode())) list.push(n);
+  list.forEach(function(t){ if(!accordExcluded(t.parentElement)){ var v=accordFeminin(t.nodeValue); if(v!==t.nodeValue) t.nodeValue=v; } });
+}
+(function(){
+  try{
+    var mo=new MutationObserver(function(muts){
+      if(!isFem()) return;
+      muts.forEach(function(m){
+        if(m.type==='characterData') accordNode(m.target);
+        else m.addedNodes.forEach(function(x){ accordNode(x); });
+      });
+    });
+    mo.observe(document.documentElement, {childList:true, subtree:true, characterData:true});
+  }catch(e){}
+})();
+
+/* ─────────── inscription et profil : le choix ─────────── */
+function genderPickHTML(){
+  var g=state.gender||'';
+  return '<div class="gender-pick" role="group" aria-label="Tu es">'
+    +[['h','Homme'],['f','Femme'],['n','Je préfère ne pas répondre']].map(function(o){
+      return '<button type="button" class="gp'+(g===o[0]?' on':'')+'" data-g="'+o[0]+'" onclick="setGender(\''+o[0]+'\')">'+o[1]+'</button>';
+    }).join('')+'</div>';
+}
+(function(){
+  try{
+    var field=document.getElementById('ob-firstname-input');
+    var wrap=field && field.closest('.ob-field');
+    if(wrap) wrap.insertAdjacentHTML('afterend','<div class="yw-label gender-label">Tu es</div>'+genderPickHTML());
+  }catch(e){}
+})();
+(function(){
+  var base=renderProfile;
+  if(typeof base!=='function') return;
+  window.renderProfile=function(){
+    var r=base.apply(this, arguments);
+    try{
+      var inp=document.getElementById('prof-name'), blk=inp && inp.closest('.block');
+      if(blk && !blk.querySelector('.gender-pick')) blk.insertAdjacentHTML('beforeend','<div class="gender-sub">Tu es</div>'+genderPickHTML());
+    }catch(e){}
+    return r;
+  };
+})();
+
+/* ─────────── 2. l'IA ─────────── */
+(function(){
+  var base=composeSystem;
+  if(typeof base!=='function') return;
+  window.composeSystem=function(){
+    var s=base.apply(this, arguments);
+    try{
+      var line = isFem()
+        ? "Accord : la personne est une femme. Accorde au féminin tout ce qui la désigne (« tu es prête », « tu t'es sentie »)."
+        : "Accord : adresse-toi à la personne au masculin (« tu es prêt », « tu t'es senti »).";
+      if(typeof s==='string') s = s + SEP + line;
+    }catch(e){}
+    return s;
+  };
+})();
+
+/* ─────────── 3. les accompagnantes ─────────── */
+var AGENT_FEM=['mia','ava','iris','eden','nora'];
+function agentFem(id){ return AGENT_FEM.indexOf(id)>=0; }
+(function(){
+  var base=renderSleepFiche;
+  if(typeof base!=='function') return;
+  window.renderSleepFiche=function(id){
+    var r=base.apply(this, arguments);
+    try{
+      if(agentFem(id)){
+        var box=$('sleep-body');
+        var badge=box.querySelector('.sleep-badge'); if(badge) badge.textContent='Elle dort';
+        [].forEach.call(box.querySelectorAll('button'), function(b){ if(b.textContent==='Le réveiller') b.textContent='La réveiller'; });
+      }
+    }catch(e){}
+    return r;
+  };
+})();
+(function(){
+  var base=openAgentDeck;
+  if(typeof base!=='function') return;
+  window.openAgentDeck=function(){
+    var r=base.apply(this, arguments);
+    try{
+      AGENT_FEM.forEach(function(id){
+        var p=document.querySelector('#deck-track .deck-page[data-id="'+id+'"]'); if(!p) return;
+        [].forEach.call(p.querySelectorAll('.deck-sec'), function(s){ s.textContent=s.textContent.replace('Ce qu’il fait', 'Ce qu’elle fait'); });
+      });
+    }catch(e){}
+    return r;
+  };
+})();
+(function(){
+  var base=entRenderFiche;
+  if(typeof base!=='function') return;
+  window.entRenderFiche=function(){
+    var r=base.apply(this, arguments);
+    try{
+      if(agentFem(_entSelected)){
+        var box=$('ent-fiche');
+        [].forEach.call(box.querySelectorAll('span, button'), function(el){
+          if(el.childElementCount===0 && el.textContent==='Il dort') el.textContent='Elle dort';
+          if(el.textContent==='Le réveiller') el.textContent='La réveiller';
+        });
+      }
+    }catch(e){}
+    return r;
+  };
+})();
+/* légende du récapitulatif : valable pour tous, sans pronom */
+(function(){
+  try{ document.querySelectorAll('.recap-legend .rl-item').forEach(function(el){ if(/Il dort/.test(el.textContent)) el.lastChild.nodeValue='Endormi'; }); }catch(e){}
+})();
+/* ══════════════════════════════════════════════════════════════════════════
+   JEU DE NORA + SIGNAUX AU PROFESSIONNEL — 29/09/2026.
+
+   Le dossier demandait une relecture par le professionnel du mental avant mise
+   en service. Le porteur du projet a levé cette condition (« pour le pro du
+   mental oublie, fais au mieux ») : les choix ci-dessous sont les miens,
+   volontairement prudents, et restent à faire relire dès que possible.
+
+   NORA
+   - Observation et substitution uniquement : aucune option de réduction, de
+     privation, de contrôle ou d'objectif ; aucun chiffre ; aucune option sur ce
+     que la personne mange ; jamais Neo en sortie.
+   - Question 2 : variante « manger » si la question préalable parle
+     d'alimentation (« mon rapport à ce que je mange », « les deux à la fois »).
+   - « Rien de particulier » : une seule question, « est-ce que ça a déjà été le
+     cas » ; « non, jamais » et « c'est derrière moi » ferment aussitôt (moteur du
+     lot 0 : q0b / close / skipToIrregular).
+   - ARRÊT ANTICIPÉ (règle choisie ici, le dossier ne donnait que des familles de
+     signaux sans réponse correspondante) : « un rapport au corps qui pèse
+     fortement et durablement ». Durablement = question 1 « il y a plusieurs
+     années » ou « jamais vraiment ». Fortement = question 2 « ça prend beaucoup de
+     place dans ma tête », « j'y pense souvent dans la journée », « je m'évite, je
+     ne me regarde pas » ou « je mange beaucoup dans certains moments ». Les deux
+     ensemble arrêtent le jeu juste après la question 2 (après la question 1 sur
+     la reprise « ça revient par périodes », où la question 2 n'est pas posée),
+     avec une phrase calme et une orientation humaine. Aucun mot clinique, aucune
+     alerte.
+
+   SIGNAUX (un des quatre du plan d'affaires : « blocage », intervention rapide)
+   - Nora : un arrêt anticipé dans les 30 derniers jours.
+   - Neo : une combinaison « c'est tous les jours » ou « j'ai du mal à m'arrêter »
+     avec « il y a plus d'un an » ou « je ne sais plus » à la question 1, dans les
+     30 derniers jours.
+   - Mateo (« trop de charge ») et Iris (« plus personne à appeler ») : réponse
+     répétée sur au moins deux passages terminés. Ils quittent donc les points
+     d'attention de 28-jeux-lot-0.js, où seul Miro reste.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+var NORA_FOOD_Q0=['Mon rapport à ce que je mange','Les deux premiers à la fois'];
+var NORA_DURABLE=['Il y a plusieurs années','Jamais vraiment'];
+var NORA_FORT=['Ça prend beaucoup de place dans ma tête',"J'y pense souvent dans la journée",'Je m’évite, je ne me regarde pas','Je mange beaucoup dans certains moments'];
+
+GAMES.corps = {
+  agent:'nora',
+  label:'Ton rapport au corps',
+  accroche:'Cinq questions. Aucun conseil, aucun jugement, et tu peux t’arrêter quand tu veux.',
+  reflectionMs:20000,
+  q0:{
+    title:'Ce dont tu veux parler.',
+    options:[
+      {label:'Comment je me sens dans mon corps', restit:'Tu veux parler de comment tu te sens dans ton corps.'},
+      {label:'Mon rapport à ce que je mange', restit:'Tu veux parler de ton rapport à ce que tu manges.'},
+      {label:'Le regard que je porte sur moi', restit:'Tu veux parler du regard que tu portes sur toi.'},
+      {label:'Les deux premiers à la fois', restit:'Tu veux parler de ton corps et de ce que tu manges.'}
+    ],
+    dropout:{label:'Rien de particulier en ce moment', sub:true}
+  },
+  q0b:{
+    title:'Est-ce que ça a déjà été le cas.',
+    options:[
+      {label:'Non, jamais', close:true},
+      {label:"Oui, et c'est derrière moi", close:true},
+      {label:'Oui, et ça revient par périodes', skipToIrregular:true, restit:'Ça revient par périodes.'}
+    ]
+  },
+  q1:{
+    title:"La dernière fois que tu t'es senti bien dans ton corps.",
+    options:[
+      {label:'Ces jours-ci', restit:"Ces jours-ci, tu t'es senti bien dans ton corps."},
+      {label:'Ce mois-ci', restit:"La dernière fois que tu t'es senti bien dans ton corps, c'était ce mois-ci."},
+      {label:'Cette année', restit:"La dernière fois que tu t'es senti bien dans ton corps, c'était cette année."},
+      {label:'Il y a plusieurs années', restit:"La dernière fois que tu t'es senti bien dans ton corps, c'était il y a plusieurs années."},
+      {label:'Jamais vraiment', restit:"Tu ne t'es jamais vraiment senti bien dans ton corps."}
+    ],
+    dropout:{label:'Je ne sais plus', restit:"Tu ne sais plus quand tu t'es senti bien dans ton corps."}
+  },
+  q2:{
+    title:'En ce moment, comment ça se passe.',
+    options:[
+      {label:'Ça me va', branch:'short'},
+      {label:"J'y pense souvent dans la journée", branch:'normal', restit:"Tu y penses souvent dans la journée."},
+      {label:'Je m’évite, je ne me regarde pas', branch:'normal', restit:'Tu t’évites, tu ne te regardes pas.'},
+      {label:'Ça dépend beaucoup du regard des autres', branch:'normal', restit:'Ça dépend beaucoup du regard des autres.'},
+      {label:'Ça prend beaucoup de place dans ma tête', branch:'normal', restit:'Ça prend beaucoup de place dans ta tête.'}
+    ],
+    dropout:{label:'Ça dépend des périodes', branch:'irregular', restit:'Ça dépend des périodes.'}
+  },
+  /* variante « manger » (voir gameQuestionDefForKey plus bas) */
+  q2Food:{
+    title:'En ce moment, manger.',
+    options:[
+      {label:'Ça se passe bien', branch:'short'},
+      {label:"Ça m'arrive de manger sans faim", branch:'normal', restit:"Ça t'arrive de manger sans faim."},
+      {label:'Je mange beaucoup dans certains moments', branch:'normal', restit:'Tu manges beaucoup dans certains moments.'},
+      {label:"J'y pense souvent dans la journée", branch:'normal', restit:"Tu y penses souvent dans la journée."}
+    ],
+    dropout:{label:'Ça dépend des périodes', branch:'irregular', restit:'Ça dépend des périodes.'}
+  },
+  q3:{
+    title:'Ce qui joue le plus.',
+    titleIrregular:'Ce qui fait la différence entre une période où ça va et une période où ça pèse.',
+    options:[
+      {label:'Le stress', exit:'sol', restit:"Ce qui joue le plus, c'est le stress."},
+      {label:"Les moments vides, l'ennui", exit:'atlas', second:'iris', restit:"Ce qui joue le plus, ce sont les moments vides, l'ennui."},
+      {label:'Les autres, les comparaisons', exit:'felix', restit:'Ce qui joue le plus, ce sont les autres, les comparaisons.'},
+      {label:'Des moments précis de la journée', exit:'naoki', restit:'Ce qui joue le plus, ce sont des moments précis de la journée.'}
+    ],
+    dropout:{label:'Je ne sais pas', exit:'nora', restit:'Tu ne saurais pas dire ce qui joue le plus.'}
+  },
+  q4:{
+    title:'Ce que tu as déjà essayé.',
+    options:[
+      {label:"En parler à quelqu'un", restit:"Tu en as parlé à quelqu'un."},
+      {label:'Changer quelque chose dans mes journées', restit:'Tu as changé quelque chose dans tes journées.'},
+      {label:"Éviter d'y penser", restit:"Tu as essayé d'éviter d'y penser."},
+      {label:'Un accompagnement', restit:'Tu as essayé un accompagnement.'}
+    ],
+    dropout:{label:'Rien de particulier', restit:"Tu n'as rien essayé de particulier."}
+  },
+  q5:{
+    title:'Cette semaine, tu te sens capable de.',
+    options:[
+      {label:'Repérer les moments où ça arrive', restit:'Tu te sens capable de repérer les moments où ça arrive.'},
+      {label:'Faire autre chose à ces moments-là', restit:'Tu te sens capable de faire autre chose à ces moments-là.'},
+      {label:"En parler à quelqu'un", restit:"Tu te sens capable d'en parler à quelqu'un."}
+    ],
+    dropout:{label:'Je ne sais pas par où commencer', restit:'Tu ne sais pas par où commencer.'}
+  },
+  short:{
+    q1:{
+      title:'Depuis quand ça te va.',
+      options:[
+        {label:'Depuis toujours', restit:'Ça te va depuis toujours.'},
+        {label:'Depuis quelques mois', restit:'Ça te va depuis quelques mois.'},
+        {label:"Depuis que j'ai changé quelque chose", restit:'Ça va mieux depuis que tu as changé quelque chose.'},
+        {label:'Ça va, sans être stable', restit:'Ça va, sans être stable.'}
+      ]
+    },
+    q2:{
+      title:'Ce qui fait que ça tient.',
+      options:[
+        {label:'Je me laisse tranquille', restit:'Ce qui tient, c’est que tu te laisses tranquille.'},
+        {label:'Je me compare moins', restit:'Ce qui tient, c’est que tu te compares moins.'},
+        {label:"J'ai d'autres choses en tête", restit:'Ce qui tient, c’est que tu as d’autres choses en tête.'}
+      ],
+      dropout:{label:'Je ne sais pas', restit:'Tu ne saurais pas dire ce qui fait que ça tient.'}
+    }
+  }
+};
+
+/* ─────────── Nora : variante « manger » de la question 2 ─────────── */
+(function(){
+  var base=gameQuestionDefForKey;
+  if(typeof base!=='function') return;
+  window.gameQuestionDefForKey=function(g, key, branch){
+    if(g===GAMES.corps && key==='q2' && _game && _game.theme==='corps' && _game.answers.q0 && NORA_FOOD_Q0.indexOf(_game.answers.q0.label)>=0) return g.q2Food;
+    return base.apply(this, arguments);
+  };
+})();
+
+/* ─────────── Nora : arrêt anticipé ─────────── */
+function noraShouldStop(){
+  if(!_game || _game.theme!=='corps') return false;
+  var a=_game.answers;
+  var durable = a.q1 && NORA_DURABLE.indexOf(a.q1.label)>=0;
+  if(!durable) return false;
+  if(_game.skipQ2) return true;                       /* « ça revient par périodes » + durable */
+  return !!(a.q2 && NORA_FORT.indexOf(a.q2.label)>=0);
+}
+function noraRenderStop(){
+  var paid=state.tier!=='free';
+  $('game-inner').innerHTML='<div class="game-top"><span></span><button class="game-exit" onclick="gameClose()">Sortir</button></div>'
+    +'<div class="game-sortie">'
+    +'<p class="game-sortie-txt">Merci d’avoir répondu. On s’arrête là pour ce jeu&nbsp;: ce que tu décris mérite mieux que des questions à choix.</p>'
+    +'<p class="game-stop-note">En parler à quelqu’un peut aider, à ton rythme.'+(paid?' Ton professionnel référent peut te lire, sans rendez-vous.':' Une personne de confiance, ou un professionnel de santé, peut t’écouter.')+'</p>'
+    +(paid?'<button class="btn full" onclick="gameClose(); closeRecap(); closeEntourage(); openPro();">Écrire à mon professionnel référent</button>':'')
+    +'<button class="btn '+(paid?'ghost ':'')+'full" style="margin-top:9px" onclick="gameClose(); startWithAgent(\'nora\');">Parler à Nora</button>'
+    +'</div>';
+}
+(function(){
+  var base=gameAdvance;
+  if(typeof base!=='function') return;
+  window.gameAdvance=function(fromStep){
+    if(_game && _game.theme==='corps' && (fromStep==='q2' || (fromStep==='q1' && _game.skipQ2)) && noraShouldStop()){
+      clearTimeout(_gameRevealTimer);
+      var runs;
+      gamePersistRun('corps', _game.branch, gameAnswersForStorage(), null, false);
+      runs=(state.gameRuns||{}).corps||[]; if(runs.length){ runs[runs.length-1].stopped=true; persist(); }
+      if(typeof isUnlocked!=='function' || isUnlocked('nora')) wakeAgent('nora');
+      _game.step='stopped';
+      noraRenderStop();
+      return;
+    }
+    return base.apply(this, arguments);
+  };
+})();
+
+/* ─────────── signaux au professionnel ─────────── */
+var SIGNAL_DAYS=30;
+function recentRuns(theme){
+  var lim=Date.now()-SIGNAL_DAYS*86400000;
+  return ((state.gameRuns||{})[theme]||[]).filter(function(r){ return r.at>=lim; });
+}
+function gameSignals(){
+  var out=[], runs=state.gameRuns||{};
+  if(recentRuns('corps').some(function(r){ return r.stopped; }))
+    out.push({k:'blocage', d:'Le jeu de Nora s’est arrêté avant la fin et a orienté vers un accompagnement humain.', w:'Intervention rapide, hors cycle mensuel'});
+  if(recentRuns('habitudes').some(function(r){ var a=r.answers||{}; return r.completed && ["C'est tous les jours","J'ai du mal à m'arrêter une fois lancé"].indexOf(a.q2)>=0 && ["Il y a plus d'un an",'Je ne sais plus'].indexOf(a.q1)>=0; }))
+    out.push({k:'blocage', d:'Jeu de Neo : ce qui prend de la place est présent chaque jour, ou difficile à arrêter, depuis longtemps.', w:'Intervention rapide, hors cycle mensuel'});
+  var rep=function(theme, q2){ return (runs[theme]||[]).filter(function(r){ return r.completed && r.answers && r.answers.q2===q2; }).length; };
+  var n=rep('travail','Trop de charge, je ne tiens plus le rythme');
+  if(n>=2) out.push({k:'blocage', d:'Jeu de Mateo : « trop de charge, je ne tiens plus le rythme », '+n+' passages.', w:'Intervention rapide, hors cycle mensuel'});
+  n=rep('lien',"Je n'ai plus personne à appeler");
+  if(n>=2) out.push({k:'blocage', d:'Jeu d’Iris : « je n’ai plus personne à appeler », '+n+' passages.', w:'Intervention rapide, hors cycle mensuel'});
+  return out;
+}
+(function(){
+  var base=proSignals;
+  if(typeof base!=='function') return;
+  window.proSignals=function(){
+    var s=base.apply(this, arguments)||[];
+    try{ s=s.concat(gameSignals()); }catch(e){}
+    return s;
+  };
+})();
+/* Mateo et Iris deviennent des signaux : ils quittent les points d'attention (seul Miro y reste) */
+try{ ATTENTION_RULES=ATTENTION_RULES.filter(function(r){ return r.theme==='sommeil'; }); }catch(e){}
 </script>
 </body>
 </html>

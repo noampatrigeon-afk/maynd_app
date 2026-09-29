@@ -80,16 +80,18 @@ ok(await miro("Ce qui m'entoure, bruit, lumière, quelqu'un")==='leo','ce qui m\
 w.eval("state.gameRuns.relation=[{at:1,completed:true,answers:{q0:'Séparé récemment'}}]");
 ok(await miro("Ce qui m'entoure, bruit, lumière, quelqu'un")==='miro','sinon reste chez Miro');
 
-console.log('\n=== 5. POINTS D\'ATTENTION POUR LE PROFESSIONNEL ===');
-w.eval("state.gameRuns.travail=[{at:1,completed:true,answers:{q2:'Trop de charge, je ne tiens plus le rythme'}}]");
+console.log('\n=== 5. POINTS D\'ATTENTION POUR LE PROFESSIONNEL (MIRO) ===');
+const nuitsLourdes="{at:1,completed:true,answers:{q1:'Je ne sais plus',q2:'Je dors, mais ça ne repose pas'}}";
+w.eval("state.gameRuns={sommeil:["+nuitsLourdes+"]}");
 ok(w.eval("attentionPoints().length")===0,'une seule fois : rien');
-w.eval("state.gameRuns.travail.push({at:2,completed:true,answers:{q2:'Trop de charge, je ne tiens plus le rythme'}})");
+w.eval("state.gameRuns.sommeil.push("+nuitsLourdes+")");
 ok(w.eval("attentionPoints().length")===1,'répété dans le temps : point d\'attention');
 w.eval("openProDashboard()"); await wait(10);
 ok(/Points d.attention/.test(w.$('pd-body').textContent),'visible dans l\'espace du professionnel');
 w.eval("closeProDashboard()");
 ok(!/attention/i.test(w.$('obj-pad').innerHTML),'rien d\'affiché à la personne');
-
+// Mateo et Iris sont devenus des signaux de blocage (31-jeu-nora-et-signaux.js), plus des points d'attention
+ok(w.eval("ATTENTION_RULES.map(function(r){return r.theme}).join()")==='sommeil','seul Miro reste en point d\'attention');
 ok(w.__errs.length===0,'aucune erreur runtime'+(w.__errs.length?' : '+w.__errs.slice(0,3).join(' | '):''));
 console.log(`\n${pass} réussis, ${fail} échoués`);
 process.exit(fail?1:0);

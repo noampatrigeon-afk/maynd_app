@@ -117,7 +117,7 @@ fond en quittant les deux écrans concernés).
 | `obEnterSkipQuiz` | 1 | 0 | 16-palette-finale.js | 16-palette-finale.js |
 | `objqAfter` | 2 | 1 | 16-palette-finale.js (enveloppe) | 05-objectifs-refonte.js, 09-couleur-questionnaires.js |
 | `objqClose` | 2 | 0 | 09-couleur-questionnaires.js | 05-objectifs-refonte.js |
-| `openAgentDeck` | 1 | 3 | 25-fiches-compactes.js (enveloppe) | 15-presentation-accompagnants.js |
+| `openAgentDeck` | 1 | 4 | 30-genre.js (enveloppe : accompagnantes au féminin) | 15-presentation-accompagnants.js |
 | `openChat` | 1 | 1 | 11-palette-enregistree.js (enveloppe) | 00-noyau.js |
 | `openFocusSheet` | 2 | 0 | 02-favoris-et-focus.js | 00-noyau.js |
 | `openFormules` | 2 | 0 | 00-noyau.js | 00-noyau.js |
@@ -131,7 +131,7 @@ fond en quittant les deux écrans concernés).
 | `sameMonth` | 1 | 0 | 16-palette-finale.js | 16-palette-finale.js |
 | `countHits` | 1 | 0 | 16-palette-finale.js | 16-palette-finale.js |
 | `paintChat` | 2 | 0 | 13-teintes-calculees.js | 11-palette-enregistree.js |
-| `proSignals` | 2 | 1 | 27-jeu-mia.js (enveloppe : stagnation du point de mesure) | 07-supervision.js |
+| `proSignals` | 2 | 2 | 31-jeu-nora-et-signaux.js (enveloppe : signaux des jeux) | 07-supervision.js |
 | `qTheme` | 2 | 0 | 10-couleurs-pleines.js | 10-couleurs-pleines.js |
 | `recentUserText` | 1 | 0 | 16-palette-finale.js | 16-palette-finale.js |
 | `qzFinish` | 1 | 2 | 16-palette-finale.js (enveloppe) | 00-noyau.js |
@@ -155,7 +155,7 @@ fond en quittant les deux écrans concernés).
 | `draftBilanText` | 1 | 0 | 16-palette-finale.js | 16-palette-finale.js |
 | `signBilan` | 1 | 0 | 16-palette-finale.js | 16-palette-finale.js |
 | `renderProDashboard` | 1 | 0 | 16-palette-finale.js | 16-palette-finale.js |
-| `composeSystem` | 2 | 2 | 17-refonte-intelligence.js (enveloppe) | 00-noyau.js, 16-palette-finale.js, 17-refonte-intelligence.js |
+| `composeSystem` | 2 | 3 | 30-genre.js (enveloppe : consigne d'accord) | 00-noyau.js, 16-palette-finale.js, 17-refonte-intelligence.js |
 | `openDeepSheet` | 1 | 0 | 16-palette-finale.js | 16-palette-finale.js |
 | `renderDeepStep` | 1 | 0 | 16-palette-finale.js | 16-palette-finale.js |
 | `deepNext` | 1 | 0 | 16-palette-finale.js | 16-palette-finale.js |
@@ -171,7 +171,7 @@ fond en quittant les deux écrans concernés).
 | `gameRenderRestitution` | 2 | 2 | 28-jeux-lot-0.js (enveloppe) | 18-moteur-des-jeux.js, 22-retours-du-29-09.js |
 | `gameRenderSortie` | 2 | 2 | 27-jeu-mia.js (enveloppe : « revoir mon objectif ») | 18-moteur-des-jeux.js, 22-retours-du-29-09.js |
 | `deckFav` | 2 | 1 | 25-fiches-compactes.js (enveloppe de la déclaration de 22) | 15-presentation-accompagnants.js |
-| `renderSleepFiche` | 2 | 0 | 22-retours-du-29-09.js | 21-fiche-recapitulatif.js |
+| `renderSleepFiche` | 2 | 1 | 30-genre.js (enveloppe de la déclaration de 22) | 21-fiche-recapitulatif.js, 22-retours-du-29-09.js |
 | `renderGamesSectionHTML` | 2 | 0 | 22-retours-du-29-09.js (renvoie une chaîne vide) | 18-moteur-des-jeux.js |
 | `entTap` | 1 | 1 | 22-retours-du-29-09.js (enveloppe) | 19-carte-entourage.js |
 | `closeRecap` | 1 | 1 | 22-retours-du-29-09.js (enveloppe : désarme « Endormir tout le monde ») | 21-fiche-recapitulatif.js |
@@ -185,7 +185,9 @@ fond en quittant les deux écrans concernés).
 | `gamePick` | 1 | 3 | 28-jeux-lot-0.js (enveloppe : q0b, sorties de Miro selon le contexte) | 18-moteur-des-jeux.js |
 | `deckAddSecond` | 1 | 1 | 25-fiches-compactes.js (enveloppe) | 22-retours-du-29-09.js |
 | `closeDeck` | 1 | 1 | 25-fiches-compactes.js (enveloppe) | 15-presentation-accompagnants.js |
-| `gameQuestionDefForKey` | 1 | 2 | 28-jeux-lot-0.js (enveloppe : mot choisi dans le jeu de Neo) | 18-moteur-des-jeux.js |
-| `gameAdvance` | 1 | 1 | 27-jeu-mia.js (enveloppe : terrain et comparaison) | 18-moteur-des-jeux.js |
+| `gameQuestionDefForKey` | 1 | 3 | 31-jeu-nora-et-signaux.js (enveloppe : question 2 « manger ») | 18-moteur-des-jeux.js |
+| `gameAdvance` | 1 | 2 | 31-jeu-nora-et-signaux.js (enveloppe : arrêt anticipé) | 18-moteur-des-jeux.js |
 | `draftBilanText` | 1 | 1 | 27-jeu-mia.js (enveloppe) | 16-palette-finale.js |
 | `renderProDashboard` | 1 | 2 | 28-jeux-lot-0.js (enveloppe : points d'attention) | 16-palette-finale.js |
+| `renderProfile` | 1 | 1 | 30-genre.js (enveloppe : choix du genre) | 00-noyau.js |
+| `entRenderFiche` | 1 | 1 | 30-genre.js (enveloppe) | 19-carte-entourage.js |

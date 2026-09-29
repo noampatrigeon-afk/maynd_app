@@ -26,7 +26,8 @@ Elles ne se discutent pas. Une seule violation suffit à casser le positionnemen
 
 **Écriture**
 - Zéro mot anglais. Toujours traduire.
-- Zéro langage genré, zéro formulation qui vise un seul genre, zéro statistique genrée.
+- Zéro statistique genrée, zéro cliché de genre.
+- **Accord au genre de la personne (décision du 29/09/2026, remplace l'ancienne règle « zéro langage genré ») :** à l'inscription, « Homme · Femme · Je préfère ne pas répondre » (`state.gender`, modifiable dans le profil). « Je préfère ne pas répondre » est traité au masculin, par choix explicite du porteur du projet. Les contenus s'écrivent au masculin ; `accordFeminin()` (`30-genre.js`) les accorde à l'affichage par règles ciblées sur des tournures précises. Toute nouvelle tournure accordée doit y recevoir sa règle. On ne réécrit jamais le fil de discussion. L'IA reçoit la consigne d'accord. Les accompagnantes (MIA, Ava, Iris, Eden, Nora) sont au féminin : « Elle dort », « Ce qu'elle fait avec toi ».
 - Phrases courtes. Direct. Pas de « voici », pas de « permettez-moi », pas de méta-commentaire.
 - Chiffres précis, jamais de fourchettes vagues.
 - Accents partout, y compris sur les majuscules.
@@ -41,7 +42,7 @@ Elles ne se discutent pas. Une seule violation suffit à casser le positionnemen
 | Ava | Aucune étape imposée au deuil, jamais de « cinq étapes » |
 | Soren | Dit « l'autre parent », jamais « le père » ni « la mère » |
 | Leo | Ne se prononce jamais sur le partenaire absent |
-| Nora | Aucun conseil alimentaire, aucun chiffre, aucun jugement sur un corps ; oriente sans dramatiser au signal d'un trouble du comportement alimentaire |
+| Nora | Aucun conseil alimentaire, aucun chiffre, aucun jugement sur un corps ; oriente sans dramatiser au signal d'un trouble du comportement alimentaire. Son jeu (`31-jeu-nora-et-signaux.js`) ne propose qu'observation et substitution, jamais Neo ; il s'arrête avant la fin quand le mal-être est à la fois fort et durable. Règles choisies le 29/09 sans relecture professionnelle, à faire relire. |
 
 Tous partagent le protocole de crise : 3114, SOS Amitié, SAMU.
 

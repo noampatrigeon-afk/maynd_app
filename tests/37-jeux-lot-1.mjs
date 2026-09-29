@@ -31,7 +31,7 @@ async function play(theme, labels){
 }
 
 console.log('\n=== 1. TOUS LES ACCOMPAGNANTS ONT LEUR JEU, SAUF NORA ===');
-ok(w.eval("ALL.map(function(a){return a.id}).filter(function(id){return !gameForAgent(id)}).join()")==='nora','seule Nora attend encore son jeu (relecture par le professionnel)');
+ok(w.eval("ALL.map(function(a){return a.id}).filter(function(id){return !gameForAgent(id)}).length")===0,'tous les accompagnants ont leur jeu (Nora depuis le 29/09)');
 
 console.log('\n=== 2. SOL : AUCUN CHRONO ===');
 w.eval("state.awakeAgents=[]"); w.openGame('anxiete'); await wait(10);

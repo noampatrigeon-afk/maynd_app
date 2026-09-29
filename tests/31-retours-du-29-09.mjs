@@ -37,6 +37,8 @@ w.eval("closeDrawer()");
 console.log('\n=== 2. RÉCAPITULATIF : RÉVEILLER MÈNE À LA DISCUSSION ===');
 w.eval("state.awakeAgents=[]"); w.openRecap(); await wait(10);
 // un accompagnant sans jeu, choisi à l'exécution : la liste change à chaque nouveau lot de jeux
+// depuis le 29/09, tous les accompagnants ont un jeu : on en retire un le temps du test
+w.eval("delete GAMES.corps");
 const sansJeu=w.eval("ALL.map(function(a){return a.id}).filter(function(id){return id!=='mia' && !gameForAgent(id)})");
 const A=sansJeu[0]; // depuis le lot 1, il ne reste qu'un accompagnant sans jeu (Nora) : la section 4 le rendort et le réutilise
 w.entTap(A); await wait(10);
