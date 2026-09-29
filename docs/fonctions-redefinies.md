@@ -166,9 +166,9 @@ fond en quittant les deux écrans concernés).
 | `renameObjective` | 1 | 0 | 16-palette-finale.js | 16-palette-finale.js |
 | `toggleFav` | 2 | 0 | 13-teintes-calculees.js | 02-favoris-et-focus.js |
 | `togglePart` | 1 | 1 | 11-palette-enregistree.js (enveloppe) | 00-noyau.js |
-| `gameRenderQuestion` | 2 | 1 | 24-jeux-lot-2.js (enveloppe : libellé de la question préalable) | 18-moteur-des-jeux.js, 20-ecrans-jeu-refonte.js |
+| `gameRenderQuestion` | 2 | 2 | 28-jeux-lot-0.js (enveloppe : libellé de q0b) | 18-moteur-des-jeux.js, 20-ecrans-jeu-refonte.js |
 | `gameShowOptions` | 1 | 1 | 20-ecrans-jeu-refonte.js (enveloppe) | 18-moteur-des-jeux.js |
-| `gameRenderRestitution` | 2 | 1 | 20-ecrans-jeu-refonte.js (enveloppe de la déclaration de 22) | 18-moteur-des-jeux.js, 22-retours-du-29-09.js |
+| `gameRenderRestitution` | 2 | 2 | 28-jeux-lot-0.js (enveloppe) | 18-moteur-des-jeux.js, 22-retours-du-29-09.js |
 | `gameRenderSortie` | 2 | 2 | 27-jeu-mia.js (enveloppe : « revoir mon objectif ») | 18-moteur-des-jeux.js, 22-retours-du-29-09.js |
 | `deckFav` | 2 | 1 | 25-fiches-compactes.js (enveloppe de la déclaration de 22) | 15-presentation-accompagnants.js |
 | `renderSleepFiche` | 2 | 0 | 22-retours-du-29-09.js | 21-fiche-recapitulatif.js |
@@ -180,12 +180,12 @@ fond en quittant les deux écrans concernés).
 | `openMoodScreen` | 1 | 1 | 23-suivi-quotidien.js (enveloppe) | 00-noyau.js |
 | `setWheel` | 1 | 1 | 23-suivi-quotidien.js (enveloppe : relevé du jour) | 00-noyau.js |
 | `objSheetDone` | 1 | 1 | 23-suivi-quotidien.js (enveloppe) | 00-noyau.js |
-| `gameOrder` | 2 | 0 | 24-jeux-lot-2.js (question préalable q0) | 18-moteur-des-jeux.js |
+| `gameOrder` | 3 | 0 | 28-jeux-lot-0.js (q0, q0b, reprise sans question 2) | 18-moteur-des-jeux.js, 24-jeux-lot-2.js |
 | `openGame` | 1 | 1 | 24-jeux-lot-2.js (enveloppe : démarre sur q0) | 18-moteur-des-jeux.js |
-| `gamePick` | 1 | 2 | 27-jeu-mia.js (enveloppe : « mes relations ») | 18-moteur-des-jeux.js |
+| `gamePick` | 1 | 3 | 28-jeux-lot-0.js (enveloppe : q0b, sorties de Miro selon le contexte) | 18-moteur-des-jeux.js |
 | `deckAddSecond` | 1 | 1 | 25-fiches-compactes.js (enveloppe) | 22-retours-du-29-09.js |
 | `closeDeck` | 1 | 1 | 25-fiches-compactes.js (enveloppe) | 15-presentation-accompagnants.js |
-| `gameQuestionDefForKey` | 1 | 1 | 27-jeu-mia.js (enveloppe : question 4 du premier passage) | 18-moteur-des-jeux.js |
+| `gameQuestionDefForKey` | 1 | 2 | 28-jeux-lot-0.js (enveloppe : mot choisi dans le jeu de Neo) | 18-moteur-des-jeux.js |
 | `gameAdvance` | 1 | 1 | 27-jeu-mia.js (enveloppe : terrain et comparaison) | 18-moteur-des-jeux.js |
 | `draftBilanText` | 1 | 1 | 27-jeu-mia.js (enveloppe) | 16-palette-finale.js |
-| `renderProDashboard` | 1 | 1 | 27-jeu-mia.js (enveloppe) | 16-palette-finale.js |
+| `renderProDashboard` | 1 | 2 | 28-jeux-lot-0.js (enveloppe : points d'attention) | 16-palette-finale.js |

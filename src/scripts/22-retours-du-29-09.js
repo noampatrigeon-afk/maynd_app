@@ -161,27 +161,33 @@ function gameRenderSortie(){
   var g=GAMES[_game.theme];
   var exitId = _game.branch==='short' ? null : (_game.answers.q3 ? _game.answers.q3.exit : null);
   var target = (exitId && byId(exitId)) ? exitId : g.agent;
-  /* second accompagnant proposé (lots 2 et 3) : porté par la réponse préalable (Leo), par
-     la question 2 (Vince) ou par la sortie de question 3 (Kael, Eden) — le premier trouvé */
-  var second=null;
-  ['q0','q2','q3'].forEach(function(k){ var a=_game.answers[k]; if(!second && a && a.second && !(k==='q3' && _game.branch==='short')) second=a.second; });
-  if(second===target || !byId(second)) second=null;
+  /* accompagnants proposés en plus (lots 0 à 3) : portés par la réponse préalable (Leo), la
+     question 2 (Vince) ou la sortie de question 3 (Kael, Eden, Neo), une chaîne ou une liste ;
+     plus `alsoAlways` au niveau du jeu (Neo : « reste proposé en second dans tous les cas »). */
+  var seconds=[];
+  function addS(v){ [].concat(v||[]).forEach(function(id){ if(id && id!==target && byId(id) && seconds.indexOf(id)<0) seconds.push(id); }); }
+  ['q0','q2','q3'].forEach(function(k){ var a=_game.answers[k]; if(a && a.second && !(k==='q3' && _game.branch==='short')) addS(a.second); });
+  addS(g.alsoAlways);
+  seconds=seconds.slice(0,2);
   var theme=_game.theme;
   if(typeof isUnlocked!=='function' || isUnlocked(g.agent)) wakeAgent(g.agent);
-  if(second){ var runs=(state.gameRuns||{})[theme]||[]; if(runs.length){ runs[runs.length-1].exitAgent2=second; persist(); } }
+  if(seconds.length){ var runs=(state.gameRuns||{})[theme]||[]; if(runs.length){ runs[runs.length-1].exitAgent2=seconds[0]; if(seconds[1]) runs[runs.length-1].exitAgent3=seconds[1]; persist(); } }
   gameClose();
   if(recapOpen()) entRenderRecap();
   openAgentDeck(target);
-  if(second) deckAddSecond(target, second);
+  if(seconds.length) deckAddSecond(target, seconds);
 }
-/* Sur la fiche de l'accompagnant proposé, une pastille qui mène au second. */
-function deckAddSecond(target, second){
+/* Sur la fiche de l'accompagnant proposé, une pastille par accompagnant proposé en plus. */
+function deckAddSecond(target, seconds){
   var page=document.querySelector('#deck-track .deck-page[data-id="'+target+'"]'); if(!page) return;
   var tag=page.querySelector('.deck-tag'); if(!tag) return;
-  var b=byId(second);
-  tag.insertAdjacentHTML('afterend','<button class="deck-also" onclick="deckGo(DECK_IDS.indexOf(\''+second+'\'))">'
-    +'<span class="deck-also-ava" style="background:'+b.color+'">'+b.name[0]+'</span>'
-    +'<span>'+escapeHtml(b.name)+' peut aussi t’accompagner là-dessus</span></button>');
+  var h=[].concat(seconds).filter(function(id){ return byId(id); }).map(function(id){
+    var b=byId(id);
+    return '<button class="deck-also" onclick="deckGo(DECK_IDS.indexOf(\''+id+'\'))">'
+      +'<span class="deck-also-ava" style="background:'+b.color+'">'+b.name[0]+'</span>'
+      +'<span>'+escapeHtml(b.name)+' peut aussi t’accompagner là-dessus</span></button>';
+  }).join('');
+  tag.insertAdjacentHTML('afterend', h);
 }
 
 /* ─────────── 5. toute conversation qui démarre ferme récapitulatif et carte ─────────── */
