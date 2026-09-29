@@ -1726,7 +1726,7 @@ button:active,.btn:active,.agx-open:active,.conv-item:active,.quest:active,.chal
           <span data-i="reassure">Un espace à toi, confidentiel. Tes échanges restent sur cet appareil.</span>
         </div>
         <div class="slogan" id="slogan"></div>
-        <div class="build-tag" id="build-tag">Version 29/09 15:46</div>
+        <div class="build-tag" id="build-tag">Version 29/09 21:12</div>
       </div></div>
     </section>
 
@@ -2893,10 +2893,13 @@ function errText(err){
     r429:{fr:"Trop de demandes d'un coup. Réessaie dans un instant.",en:"Too many requests at once. Try again shortly.",es:"Demasiadas solicitudes a la vez. Inténtalo de nuevo en un momento."},
     credit:{fr:"Crédit "+provName+" insuffisant sur cette clé.",en:"Insufficient "+provName+" credit on this key.",es:"Crédito de "+provName+" insuficiente en esta clave."},
     over:{fr:"Service momentanément surchargé. Réessaie dans un instant.",en:"Service briefly overloaded. Try again shortly.",es:"Servicio sobrecargado un momento. Inténtalo de nuevo."},
-    gen:{fr:"Petit souci de connexion. Réessaie.",en:"Connection hiccup. Try again.",es:"Pequeño fallo de conexión. Inténtalo de nuevo."}
+    gen:{fr:"Petit souci de connexion. Réessaie.",en:"Connection hiccup. Try again.",es:"Pequeño fallo de conexión. Inténtalo de nuevo."},
+    net:{fr:"Pas de connexion pour l'instant. Vérifie ton réseau et réessaie.",en:"No connection right now. Check your network and try again.",es:"Sin conexión por ahora. Revisa tu red e inténtalo de nuevo."}
   };
   let key='gen';
-  if(err&&(err.name==='TypeError'||/fetch/i.test(err.message||''))&&!err.status) key='host';
+  /* 29/09/2026 : le message « fichier ouvert en local » ne s'affiche plus que dans ce cas précis ;
+     en ligne, un échec réseau est un simple problème de connexion. */
+  if(err&&(err.name==='TypeError'||/fetch/i.test(err.message||''))&&!err.status) key = (location.protocol==='file:') ? 'host' : 'net';
   else if(err&&err.status===401) key='k401';
   else if(err&&err.status===429) key='r429';
   else if(err&&err.status===400 && err.body && /credit|balance|insufficient/i.test(JSON.stringify(err.body))) key='credit';
@@ -6700,7 +6703,9 @@ async function send(){
   if(state.tier==='free'){ ensureFreeDay(); if(state.freeCount>=5){ openUpsell('limit'); return; } }
   inp.value=''; autoGrow(inp); toggleSend();
   addBubble('user',text); markActivity('chat');
-  if(state.tier==='free'){ state.freeCount++; persist(); }
+  /* 29/09/2026 : le quota gratuit n'est plus décompté ici, mais seulement quand une réponse
+     arrive vraiment (plus bas) — sans clé, clé refusée ou réseau coupé, on ne perdait un
+     message sur cinq pour rien. */
   if(!state.apiKey){ addError(t('needKey')+'<br><a class="keylink" onclick="openProfile()">'+t('openProfileLink')+'</a>'); return; }
   addTyping();
   try{
@@ -6715,6 +6720,7 @@ async function send(){
     const capped = r.clean ? enforceLengthCap(r.clean, budget.wordCap) : r.clean;
     const meta = r.boucle ? {crossed:true, boucleTerrain:r.boucle.terrain, boucleText:r.boucle.texte} : null;
     if(capped) addBubbleSplit('assistant',capped,meta); else addBubbleSplit('assistant','…',meta);
+    if(state.tier==='free'){ state.freeCount++; persist(); }
     if(r.ancrage){
       th.ancrage={terrain:r.ancrage.terrain, certitude:r.ancrage.certitude, atMsgCount:(th.msgs||[]).filter(m=>m.role).length};
       persist();

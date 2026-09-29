@@ -701,10 +701,13 @@ function errText(err){
     r429:{fr:"Trop de demandes d'un coup. Réessaie dans un instant.",en:"Too many requests at once. Try again shortly.",es:"Demasiadas solicitudes a la vez. Inténtalo de nuevo en un momento."},
     credit:{fr:"Crédit "+provName+" insuffisant sur cette clé.",en:"Insufficient "+provName+" credit on this key.",es:"Crédito de "+provName+" insuficiente en esta clave."},
     over:{fr:"Service momentanément surchargé. Réessaie dans un instant.",en:"Service briefly overloaded. Try again shortly.",es:"Servicio sobrecargado un momento. Inténtalo de nuevo."},
-    gen:{fr:"Petit souci de connexion. Réessaie.",en:"Connection hiccup. Try again.",es:"Pequeño fallo de conexión. Inténtalo de nuevo."}
+    gen:{fr:"Petit souci de connexion. Réessaie.",en:"Connection hiccup. Try again.",es:"Pequeño fallo de conexión. Inténtalo de nuevo."},
+    net:{fr:"Pas de connexion pour l'instant. Vérifie ton réseau et réessaie.",en:"No connection right now. Check your network and try again.",es:"Sin conexión por ahora. Revisa tu red e inténtalo de nuevo."}
   };
   let key='gen';
-  if(err&&(err.name==='TypeError'||/fetch/i.test(err.message||''))&&!err.status) key='host';
+  /* 29/09/2026 : le message « fichier ouvert en local » ne s'affiche plus que dans ce cas précis ;
+     en ligne, un échec réseau est un simple problème de connexion. */
+  if(err&&(err.name==='TypeError'||/fetch/i.test(err.message||''))&&!err.status) key = (location.protocol==='file:') ? 'host' : 'net';
   else if(err&&err.status===401) key='k401';
   else if(err&&err.status===429) key='r429';
   else if(err&&err.status===400 && err.body && /credit|balance|insufficient/i.test(JSON.stringify(err.body))) key='credit';

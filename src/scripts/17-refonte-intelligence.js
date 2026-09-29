@@ -477,7 +477,9 @@ async function send(){
   if(state.tier==='free'){ ensureFreeDay(); if(state.freeCount>=5){ openUpsell('limit'); return; } }
   inp.value=''; autoGrow(inp); toggleSend();
   addBubble('user',text); markActivity('chat');
-  if(state.tier==='free'){ state.freeCount++; persist(); }
+  /* 29/09/2026 : le quota gratuit n'est plus décompté ici, mais seulement quand une réponse
+     arrive vraiment (plus bas) — sans clé, clé refusée ou réseau coupé, on ne perdait un
+     message sur cinq pour rien. */
   if(!state.apiKey){ addError(t('needKey')+'<br><a class="keylink" onclick="openProfile()">'+t('openProfileLink')+'</a>'); return; }
   addTyping();
   try{
@@ -492,6 +494,7 @@ async function send(){
     const capped = r.clean ? enforceLengthCap(r.clean, budget.wordCap) : r.clean;
     const meta = r.boucle ? {crossed:true, boucleTerrain:r.boucle.terrain, boucleText:r.boucle.texte} : null;
     if(capped) addBubbleSplit('assistant',capped,meta); else addBubbleSplit('assistant','…',meta);
+    if(state.tier==='free'){ state.freeCount++; persist(); }
     if(r.ancrage){
       th.ancrage={terrain:r.ancrage.terrain, certitude:r.ancrage.certitude, atMsgCount:(th.msgs||[]).filter(m=>m.role).length};
       persist();
