@@ -31,7 +31,7 @@ async function play(theme, labels){
 
 console.log('\n=== 1. QUATRE NOUVEAUX JEUX ===');
 ok(['soren','iris','eden','vince'].every(id=>w.eval(`!!gameForAgent('${id}')`)),'Soren, Iris, Eden et Vince ont chacun leur jeu');
-ok(Object.keys(w.eval('GAMES')).every(k=>w.eval(`GAMES['${k}'].reflectionMs`)===20000),'tous les jeux laissent 20 secondes de réflexion');
+ok(Object.keys(w.eval('GAMES')).filter(k=>k!=='anxiete').every(k=>w.eval(`GAMES['${k}'].reflectionMs`)===20000),'tous les jeux laissent 20 secondes de réflexion (sauf Sol, sans chrono)');
 
 console.log('\n=== 2. CADRAGES DU DOSSIER ===');
 const soren=w.eval("JSON.stringify(GAMES.parentalite)");

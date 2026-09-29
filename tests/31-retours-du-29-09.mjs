@@ -38,7 +38,7 @@ console.log('\n=== 2. RÉCAPITULATIF : RÉVEILLER MÈNE À LA DISCUSSION ===');
 w.eval("state.awakeAgents=[]"); w.openRecap(); await wait(10);
 // un accompagnant sans jeu, choisi à l'exécution : la liste change à chaque nouveau lot de jeux
 const sansJeu=w.eval("ALL.map(function(a){return a.id}).filter(function(id){return id!=='mia' && !gameForAgent(id)})");
-const A=sansJeu[0], B=sansJeu[1];
+const A=sansJeu[0]; // depuis le lot 1, il ne reste qu'un accompagnant sans jeu (Nora) : la section 4 le rendort et le réutilise
 w.entTap(A); await wait(10);
 ok(shown('sleep-sheet'),'un accompagnant endormi ouvre sa fiche');
 ok(!w.document.querySelector('#sleep-body .sleep-play-main'),'pas de jeu pour '+A+' : réveil direct');
@@ -65,7 +65,7 @@ w.eval("closeDeck(); closeRecap()");
 
 console.log('\n=== 4. GRATUIT : LE RÉVEIL NE TRICHE PAS ===');
 w.eval("state.tier='free'"); w.openRecap(); await wait(10);
-w.entTap(B); await wait(10);
+const B=A; w.eval("state.awakeAgents=[]"); w.entTap(B); await wait(10);
 w.document.querySelector('#sleep-body .btn').click(); await wait(30);
 ok(!shown('recap'),'le récapitulatif se ferme pour laisser voir la page d\'abonnement');
 ok(!w.eval("agentAwake('"+B+"')"),B+' reste endormi sans abonnement');
