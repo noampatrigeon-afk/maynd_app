@@ -71,7 +71,8 @@ ok(/Dernier point de mesure/.test(w.eval("draftBilanText()")),'la question 3 rem
 w.eval("openProDashboard()"); await wait(10);
 ok(/Points de mesure/.test(w.$('pd-body').textContent),'et dans l\'espace du professionnel');
 w.eval("closeProDashboard()");
-ok(!/stagnation|signal/i.test(w.$('obj-pad').innerHTML),'rien n\'est affiché à la personne');
+w.showTab('objectifs'); await wait(20);
+ok(!/stagnation|points de mesure de suite/i.test(w.$('obj-pad').innerHTML),'rien n\'est affiché à la personne'); // « intervient sur signal » (supervision) est un texte normal de l'onglet
 
 console.log('\n=== 5. REVOIR MON OBJECTIF ===');
 w.openGame('point'); await wait(10);
