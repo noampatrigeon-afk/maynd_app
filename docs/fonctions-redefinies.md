@@ -103,7 +103,7 @@ fond en quittant les deux écrans concernés).
 | `regenerateEtatCourant` | 1 | 0 | 17-refonte-intelligence.js | 17-refonte-intelligence.js |
 | `arrivalNoteEl` / `withdrawArrival` | 1 | 0 | 17-refonte-intelligence.js | 17-refonte-intelligence.js |
 | `setProvider` | 1 | 0 | 00-noyau.js | 00-noyau.js |
-| `deckSync` | 1 | 2 | 22-retours-du-29-09.js (enveloppe) | 15-presentation-accompagnants.js |
+| `deckSync` | 1 | 3 | 25-fiches-compactes.js (enveloppe) | 15-presentation-accompagnants.js |
 | `deleteObjective` | 1 | 1 | 14-palette-et-accueil.js (enveloppe) | 00-noyau.js |
 | `feat` | 2 | 0 | 00-noyau.js | 00-noyau.js |
 | `init` | 2 | 0 | 00-noyau.js | 00-noyau.js |
@@ -115,7 +115,7 @@ fond en quittant les deux écrans concernés).
 | `obEnterSkipQuiz` | 1 | 0 | 16-palette-finale.js | 16-palette-finale.js |
 | `objqAfter` | 2 | 1 | 16-palette-finale.js (enveloppe) | 05-objectifs-refonte.js, 09-couleur-questionnaires.js |
 | `objqClose` | 2 | 0 | 09-couleur-questionnaires.js | 05-objectifs-refonte.js |
-| `openAgentDeck` | 1 | 2 | 22-retours-du-29-09.js (enveloppe) | 15-presentation-accompagnants.js |
+| `openAgentDeck` | 1 | 3 | 25-fiches-compactes.js (enveloppe) | 15-presentation-accompagnants.js |
 | `openChat` | 1 | 1 | 11-palette-enregistree.js (enveloppe) | 00-noyau.js |
 | `openFocusSheet` | 2 | 0 | 02-favoris-et-focus.js | 00-noyau.js |
 | `openFormules` | 2 | 0 | 00-noyau.js | 00-noyau.js |
@@ -168,7 +168,7 @@ fond en quittant les deux écrans concernés).
 | `gameShowOptions` | 1 | 1 | 20-ecrans-jeu-refonte.js (enveloppe) | 18-moteur-des-jeux.js |
 | `gameRenderRestitution` | 2 | 1 | 20-ecrans-jeu-refonte.js (enveloppe de la déclaration de 22) | 18-moteur-des-jeux.js, 22-retours-du-29-09.js |
 | `gameRenderSortie` | 2 | 1 | 20-ecrans-jeu-refonte.js (enveloppe de la déclaration de 22) | 18-moteur-des-jeux.js, 22-retours-du-29-09.js |
-| `deckFav` | 2 | 0 | 22-retours-du-29-09.js | 15-presentation-accompagnants.js |
+| `deckFav` | 2 | 1 | 25-fiches-compactes.js (enveloppe de la déclaration de 22) | 15-presentation-accompagnants.js |
 | `renderSleepFiche` | 2 | 0 | 22-retours-du-29-09.js | 21-fiche-recapitulatif.js |
 | `renderGamesSectionHTML` | 2 | 0 | 22-retours-du-29-09.js (renvoie une chaîne vide) | 18-moteur-des-jeux.js |
 | `entTap` | 1 | 1 | 22-retours-du-29-09.js (enveloppe) | 19-carte-entourage.js |
@@ -181,3 +181,5 @@ fond en quittant les deux écrans concernés).
 | `gameOrder` | 2 | 0 | 24-jeux-lot-2.js (question préalable q0) | 18-moteur-des-jeux.js |
 | `openGame` | 1 | 1 | 24-jeux-lot-2.js (enveloppe : démarre sur q0) | 18-moteur-des-jeux.js |
 | `gamePick` | 1 | 1 | 24-jeux-lot-2.js (enveloppe : bascule directe) | 18-moteur-des-jeux.js |
+| `deckAddSecond` | 1 | 1 | 25-fiches-compactes.js (enveloppe) | 22-retours-du-29-09.js |
+| `closeDeck` | 1 | 1 | 25-fiches-compactes.js (enveloppe) | 15-presentation-accompagnants.js |

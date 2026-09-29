@@ -41,6 +41,9 @@
    devenaient visibles que par leur animation — fiche vide, jeu injouable. */
 @media (prefers-reduced-motion:reduce){
   .sleep-wrap>*,#game-inner .game-opts .game-opt,#game-inner .game-opts-dropout .game-opt.dropout{opacity:1}
+  /* sans animation, le bloc de remplissage sauterait à 100 % et l'écran resterait plein
+     pendant toute la réflexion : on ne garde que l'horloge et « Réponses dans … secondes » */
+  #game-inner .game-fill-wrap{display:none}
 }
 
 /* fin d'un jeu : second accompagnant proposé, sur la fiche du premier */

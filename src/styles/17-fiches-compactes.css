@@ -1,0 +1,28 @@
+/* ══════════ FICHES DES ACCOMPAGNANTS SUR UN SEUL ÉCRAN — voir 25-fiches-compactes.js ══════════
+   Toutes les tailles dépendent de --k (1 par défaut) : deckFit() le baisse par pas de 0,04
+   jusqu'à ce que la fiche tienne sans défilement. Pas de propriété zoom (comportement
+   inégal selon les navigateurs, Safari compris). */
+.deck-inner{--k:1;display:flex;flex-direction:column;padding:70px calc(22px * var(--k)) calc(18px * var(--k) + env(safe-area-inset-bottom,0px))}
+.deck-inner>*{flex-shrink:0}  /* sinon la colonne écrase le bouton au lieu de déborder, et deckFit croit que tout tient */
+.deck-head{display:flex;align-items:center;gap:calc(14px * var(--k))}
+.deck-head .deck-top{margin:0;flex-shrink:0}
+.deck-head .deck-ava{width:calc(58px * var(--k));height:calc(58px * var(--k));border-radius:calc(18px * var(--k));font-size:calc(26px * var(--k))}
+.deck-head .deck-ava.mia svg{width:calc(34px * var(--k));height:calc(34px * var(--k))}
+.deck-head-tx{min-width:0}
+.deck-head .deck-name{font-size:calc(28px * var(--k))}
+.deck-head .deck-dom{margin-top:2px;font-size:calc(14px * var(--k))}
+.deck-head .deck-acc{margin-top:calc(6px * var(--k));font-size:calc(9.5px * var(--k));padding:calc(4px * var(--k)) calc(10px * var(--k))}
+.deck-tag{font-size:calc(14.5px * var(--k));line-height:1.42;margin-top:calc(14px * var(--k))}
+.deck-sec{margin:calc(16px * var(--k)) 0 calc(7px * var(--k));font-size:calc(10px * var(--k))}
+.deck-list li{font-size:calc(13.5px * var(--k));line-height:1.38;margin-bottom:calc(6px * var(--k));padding-left:calc(20px * var(--k))}
+.deck-list li::before{top:calc(6px * var(--k))}
+.deck-list.dot li::before{top:calc(7px * var(--k))}
+.deck-also{margin-top:calc(12px * var(--k));padding:calc(8px * var(--k)) calc(12px * var(--k));font-size:calc(13px * var(--k))}
+.deck-also-ava{width:calc(30px * var(--k));height:calc(30px * var(--k))}
+.deck-inner .deck-list.dot{margin-bottom:calc(18px * var(--k))}
+.deck-cta{margin-top:auto;padding:calc(14px * var(--k));font-size:calc(15px * var(--k))}
+.deck-actions2{display:flex;gap:8px;margin-top:calc(8px * var(--k))}
+.deck-actions2 .deck-fav{margin-top:0;padding:calc(11px * var(--k)) 10px;font-size:calc(13px * var(--k))}
+.deck-actions2 .deck-fav svg{width:16px;height:16px;flex-shrink:0}
+.deck-actions2.two .deck-fav{flex:1;min-width:0}
+.deck-actions2.two .deck-fav span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}

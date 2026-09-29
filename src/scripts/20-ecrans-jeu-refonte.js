@@ -33,7 +33,7 @@ function gameRenderQuestion(step){
     +'<button class="game-exit" onclick="gameAbandon()">Sortir</button></div>'
     +'<div class="game-qn">Question '+gameQuestionNumber(step)+'</div>'
     +'<div class="game-q">'+escapeHtml(q.title)+'</div>'
-    +'<div class="game-reflect"><span class="game-clock" style="color:'+a.color+'">'+gameClockSVG()+'</span><span class="game-reflect-note">Réponses dans 30 secondes</span></div>'
+    +'<div class="game-reflect"><span class="game-clock" style="color:'+a.color+'">'+gameClockSVG()+'</span><span class="game-reflect-note">Réponses dans '+Math.round((g.reflectionMs||0)/1000)+' secondes</span></div>'
     +'<div class="game-fill-wrap" id="game-fill-wrap">'
       +'<svg class="game-wave" viewBox="0 0 320 16" preserveAspectRatio="none"><path d="M0 10 C 40 2, 80 2, 120 10 S 200 18, 240 10 S 300 2, 320 10 L 320 16 L 0 16 Z"/></svg>'
       +pearls
@@ -51,10 +51,13 @@ function gameRenderQuestion(step){
   var ms=g.reflectionMs;
   if(!ms){ gameShowOptions(); return; }
   var fill=$('game-fill-wrap');
+  /* Montée linéaire jusqu'à 100 % pile, sur exactement la durée de réflexion : l'écran est
+     plein à l'instant où les réponses apparaissent, jamais avant (29/09/2026 — avant : courbe
+     ease-in-out jusqu'à 104 %, l'écran restait plein près d'une seconde). */
   requestAnimationFrame(function(){
     if(!fill) return;
-    fill.style.transition='height '+(ms/1000)+'s cubic-bezier(.4,0,.6,1)';
-    fill.style.height='104%';
+    fill.style.transition='height '+(ms/1000)+'s linear';
+    fill.style.height='100%';
   });
   _gameRevealTimer=setTimeout(gameShowOptions, ms);
 }

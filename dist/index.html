@@ -1559,6 +1559,9 @@ button:active,.btn:active,.agx-open:active,.conv-item:active,.quest:active,.chal
    devenaient visibles que par leur animation — fiche vide, jeu injouable. */
 @media (prefers-reduced-motion:reduce){
   .sleep-wrap>*,#game-inner .game-opts .game-opt,#game-inner .game-opts-dropout .game-opt.dropout{opacity:1}
+  /* sans animation, le bloc de remplissage sauterait à 100 % et l'écran resterait plein
+     pendant toute la réflexion : on ne garde que l'horloge et « Réponses dans … secondes » */
+  #game-inner .game-fill-wrap{display:none}
 }
 
 /* fin d'un jeu : second accompagnant proposé, sur la fiche du premier */
@@ -1628,6 +1631,34 @@ button:active,.btn:active,.agx-open:active,.conv-item:active,.quest:active,.chal
 .sv-lg{display:inline-block;width:18px;height:0;border-top:2.4px solid #974AF0;margin-left:8px}
 .sv-lg.prev{border-top:1.6px dashed #A79CBC}
 @media (max-width:360px){ .sv-radar-box{flex-basis:120px} .sv-radar-box .sv-radar{width:120px;height:120px} .sv-face{width:34px;height:34px;font-size:21px} }
+/* ══════════ FICHES DES ACCOMPAGNANTS SUR UN SEUL ÉCRAN — voir 25-fiches-compactes.js ══════════
+   Toutes les tailles dépendent de --k (1 par défaut) : deckFit() le baisse par pas de 0,04
+   jusqu'à ce que la fiche tienne sans défilement. Pas de propriété zoom (comportement
+   inégal selon les navigateurs, Safari compris). */
+.deck-inner{--k:1;display:flex;flex-direction:column;padding:70px calc(22px * var(--k)) calc(18px * var(--k) + env(safe-area-inset-bottom,0px))}
+.deck-inner>*{flex-shrink:0}  /* sinon la colonne écrase le bouton au lieu de déborder, et deckFit croit que tout tient */
+.deck-head{display:flex;align-items:center;gap:calc(14px * var(--k))}
+.deck-head .deck-top{margin:0;flex-shrink:0}
+.deck-head .deck-ava{width:calc(58px * var(--k));height:calc(58px * var(--k));border-radius:calc(18px * var(--k));font-size:calc(26px * var(--k))}
+.deck-head .deck-ava.mia svg{width:calc(34px * var(--k));height:calc(34px * var(--k))}
+.deck-head-tx{min-width:0}
+.deck-head .deck-name{font-size:calc(28px * var(--k))}
+.deck-head .deck-dom{margin-top:2px;font-size:calc(14px * var(--k))}
+.deck-head .deck-acc{margin-top:calc(6px * var(--k));font-size:calc(9.5px * var(--k));padding:calc(4px * var(--k)) calc(10px * var(--k))}
+.deck-tag{font-size:calc(14.5px * var(--k));line-height:1.42;margin-top:calc(14px * var(--k))}
+.deck-sec{margin:calc(16px * var(--k)) 0 calc(7px * var(--k));font-size:calc(10px * var(--k))}
+.deck-list li{font-size:calc(13.5px * var(--k));line-height:1.38;margin-bottom:calc(6px * var(--k));padding-left:calc(20px * var(--k))}
+.deck-list li::before{top:calc(6px * var(--k))}
+.deck-list.dot li::before{top:calc(7px * var(--k))}
+.deck-also{margin-top:calc(12px * var(--k));padding:calc(8px * var(--k)) calc(12px * var(--k));font-size:calc(13px * var(--k))}
+.deck-also-ava{width:calc(30px * var(--k));height:calc(30px * var(--k))}
+.deck-inner .deck-list.dot{margin-bottom:calc(18px * var(--k))}
+.deck-cta{margin-top:auto;padding:calc(14px * var(--k));font-size:calc(15px * var(--k))}
+.deck-actions2{display:flex;gap:8px;margin-top:calc(8px * var(--k))}
+.deck-actions2 .deck-fav{margin-top:0;padding:calc(11px * var(--k)) 10px;font-size:calc(13px * var(--k))}
+.deck-actions2 .deck-fav svg{width:16px;height:16px;flex-shrink:0}
+.deck-actions2.two .deck-fav{flex:1;min-width:0}
+.deck-actions2.two .deck-fav span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 </style>
 </head>
 <body>
@@ -1670,7 +1701,7 @@ button:active,.btn:active,.agx-open:active,.conv-item:active,.quest:active,.chal
           <span data-i="reassure">Un espace à toi, confidentiel. Tes échanges restent sur cet appareil.</span>
         </div>
         <div class="slogan" id="slogan"></div>
-        <div class="build-tag" id="build-tag">Version 29/09 14:53</div>
+        <div class="build-tag" id="build-tag">Version 29/09 15:13</div>
       </div></div>
     </section>
 
@@ -6811,7 +6842,7 @@ var GAMES = {
     agent: 'miro',
     label: 'Tes nuits',
     accroche: "Cinq questions sur tes nuits. Prends ton temps.",
-    reflectionMs: 30000,
+    reflectionMs: 20000, /* 30 s à l'origine, ramené à 20 s le 29/09/2026 */
     q1: {
       title: "La dernière fois que tu t'es réveillé vraiment reposé.",
       options: [
@@ -7429,7 +7460,7 @@ function gameRenderQuestion(step){
     +'<button class="game-exit" onclick="gameAbandon()">Sortir</button></div>'
     +'<div class="game-qn">Question '+gameQuestionNumber(step)+'</div>'
     +'<div class="game-q">'+escapeHtml(q.title)+'</div>'
-    +'<div class="game-reflect"><span class="game-clock" style="color:'+a.color+'">'+gameClockSVG()+'</span><span class="game-reflect-note">Réponses dans 30 secondes</span></div>'
+    +'<div class="game-reflect"><span class="game-clock" style="color:'+a.color+'">'+gameClockSVG()+'</span><span class="game-reflect-note">Réponses dans '+Math.round((g.reflectionMs||0)/1000)+' secondes</span></div>'
     +'<div class="game-fill-wrap" id="game-fill-wrap">'
       +'<svg class="game-wave" viewBox="0 0 320 16" preserveAspectRatio="none"><path d="M0 10 C 40 2, 80 2, 120 10 S 200 18, 240 10 S 300 2, 320 10 L 320 16 L 0 16 Z"/></svg>'
       +pearls
@@ -7447,10 +7478,13 @@ function gameRenderQuestion(step){
   var ms=g.reflectionMs;
   if(!ms){ gameShowOptions(); return; }
   var fill=$('game-fill-wrap');
+  /* Montée linéaire jusqu'à 100 % pile, sur exactement la durée de réflexion : l'écran est
+     plein à l'instant où les réponses apparaissent, jamais avant (29/09/2026 — avant : courbe
+     ease-in-out jusqu'à 104 %, l'écran restait plein près d'une seconde). */
   requestAnimationFrame(function(){
     if(!fill) return;
-    fill.style.transition='height '+(ms/1000)+'s cubic-bezier(.4,0,.6,1)';
-    fill.style.height='104%';
+    fill.style.transition='height '+(ms/1000)+'s linear';
+    fill.style.height='100%';
   });
   _gameRevealTimer=setTimeout(gameShowOptions, ms);
 }
@@ -7793,9 +7827,10 @@ function deckFavBtnHTML(id){
 function deckGameBtnHTML(id){
   var key=gameForAgent(id); if(!key) return '';
   var played=((state.gameRuns && state.gameRuns[key]) || []).length>0;
-  return '<button class="deck-fav deck-replay" onclick="deckReplay(\''+key+'\')">'
+  /* libellé court : le bouton partage sa ligne avec « Ajouter en favori » (25-fiches-compactes.js) */
+  return '<button class="deck-fav deck-replay" onclick="deckReplay(\''+key+'\')" aria-label="'+(played?'Rejouer':'Jouer')+' : '+escapeHtml(GAMES[key].label)+'">'
     +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>'
-    +'<span>'+(played?'Rejouer':'Jouer')+' · '+escapeHtml(GAMES[key].label)+'</span></button>';
+    +'<span>'+(played?'Rejouer':'Jouer')+'</span></button>';
 }
 function deckReplay(key){ closeDeck(); openGame(key); }
 function deckFav(id, ev){
@@ -8132,7 +8167,7 @@ GAMES.relation = {
   agent:'leo',
   label:'Ta relation',
   accroche:"Cinq questions sur ta relation. On parle de toi, pas de l'autre.",
-  reflectionMs:30000,
+  reflectionMs:20000,
   q0:{
     title:'Où tu en es côté relation.',
     options:[
@@ -8221,7 +8256,7 @@ GAMES.affirmation = {
   agent:'otis',
   label:'Ce que tu dis',
   accroche:'Cinq questions sur ce que tu arrives à dire.',
-  reflectionMs:30000,
+  reflectionMs:20000,
   q1:{
     title:'La dernière fois que tu as dit non sans culpabiliser.',
     options:[
@@ -8302,7 +8337,7 @@ GAMES.effort = {
   agent:'kael',
   label:"Ton rapport à l'effort",
   accroche:"Cinq questions sur ton rapport à l'effort.",
-  reflectionMs:30000,
+  reflectionMs:20000,
   q1:{
     title:'La dernière fois que tu as pris du plaisir à bouger.',
     options:[
@@ -8384,7 +8419,7 @@ GAMES.travail = {
   agent:'mateo',
   label:'Ton travail',
   accroche:'Cinq questions sur ton travail.',
-  reflectionMs:30000,
+  reflectionMs:20000,
   q1:{
     title:'La dernière fois que tu as fini une journée satisfait.',
     options:[
@@ -8461,6 +8496,115 @@ GAMES.travail = {
      professionnel. Aucun mot clinique affiché, aucune alerte, aucun changement de ton.
      Le branchement vers proSignals() reste à faire (voir l'en-tête). */
 };
+/* ══════════════════════════════════════════════════════════════════════════
+   FICHES DES ACCOMPAGNANTS SUR UN SEUL ÉCRAN — demande du 29/09/2026 : plus
+   jamais de défilement vertical dans la présentation, quelle que soit la
+   longueur du texte ou la taille du téléphone.
+
+   Deux étages :
+   1. Mise en page resserrée (CSS 17-fiches-compactes.css) : l'initiale passe à
+      gauche du prénom (bloc .deck-head construit ici), « Ajouter en favori » et
+      « Rejouer » se partagent une ligne (.deck-actions2), textes resserrés.
+   2. Ajustement automatique (deckFit) : si une fiche dépasse encore la hauteur
+      de l'écran, toutes ses tailles (variable CSS --k) baissent par pas de 4 %
+      jusqu'à ce qu'elle tienne, sans descendre sous 0,6. Recalculé à l'ouverture, au redimensionnement,
+      et quand le contenu change (favori, second accompagnant proposé).
+   ══════════════════════════════════════════════════════════════════════════ */
+
+function deckCompactPage(page){
+  var inner=page.querySelector('.deck-inner'); if(!inner || inner.querySelector('.deck-head')) return;
+  var top=inner.querySelector('.deck-top'), name=inner.querySelector('.deck-name'),
+      dom=inner.querySelector('.deck-dom'), acc=inner.querySelector('.deck-acc');
+  if(!top || !name) return;
+  var head=document.createElement('div'); head.className='deck-head';
+  var tx=document.createElement('div'); tx.className='deck-head-tx';
+  inner.insertBefore(head, top);
+  head.appendChild(top); head.appendChild(tx);
+  [name, dom, acc].forEach(function(el){ if(el) tx.appendChild(el); });
+  var fav=inner.querySelector('.deck-fav[data-fav]'), rep=inner.querySelector('.deck-replay');
+  if(fav || rep){
+    var row=document.createElement('div'); row.className='deck-actions2'+(fav&&rep?' two':'');
+    (fav||rep).parentNode.insertBefore(row, fav||rep);
+    if(fav) row.appendChild(fav);
+    if(rep) row.appendChild(rep);
+  }
+}
+function deckFitPage(page){
+  var inner=page.querySelector('.deck-inner'); if(!inner) return;
+  var k=1;
+  inner.style.setProperty('--k', k);
+  if(!page.clientHeight) return;
+  var need=page.scrollHeight;
+  while(need>page.clientHeight+1 && k>0.6){
+    k=Math.round((k-0.04)*100)/100;
+    inner.style.setProperty('--k', k);
+    var now=page.scrollHeight;
+    /* sécurité : si la réduction ne fait rien baisser (mise en page pas encore calculée),
+       on garde la taille normale plutôt que de tout rétrécir pour rien */
+    if(now>=need){ inner.style.setProperty('--k', 1); return; }
+    need=now;
+  }
+}
+function deckFit(){
+  var pages=document.querySelectorAll('#deck-track .deck-page');
+  for(var i=0;i<pages.length;i++){ deckCompactPage(pages[i]); deckFitPage(pages[i]); }
+}
+(function(){
+  var base=openAgentDeck;
+  if(typeof base!=='function') return;
+  window.openAgentDeck=function(){
+    var r=base.apply(this, arguments);
+    try{ deckFit(); }catch(e){}
+    /* recalculs de sécurité : premier rendu, puis polices encore en chargement au premier
+       lancement (un calcul fait trop tôt réduit plus que nécessaire, deckFitPage repart de 1) */
+    [60, 350, 1200].forEach(function(ms){ setTimeout(function(){ try{ if($('deck').classList.contains('show')) deckFit(); }catch(e){} }, ms); });
+    return r;
+  };
+})();
+(function(){
+  var base=deckFav;
+  if(typeof base!=='function') return;
+  window.deckFav=function(id){
+    var r=base.apply(this, arguments);
+    try{ var p=document.querySelector('#deck-track .deck-page[data-id="'+id+'"]'); if(p) deckFitPage(p); }catch(e){}
+    return r;
+  };
+})();
+(function(){
+  var base=deckAddSecond;
+  if(typeof base!=='function') return;
+  window.deckAddSecond=function(target){
+    var r=base.apply(this, arguments);
+    try{ var p=document.querySelector('#deck-track .deck-page[data-id="'+target+'"]'); if(p) deckFitPage(p); }catch(e){}
+    return r;
+  };
+})();
+/* Les polices (Poppins, DM Sans) peuvent finir de charger après l'ouverture et élargir le
+   texte : on recalcule quand elles sont prêtes, et à chaque changement de fiche. */
+function deckRefitIfOpen(){ try{ if($('deck') && $('deck').classList.contains('show')) deckFit(); }catch(e){} }
+try{ if(document.fonts){ document.fonts.ready.then(deckRefitIfOpen); document.fonts.addEventListener && document.fonts.addEventListener('loadingdone', deckRefitIfOpen); } }catch(e){}
+/* deckSync est appelée à chaque évènement de défilement horizontal : on ne recalcule la
+   fiche qu'au changement de fiche, et dans les deux sens (un calcul fait trop tôt, avant que
+   la mise en page soit stable, a pu trop réduire). */
+var _deckFitIdx=-1;
+(function(){
+  var base=deckSync;
+  if(typeof base!=='function') return;
+  window.deckSync=function(i){
+    var r=base.apply(this, arguments);
+    try{
+      if(i==null) i=deckIndex();
+      if(i!==_deckFitIdx){ _deckFitIdx=i; var p=document.querySelectorAll('#deck-track .deck-page')[i]; if(p) deckFitPage(p); }
+    }catch(e){}
+    return r;
+  };
+})();
+(function(){
+  var base=closeDeck;
+  if(typeof base!=='function') return;
+  window.closeDeck=function(){ _deckFitIdx=-1; return base.apply(this, arguments); };
+})();
+window.addEventListener('resize', function(){ try{ if($('deck') && $('deck').classList.contains('show')) deckFit(); }catch(e){} });
 </script>
 </body>
 </html>

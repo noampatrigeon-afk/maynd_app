@@ -235,9 +235,10 @@ function deckFavBtnHTML(id){
 function deckGameBtnHTML(id){
   var key=gameForAgent(id); if(!key) return '';
   var played=((state.gameRuns && state.gameRuns[key]) || []).length>0;
-  return '<button class="deck-fav deck-replay" onclick="deckReplay(\''+key+'\')">'
+  /* libellé court : le bouton partage sa ligne avec « Ajouter en favori » (25-fiches-compactes.js) */
+  return '<button class="deck-fav deck-replay" onclick="deckReplay(\''+key+'\')" aria-label="'+(played?'Rejouer':'Jouer')+' : '+escapeHtml(GAMES[key].label)+'">'
     +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>'
-    +'<span>'+(played?'Rejouer':'Jouer')+' · '+escapeHtml(GAMES[key].label)+'</span></button>';
+    +'<span>'+(played?'Rejouer':'Jouer')+'</span></button>';
 }
 function deckReplay(key){ closeDeck(); openGame(key); }
 function deckFav(id, ev){

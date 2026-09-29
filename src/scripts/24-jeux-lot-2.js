@@ -75,7 +75,7 @@ GAMES.relation = {
   agent:'leo',
   label:'Ta relation',
   accroche:"Cinq questions sur ta relation. On parle de toi, pas de l'autre.",
-  reflectionMs:30000,
+  reflectionMs:20000,
   q0:{
     title:'Où tu en es côté relation.',
     options:[
@@ -164,7 +164,7 @@ GAMES.affirmation = {
   agent:'otis',
   label:'Ce que tu dis',
   accroche:'Cinq questions sur ce que tu arrives à dire.',
-  reflectionMs:30000,
+  reflectionMs:20000,
   q1:{
     title:'La dernière fois que tu as dit non sans culpabiliser.',
     options:[
@@ -245,7 +245,7 @@ GAMES.effort = {
   agent:'kael',
   label:"Ton rapport à l'effort",
   accroche:"Cinq questions sur ton rapport à l'effort.",
-  reflectionMs:30000,
+  reflectionMs:20000,
   q1:{
     title:'La dernière fois que tu as pris du plaisir à bouger.',
     options:[
@@ -327,7 +327,7 @@ GAMES.travail = {
   agent:'mateo',
   label:'Ton travail',
   accroche:'Cinq questions sur ton travail.',
-  reflectionMs:30000,
+  reflectionMs:20000,
   q1:{
     title:'La dernière fois que tu as fini une journée satisfait.',
     options:[

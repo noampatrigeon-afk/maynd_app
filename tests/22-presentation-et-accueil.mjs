@@ -26,7 +26,7 @@ ok(w.document.querySelectorAll('#deck-dots .deck-dot').length===0,'plus de rang�
 ok(w.$('deck-count').textContent==='1 / 17','compteur de navigation sur la première fiche');
 ok(!w.document.querySelector('#deck-track .deck-star'),'plus d\'étoile collée à la croix de fermeture');
 ok(w.document.querySelectorAll('#deck-track .deck-fav[data-fav]').length===16,'un bouton favori sous chaque fiche, sauf MIA');
-ok(/Jouer · Tes nuits/.test(w.document.querySelector('.deck-page[data-id="miro"] .deck-replay')?.textContent||'') && !w.document.querySelector('.deck-page[data-id="vince"] .deck-replay'),'bouton de jeu sur la fiche des accompagnants qui ont un jeu (Miro), pas sur les autres (Vince)');
+ok(/^Jouer$/.test((w.document.querySelector('.deck-page[data-id="miro"] .deck-replay')?.textContent||'').trim()) && !w.document.querySelector('.deck-page[data-id="vince"] .deck-replay'),'bouton de jeu sur la fiche des accompagnants qui ont un jeu (Miro), pas sur les autres (Vince)');
 const p0=pages[0].innerHTML;
 ok(p0.includes('MIA') && p0.includes('Ce qu'),'fiche MIA détaillée');
 const atlas=pages.find(p=>p.getAttribute('data-id')==='atlas').innerHTML;

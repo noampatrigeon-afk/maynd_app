@@ -45,7 +45,7 @@ w.eval("closeRecap()");
 console.log('\n=== 2. BRANCHE NORMALE, DE BOUT EN BOUT ===');
 w.openGame('sommeil'); await wait(20);
 ok(w.$('game').classList.contains('show'), "le jeu s'ouvre en plein écran");
-ok(w.$('game-opts').style.display==='none', "les options restent cachées avant la révélation (30 secondes, jamais un chiffre affiché)");
+ok(w.$('game-opts').style.display==='none', "les options restent cachées avant la révélation (20 secondes)");
 await answer('Cette année');
 await answer('Je me réveille la nuit');
 ok(w.eval('_game.branch')==='normal', "réponse normale à la question 2 -> branche normale");
