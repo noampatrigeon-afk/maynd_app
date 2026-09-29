@@ -384,7 +384,7 @@ GAMES.emotions = {
       {label:'Laisser passer le temps', restit:'Tu as laissé passer le temps.'},
       {label:'Un accompagnement', restit:'Tu as essayé un accompagnement.'}
     ],
-    dropout:{label:'Rien de particulier', restit:"Tu n'as encore rien essayé de particulier."}
+    dropout:{label:'Rien de particulier', restit:"Tu n'as rien essayé de particulier."}
   },
   q5:{
     title:'Cette semaine, tu te sens capable de.',
