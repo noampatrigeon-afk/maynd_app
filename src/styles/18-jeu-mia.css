@@ -1,0 +1,12 @@
+/* ══════════ JEU DE MIA, LE POINT DE MESURE — voir 27-jeu-mia.js ══════════ */
+.mia-point-card{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:12px 14px;background:#974AF0;color:#fff;border-radius:20px;padding:16px 18px 18px;margin:14px 0 4px;box-shadow:var(--sh)}
+.mia-point-ava{width:46px;height:46px;border-radius:14px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center}
+.mia-point-ava svg{width:30px;height:30px;color:#fff}
+.mia-point-tx{display:flex;flex-direction:column;min-width:0}
+.mia-point-t{font-family:'Poppins',sans-serif;font-weight:700;font-size:17px;line-height:1.25}
+.mia-point-s{font-family:'DM Sans',sans-serif;font-size:13px;opacity:.88;margin-top:3px}
+.mia-point-btn{grid-column:1 / -1;display:block;width:100%;margin-top:2px;padding:11px 14px;font-size:14px;background:rgba(255,255,255,.2)}
+
+/* restitution : le second bloc, la comparaison, visuellement séparé du premier */
+.game-restit{flex-direction:column;justify-content:center;align-items:stretch}
+.game-restit .game-restit-cmp{margin-top:18px;padding-top:16px;border-top:1.5px dashed #C9B3F5;font-size:18px;color:var(--violet-deep,#6F2FC0)}

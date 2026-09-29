@@ -70,7 +70,7 @@ fond en quittant les deux écrans concernés).
 | Fonction | Déclarations | Enveloppes | Version qui s'applique | Fichiers concernés |
 |---|---|---|---|---|
 | `obShow` | 1 | 7 | 15-presentation-accompagnants.js (enveloppe) | 00-noyau.js |
-| `renderObjectives` | 4 | 7 | 23-suivi-quotidien.js (enveloppe) | 00-noyau.js (x2), 03-cap-et-objectifs.js, 05-objectifs-refonte.js |
+| `renderObjectives` | 4 | 8 | 27-jeu-mia.js (enveloppe : carte du point de mesure) | 00-noyau.js (x2), 03-cap-et-objectifs.js, 05-objectifs-refonte.js |
 | `qzRenderCrisis` | 2 | 3 | 10-couleurs-pleines.js (enveloppe) | 00-noyau.js, 01-freemium-et-crise.js |
 | `showTab` | 1 | 4 | 14-palette-et-accueil.js (enveloppe) | 00-noyau.js |
 | `addParticipant` | 3 | 3 | 19-carte-entourage.js (enveloppe) | 00-noyau.js, 01-freemium-et-crise.js, 11-palette-enregistree.js, 17-refonte-intelligence.js |
@@ -131,7 +131,7 @@ fond en quittant les deux écrans concernés).
 | `sameMonth` | 1 | 0 | 16-palette-finale.js | 16-palette-finale.js |
 | `countHits` | 1 | 0 | 16-palette-finale.js | 16-palette-finale.js |
 | `paintChat` | 2 | 0 | 13-teintes-calculees.js | 11-palette-enregistree.js |
-| `proSignals` | 2 | 0 | 16-palette-finale.js | 07-supervision.js |
+| `proSignals` | 2 | 1 | 27-jeu-mia.js (enveloppe : stagnation du point de mesure) | 07-supervision.js |
 | `qTheme` | 2 | 0 | 10-couleurs-pleines.js | 10-couleurs-pleines.js |
 | `recentUserText` | 1 | 0 | 16-palette-finale.js | 16-palette-finale.js |
 | `qzFinish` | 1 | 2 | 16-palette-finale.js (enveloppe) | 00-noyau.js |
@@ -169,7 +169,7 @@ fond en quittant les deux écrans concernés).
 | `gameRenderQuestion` | 2 | 1 | 24-jeux-lot-2.js (enveloppe : libellé de la question préalable) | 18-moteur-des-jeux.js, 20-ecrans-jeu-refonte.js |
 | `gameShowOptions` | 1 | 1 | 20-ecrans-jeu-refonte.js (enveloppe) | 18-moteur-des-jeux.js |
 | `gameRenderRestitution` | 2 | 1 | 20-ecrans-jeu-refonte.js (enveloppe de la déclaration de 22) | 18-moteur-des-jeux.js, 22-retours-du-29-09.js |
-| `gameRenderSortie` | 2 | 1 | 20-ecrans-jeu-refonte.js (enveloppe de la déclaration de 22) | 18-moteur-des-jeux.js, 22-retours-du-29-09.js |
+| `gameRenderSortie` | 2 | 2 | 27-jeu-mia.js (enveloppe : « revoir mon objectif ») | 18-moteur-des-jeux.js, 22-retours-du-29-09.js |
 | `deckFav` | 2 | 1 | 25-fiches-compactes.js (enveloppe de la déclaration de 22) | 15-presentation-accompagnants.js |
 | `renderSleepFiche` | 2 | 0 | 22-retours-du-29-09.js | 21-fiche-recapitulatif.js |
 | `renderGamesSectionHTML` | 2 | 0 | 22-retours-du-29-09.js (renvoie une chaîne vide) | 18-moteur-des-jeux.js |
@@ -182,6 +182,10 @@ fond en quittant les deux écrans concernés).
 | `objSheetDone` | 1 | 1 | 23-suivi-quotidien.js (enveloppe) | 00-noyau.js |
 | `gameOrder` | 2 | 0 | 24-jeux-lot-2.js (question préalable q0) | 18-moteur-des-jeux.js |
 | `openGame` | 1 | 1 | 24-jeux-lot-2.js (enveloppe : démarre sur q0) | 18-moteur-des-jeux.js |
-| `gamePick` | 1 | 1 | 24-jeux-lot-2.js (enveloppe : bascule directe) | 18-moteur-des-jeux.js |
+| `gamePick` | 1 | 2 | 27-jeu-mia.js (enveloppe : « mes relations ») | 18-moteur-des-jeux.js |
 | `deckAddSecond` | 1 | 1 | 25-fiches-compactes.js (enveloppe) | 22-retours-du-29-09.js |
 | `closeDeck` | 1 | 1 | 25-fiches-compactes.js (enveloppe) | 15-presentation-accompagnants.js |
+| `gameQuestionDefForKey` | 1 | 1 | 27-jeu-mia.js (enveloppe : question 4 du premier passage) | 18-moteur-des-jeux.js |
+| `gameAdvance` | 1 | 1 | 27-jeu-mia.js (enveloppe : terrain et comparaison) | 18-moteur-des-jeux.js |
+| `draftBilanText` | 1 | 1 | 27-jeu-mia.js (enveloppe) | 16-palette-finale.js |
+| `renderProDashboard` | 1 | 1 | 27-jeu-mia.js (enveloppe) | 16-palette-finale.js |

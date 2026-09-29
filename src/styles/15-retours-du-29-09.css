@@ -20,6 +20,8 @@
 
 /* 3. le jeu passe au-dessus du récapitulatif (90) et de la carte (88), sous la fiche de présentation (92) */
 #game{z-index:91}
+/* « Continuer » de la restitution : width:100 % + marges de 20 px débordait de 40 px à droite */
+.btn.full.game-next{width:auto;align-self:stretch}
 
 /* 6. fiche de présentation : flèches et compteur en haut à gauche (face à la croix), le bas
    de la fiche reste libre pour « Parler à … » et « Ajouter en favori » */
