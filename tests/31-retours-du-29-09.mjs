@@ -36,13 +36,13 @@ w.eval("closeDrawer()");
 
 console.log('\n=== 2. RÉCAPITULATIF : RÉVEILLER MÈNE À LA DISCUSSION ===');
 w.eval("state.awakeAgents=[]"); w.openRecap(); await wait(10);
-w.entTap('leo'); await wait(10);
+w.entTap('vince'); await wait(10); // Vince n'a pas encore de jeu (Leo en a un depuis le lot 2)
 ok(shown('sleep-sheet'),'un accompagnant endormi ouvre sa fiche');
-ok(!w.document.querySelector('#sleep-body .sleep-play-main'),'pas de jeu pour Leo : réveil direct');
+ok(!w.document.querySelector('#sleep-body .sleep-play-main'),'pas de jeu pour Vince : réveil direct');
 w.document.querySelector('#sleep-body .btn').click(); await wait(30);
 ok(!shown('recap'),'le récapitulatif se ferme');
-ok(w.activeScreen()==='tab-chat' && w.eval("threadParts()").includes('leo'),'on arrive dans la discussion avec Leo');
-ok(w.eval("agentAwake('leo')"),'Leo est réveillé');
+ok(w.activeScreen()==='tab-chat' && w.eval("threadParts()").includes('vince'),'on arrive dans la discussion avec Vince');
+ok(w.eval("agentAwake('vince')"),'Vince est réveillé');
 
 console.log('\n=== 3. RÉCAPITULATIF : LE JEU PASSE AU PREMIER PLAN ===');
 w.openRecap(); await wait(10);
@@ -62,10 +62,10 @@ w.eval("closeDeck(); closeRecap()");
 
 console.log('\n=== 4. GRATUIT : LE RÉVEIL NE TRICHE PAS ===');
 w.eval("state.tier='free'"); w.openRecap(); await wait(10);
-w.entTap('otis'); await wait(10);
+w.entTap('eden'); await wait(10); // Eden n'a pas encore de jeu (Otis en a un depuis le lot 2)
 w.document.querySelector('#sleep-body .btn').click(); await wait(30);
 ok(!shown('recap'),'le récapitulatif se ferme pour laisser voir la page d\'abonnement');
-ok(!w.eval("agentAwake('otis')"),'Otis reste endormi sans abonnement');
+ok(!w.eval("agentAwake('eden')"),'Eden reste endormie sans abonnement');
 w.eval("state.tier='plus'");
 
 console.log('\n=== 5. « ENDORMIR TOUT LE MONDE » (DÉMONSTRATIONS) ===');
