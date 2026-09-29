@@ -53,7 +53,7 @@ let blancs=[];
 for(const id of obIds){
   w.obShow(id); await wait(20);
   const bg=w.$('onboarding').style.background;
-  if(/255, 255, 255/.test(bg) || !bg) blancs.push(id);
+  if((/255, 255, 255/.test(bg) || !bg) && id!=='ob-firstname') blancs.push(id); // écran du prénom blanc exprès depuis le 23/07 (OB_SAT, 15-presentation-accompagnants.js)
 }
 ok(blancs.length===0,'aucun écran blanc'+(blancs.length?' ('+blancs.join(', ')+')':''));
 ok(w.eval("Object.keys(OB_SAT).length")===15,'15 écrans en couleur pleine');
@@ -123,7 +123,7 @@ for(const h of [...html.matchAll(/\son(?:click|input|change)="([^"]+)"/g)].map(m
 }
 const undef=[...names].filter(n=>typeof w[n]!=='function');
 ok(undef.length===0,'toutes les fonctions de boutons définies'+(undef.length?' ('+undef.join(', ')+')':''));
-ok((html.match(/(linear|radial)-gradient/g)||[]).length===2,'zéro dégradé visuel');
+ok((html.match(/(linear|radial)-gradient/g)||[]).length===4 /* 2 masques de fondu + 2 dégradés du jeu, exception CLAUDE.md du 28/09 */,'zéro dégradé visuel');
 ok(w.__errs.length===0,'aucune erreur runtime'+(w.__errs.length?' : '+w.__errs.slice(0,4).join(' | '):''));
 
 console.log('\n  RÉSULTAT : '+pass+' réussis, '+fail+' échoués');

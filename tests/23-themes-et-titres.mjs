@@ -60,7 +60,7 @@ for(const id of obIds){
   w.obShow(id); await wait(16);
   const bg=w.$('onboarding').style.background;
   if(/216, 242, 228|0, 168, 98/.test(bg)) verts.push(id);
-  if(/255, 255, 255/.test(bg) || !bg) blancs.push(id);
+  if((/255, 255, 255/.test(bg) || !bg) && id!=='ob-firstname') blancs.push(id); // écran du prénom blanc exprès depuis le 23/07 (OB_SAT, 15-presentation-accompagnants.js)
 }
 const expectedVerts=['ob-access','ob-faceid','ob-fingerprint','ob-pin-create','ob-pin-confirm','ob-account-success'];
 ok(verts.length===expectedVerts.length && expectedVerts.every(id=>verts.includes(id)),'étape 3 (accès rapide) en vert, aucun autre écran : '+verts.join(', '));
@@ -74,7 +74,8 @@ w.showTab('accueil'); await wait(30);
 const bm=w.$('brandmark-slot');
 ok(!!bm,'emplacement toujours présent dans la structure');
 ok(w.getComputedStyle(bm).display==='none' || html.includes('#brandmark-slot{display:none}'),'mais masqué');
-ok(w.$('tab-objectifs').innerHTML.includes('class="wordmark"'),'les autres onglets gardent leur titre');
+w.showTab('objectifs'); await wait(30); w.showTab('accueil'); await wait(20);
+ok(/Ton parcours/.test(w.$('tab-objectifs').textContent),'l\'onglet Parcours garde son titre (« Ton parcours » depuis la refonte du 12/09)');
 
 console.log('\n=== 4. PANNEAU RENOMMÉ ===');
 ok(w.eval("t('participants')")==='Accompagnants','panneau renommé en Accompagnants');
@@ -145,7 +146,7 @@ for(const h of [...html.matchAll(/\son(?:click|input|change|scroll)="([^"]+)"/g)
 }
 const undef=[...names].filter(n=>typeof w[n]!=='function');
 ok(undef.length===0,'toutes les fonctions de boutons définies'+(undef.length?' ('+undef.join(', ')+')':''));
-ok((html.match(/(linear|radial)-gradient/g)||[]).length===2,'zéro dégradé visuel');
+ok((html.match(/(linear|radial)-gradient/g)||[]).length===4 /* 2 masques de fondu + 2 dégradés du jeu, exception CLAUDE.md du 28/09 */,'zéro dégradé visuel');
 ok(w.__errs.length===0,'aucune erreur runtime'+(w.__errs.length?' : '+w.__errs.slice(0,3).join(' | '):''));
 
 console.log('\n  RÉSULTAT : '+pass+' réussis, '+fail+' échoués');

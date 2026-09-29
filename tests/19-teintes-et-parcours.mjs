@@ -123,7 +123,7 @@ for(const h of [...html.matchAll(/\son(?:click|input|change)="([^"]+)"/g)].map(m
 }
 const undef=[...names].filter(n=>typeof w[n]!=='function');
 ok(undef.length===0,'toutes les fonctions de boutons définies'+(undef.length?' ('+undef.join(', ')+')':''));
-ok((html.match(/(linear|radial)-gradient/g)||[]).length===2,'zéro dégradé visuel');
+ok((html.match(/(linear|radial)-gradient/g)||[]).length===4 /* 2 masques de fondu + 2 dégradés du jeu, exception CLAUDE.md du 28/09 */,'zéro dégradé visuel');
 ok(w.__errs.length===0,'aucune erreur runtime'+(w.__errs.length?' : '+w.__errs.slice(0,3).join(' | '):''));
 
 console.log('\n  RÉSULTAT : '+pass+' réussis, '+fail+' échoués');

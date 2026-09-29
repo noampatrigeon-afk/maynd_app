@@ -39,7 +39,7 @@ const bars=[...w.document.querySelectorAll('#tab-objectifs .section-head h2')];
 ok(bars.length>0 && bars.some(b=>b.style.getPropertyValue('--sc')),'couleurs appliquées aux sections');
 const cols=new Set(bars.map(b=>b.style.getPropertyValue('--sc')).filter(Boolean));
 ok(cols.size>=2,'les sections alternent les couleurs ('+cols.size+' couleurs)');
-ok((html.match(/(linear|radial)-gradient/g)||[]).length===2,'toujours zéro dégradé visuel');
+ok((html.match(/(linear|radial)-gradient/g)||[]).length===4 /* 2 masques de fondu + 2 dégradés du jeu, exception CLAUDE.md du 28/09 */,'toujours zéro dégradé visuel');
 
 console.log('\n=== 3. retour arrière ===');
 w.startObjQuiz(); await wait(15);

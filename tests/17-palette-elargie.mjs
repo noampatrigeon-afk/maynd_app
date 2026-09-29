@@ -46,7 +46,7 @@ ok(html.includes('#tab-accueil .section-head{margin:32px 2px 14px}'),'sections e
 ok(html.includes('Aller vers'),'les cartes ont leur propre section');
 const pad=w.$('tab-accueil').innerHTML;
 ok(pad.indexOf('Aller vers')>pad.indexOf('mia-cta'),'séparation entre MIA et les cartes');
-ok(html.includes('#tab-accueil .greet-hi{font-size:29px'),'salutation agrandie');
+ok(html.includes('#tab-accueil .greet-hi,#tab-objectifs .greet-hi{font-size:29px'),'salutation agrandie');
 ok(html.includes('#tab-accueil .mia-cta{padding:20px 18px'),'carte MIA plus généreuse');
 
 console.log('\n=== 5. couleur dans inscription et paiement ===');
@@ -80,7 +80,7 @@ ok(new Set(seen).size>=4,'les questions changent de couleur ('+new Set(seen).siz
 w.objqClose();
 
 console.log('\n=== 8. non-régression ===');
-ok((html.match(/(linear|radial)-gradient/g)||[]).length===2,'toujours zéro dégradé visuel');
+ok((html.match(/(linear|radial)-gradient/g)||[]).length===4 /* 2 masques de fondu + 2 dégradés du jeu, exception CLAUDE.md du 28/09 */,'toujours zéro dégradé visuel');
 w.showTab('objectifs'); await wait(20);
 ok(w.$('obj-pad').innerHTML.includes('Ta supervision'),'supervision intacte');
 const skip=new Set(['this','event','window','document','return','void','true','false','if','let','const','var']);

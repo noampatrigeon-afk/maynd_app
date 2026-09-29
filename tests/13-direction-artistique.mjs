@@ -21,7 +21,7 @@ ok(html.includes('--orange:#FE6601') && html.includes('--blue:#224CF2'),'accents
 ok(html.includes('--ink:#000000'),'noir pur');
 const grads=(html.match(/(linear|radial)-gradient/g)||[]).length;
 const masks=(html.match(/mask-image:linear-gradient/g)||[]).length;
-ok(grads-masks===0,'zéro dégradé visuel (reste '+masks+' masques de fondu)');
+ok(grads-masks===2,'aucun dégradé hors des 2 du jeu (exception CLAUDE.md du 28/09) ; reste '+masks+' masques de fondu');
 
 console.log('\n=== 2. profondeur ===');
 ok(html.includes('--sh-sm:0 1px 3px rgba(111,47,192'),'ombres teintées marque (légère)');

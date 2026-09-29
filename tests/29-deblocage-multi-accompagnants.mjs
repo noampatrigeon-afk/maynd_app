@@ -39,9 +39,9 @@ console.log('\n=== LA CARTE D’INVITATION DE MIA PASSE PAR LE MÊME CHEMIN ==='
 w.eval("state.multiUnlocked=false; var th2=mkThread(['leo']); state.threads.push(th2); state.current=th2.id; persist();");
 w.eval("handleJoin('atlas')");
 await wait(10);
-const inviteHtml=w.document.querySelector('.bubble.note')?.innerHTML || '';
+const inviteHtml=[...w.document.querySelectorAll('.bubble.note')].pop()?.innerHTML || '';
 ok(!/MAYND\+/.test(inviteHtml), "la carte d'invitation n'affiche plus l'ancien badge MAYND+ (palier disparu)");
-w.document.querySelector('.bubble.note')?.click();
+[...w.document.querySelectorAll('.bubble.note')].pop()?.click(); // la carte d'invitation est la dernière note du fil
 await wait(10);
 ok(w.$('mix-sheet').classList.contains('show'), "cliquer la carte d'invitation ouvre le même écran de déblocage, pas l'écran de formules");
 

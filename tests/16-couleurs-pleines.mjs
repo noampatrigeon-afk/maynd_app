@@ -73,7 +73,7 @@ w.enterApp(false); await wait(20); w.eval("state.tier='plus'");
 w.showTab('objectifs'); await wait(20);
 ok(w.$('obj-pad').innerHTML.includes('Ta supervision'),'supervision intacte');
 ok(w.$('obj-pad').innerHTML.includes('wheel-card'),'boussole intacte');
-ok((html.match(/(linear|radial)-gradient/g)||[]).length===2,'toujours zéro dégradé visuel');
+ok((html.match(/(linear|radial)-gradient/g)||[]).length===4 /* 2 masques de fondu + 2 dégradés du jeu, exception CLAUDE.md du 28/09 */,'toujours zéro dégradé visuel');
 const skip=new Set(['this','event','window','document','return','void','true','false','if','let','const','var']);
 const names=new Set();
 for(const h of [...html.matchAll(/\son(?:click|input|change)="([^"]+)"/g)].map(m=>m[1])){
