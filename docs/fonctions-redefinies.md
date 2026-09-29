@@ -164,7 +164,7 @@ fond en quittant les deux écrans concernés).
 | `renameObjective` | 1 | 0 | 16-palette-finale.js | 16-palette-finale.js |
 | `toggleFav` | 2 | 0 | 13-teintes-calculees.js | 02-favoris-et-focus.js |
 | `togglePart` | 1 | 1 | 11-palette-enregistree.js (enveloppe) | 00-noyau.js |
-| `gameRenderQuestion` | 2 | 0 | 20-ecrans-jeu-refonte.js | 18-moteur-des-jeux.js, 20-ecrans-jeu-refonte.js |
+| `gameRenderQuestion` | 2 | 1 | 24-jeux-lot-2.js (enveloppe : libellé de la question préalable) | 18-moteur-des-jeux.js, 20-ecrans-jeu-refonte.js |
 | `gameShowOptions` | 1 | 1 | 20-ecrans-jeu-refonte.js (enveloppe) | 18-moteur-des-jeux.js |
 | `gameRenderRestitution` | 2 | 1 | 20-ecrans-jeu-refonte.js (enveloppe de la déclaration de 22) | 18-moteur-des-jeux.js, 22-retours-du-29-09.js |
 | `gameRenderSortie` | 2 | 1 | 20-ecrans-jeu-refonte.js (enveloppe de la déclaration de 22) | 18-moteur-des-jeux.js, 22-retours-du-29-09.js |
@@ -178,3 +178,6 @@ fond en quittant les deux écrans concernés).
 | `openMoodScreen` | 1 | 1 | 23-suivi-quotidien.js (enveloppe) | 00-noyau.js |
 | `setWheel` | 1 | 1 | 23-suivi-quotidien.js (enveloppe : relevé du jour) | 00-noyau.js |
 | `objSheetDone` | 1 | 1 | 23-suivi-quotidien.js (enveloppe) | 00-noyau.js |
+| `gameOrder` | 2 | 0 | 24-jeux-lot-2.js (question préalable q0) | 18-moteur-des-jeux.js |
+| `openGame` | 1 | 1 | 24-jeux-lot-2.js (enveloppe : démarre sur q0) | 18-moteur-des-jeux.js |
+| `gamePick` | 1 | 1 | 24-jeux-lot-2.js (enveloppe : bascule directe) | 18-moteur-des-jeux.js |

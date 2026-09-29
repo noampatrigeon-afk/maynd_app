@@ -122,7 +122,7 @@ function renderSleepFiche(id){
   var a=byId(id); if(!a) return;
   var info=(typeof AGENT_INFO!=='undefined' && AGENT_INFO[id]) ? AGENT_INFO[id] : {tag:''};
   var key=gameForAgent(id);
-  var qCount=key ? Object.keys(GAMES[key]).filter(function(k){ return /^q\d+$/.test(k); }).length : 0;
+  var qCount=key ? Object.keys(GAMES[key]).filter(function(k){ return /^q[1-9]$/.test(k); }).length : 0; /* sans la question préalable q0 */
   var actions = key
     ? '<button class="btn full sleep-play-main" onclick="sleepPlay(\''+id+'\')">Jouer avec '+escapeHtml(a.name)+'</button>'
       +'<div class="sleep-qcount">'+qCount+' question'+(qCount>1?'s':'')+'</div>'
@@ -144,6 +144,8 @@ function gameRenderRestitution(){
   var sentences = _game.branch==='short'
     ? ['shortQ1','shortQ2'].map(function(k){ var a=_game.answers[k]; return a?a.restit:null; })
     : ['q1','q2','q3','q4','q5'].map(function(k){ var a=_game.answers[k]; return a?a.restit:null; });
+  /* question préalable (lot 2, Leo) : sa phrase ouvre la restitution, quelle que soit la branche */
+  if(_game.answers.q0 && _game.answers.q0.restit) sentences.unshift(_game.answers.q0.restit);
   sentences=sentences.filter(Boolean);
   var prev=gamePreviousRun(_game.theme);
   var h='<div class="game-top"><span></span><button class="game-exit" onclick="gameAbandon()">Sortir</button></div>'
@@ -159,10 +161,25 @@ function gameRenderSortie(){
   var g=GAMES[_game.theme];
   var exitId = _game.branch==='short' ? null : (_game.answers.q3 ? _game.answers.q3.exit : null);
   var target = (exitId && byId(exitId)) ? exitId : g.agent;
+  /* second accompagnant proposé (lot 2) : porté par la réponse préalable ou par la sortie */
+  var second=(_game.answers.q0 && _game.answers.q0.second) || (_game.branch!=='short' && _game.answers.q3 && _game.answers.q3.second) || null;
+  if(second===target || !byId(second)) second=null;
+  var theme=_game.theme;
   if(typeof isUnlocked!=='function' || isUnlocked(g.agent)) wakeAgent(g.agent);
+  if(second){ var runs=(state.gameRuns||{})[theme]||[]; if(runs.length){ runs[runs.length-1].exitAgent2=second; persist(); } }
   gameClose();
   if(recapOpen()) entRenderRecap();
   openAgentDeck(target);
+  if(second) deckAddSecond(target, second);
+}
+/* Sur la fiche de l'accompagnant proposé, une pastille qui mène au second. */
+function deckAddSecond(target, second){
+  var page=document.querySelector('#deck-track .deck-page[data-id="'+target+'"]'); if(!page) return;
+  var tag=page.querySelector('.deck-tag'); if(!tag) return;
+  var b=byId(second);
+  tag.insertAdjacentHTML('afterend','<button class="deck-also" onclick="deckGo(DECK_IDS.indexOf(\''+second+'\'))">'
+    +'<span class="deck-also-ava" style="background:'+b.color+'">'+b.name[0]+'</span>'
+    +'<span>'+escapeHtml(b.name)+' peut aussi t’accompagner là-dessus</span></button>');
 }
 
 /* ─────────── 5. toute conversation qui démarre ferme récapitulatif et carte ─────────── */
