@@ -68,7 +68,7 @@ fond en quittant les deux écrans concernés).
 | Fonction | Déclarations | Enveloppes | Version qui s'applique | Fichiers concernés |
 |---|---|---|---|---|
 | `obShow` | 1 | 7 | 15-presentation-accompagnants.js (enveloppe) | 00-noyau.js |
-| `renderObjectives` | 4 | 6 | 22-retours-du-29-09.js (enveloppe) | 00-noyau.js (x2), 03-cap-et-objectifs.js, 05-objectifs-refonte.js |
+| `renderObjectives` | 4 | 7 | 23-suivi-quotidien.js (enveloppe) | 00-noyau.js (x2), 03-cap-et-objectifs.js, 05-objectifs-refonte.js |
 | `qzRenderCrisis` | 2 | 3 | 10-couleurs-pleines.js (enveloppe) | 00-noyau.js, 01-freemium-et-crise.js |
 | `showTab` | 1 | 4 | 14-palette-et-accueil.js (enveloppe) | 00-noyau.js |
 | `addParticipant` | 3 | 3 | 19-carte-entourage.js (enveloppe) | 00-noyau.js, 01-freemium-et-crise.js, 11-palette-enregistree.js, 17-refonte-intelligence.js |
@@ -173,3 +173,8 @@ fond en quittant les deux écrans concernés).
 | `renderGamesSectionHTML` | 2 | 0 | 22-retours-du-29-09.js (renvoie une chaîne vide) | 18-moteur-des-jeux.js |
 | `entTap` | 1 | 1 | 22-retours-du-29-09.js (enveloppe) | 19-carte-entourage.js |
 | `closeRecap` | 1 | 1 | 22-retours-du-29-09.js (enveloppe : désarme « Endormir tout le monde ») | 21-fiche-recapitulatif.js |
+| `renderSuivi` | 2 | 1 | 14-palette-et-accueil.js (enveloppe de la déclaration de 23) | 00-noyau.js, 23-suivi-quotidien.js |
+| `validateMood` | 1 | 1 | 23-suivi-quotidien.js (enveloppe : enchaîne sur la boussole) | 00-noyau.js |
+| `openMoodScreen` | 1 | 1 | 23-suivi-quotidien.js (enveloppe) | 00-noyau.js |
+| `setWheel` | 1 | 1 | 23-suivi-quotidien.js (enveloppe : relevé du jour) | 00-noyau.js |
+| `objSheetDone` | 1 | 1 | 23-suivi-quotidien.js (enveloppe) | 00-noyau.js |

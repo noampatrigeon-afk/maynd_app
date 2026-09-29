@@ -1,0 +1,54 @@
+/* ══════════ SUIVI QUOTIDIEN : HUMEUR + BOUSSOLE — voir l'en-tête de 23-suivi-quotidien.js ══════════ */
+
+/* point du jour : étape boussole dans l'écran d'humeur */
+#mood-screen.ci-wheel .ms-mid{justify-content:flex-start;padding-top:8px;overflow-y:auto}
+#mood-screen.ci-wheel .ms-q{font-size:26px}
+#mood-screen.ci-wheel .ms-date{text-transform:none;margin-bottom:10px}
+.ms-wheel{width:100%;max-width:340px}
+.ci-radar{display:flex;justify-content:center;margin:0 0 6px}
+.ci-radar .sv-radar{width:170px;height:170px}
+.ci-row{display:flex;align-items:center;gap:10px;padding:7px 2px}
+.ci-dot{width:10px;height:10px;border-radius:50%;background:var(--ac);flex-shrink:0}
+.ci-n{width:78px;text-align:left;font-family:'Poppins',sans-serif;font-weight:600;font-size:13.5px;color:var(--ink);flex-shrink:0}
+.ci-row input[type=range]{flex:1;min-width:0;height:28px;-webkit-appearance:none;appearance:none;background:transparent;cursor:pointer}
+.ci-row input[type=range]::-webkit-slider-runnable-track{height:8px;border-radius:99px;background:#EDE1FF}
+.ci-row input[type=range]::-moz-range-track{height:8px;border-radius:99px;background:#EDE1FF}
+.ci-row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:var(--ac);border:3px solid #fff;box-shadow:0 2px 6px rgba(20,12,40,.25);margin-top:-8px}
+.ci-row input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--ac);border:3px solid #fff;box-shadow:0 2px 6px rgba(20,12,40,.25)}
+.ci-v{width:24px;text-align:right;font-family:'Poppins',sans-serif;font-weight:800;font-size:16px;color:var(--ink);flex-shrink:0}
+.ms-bottom .ci-same{margin-top:9px}
+
+/* « Ton suivi » : carte à deux onglets */
+.sv-card{background:#F8F4FF;border:1px solid #EFE6FF;border-radius:20px;padding:14px 14px 16px;box-shadow:var(--sh)}
+.sv-tabs{display:flex;gap:4px;background:#EDE1FF;border-radius:99px;padding:4px;margin-bottom:16px}
+.sv-tab{flex:1;border:none;background:none;border-radius:99px;padding:9px 0;font-family:'Poppins',sans-serif;font-weight:600;font-size:13.5px;color:var(--violet-deep);cursor:pointer}
+.sv-tab.on{background:#974AF0;color:#fff}
+.sv-panel{display:none}
+.sv-card[data-tab="humeur"] .sv-p-humeur,.sv-card[data-tab="boussole"] .sv-p-boussole{display:block}
+
+.sv-week{display:flex;justify-content:space-between;gap:4px}
+.sv-day{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0}
+.sv-face{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:25px;line-height:1}
+.sv-face.empty{border:1.5px dashed #D9C8F5;background:transparent}
+.sv-day.today .sv-face{box-shadow:0 0 0 2.5px #974AF0}
+.sv-dl{font-family:'DM Sans',sans-serif;font-size:11px;color:var(--mist);white-space:nowrap}
+.sv-day.today .sv-dl{color:var(--violet-deep);font-weight:700}
+.sv-sum{font-family:'DM Sans',sans-serif;font-size:13px;color:var(--mist);text-align:center;margin-top:14px;line-height:1.4}
+.sv-act{display:block;width:100%;margin-top:14px;padding:11px 14px;font-size:14px;background:#974AF0;color:#fff}
+
+.sv-wheel{display:flex;align-items:center;gap:10px}
+.sv-radar-box{flex:0 0 150px}
+.sv-radar-box .sv-radar{width:150px;height:150px;display:block}
+.sv-axes{flex:1;min-width:0}
+.sv-axe{display:flex;align-items:center;gap:7px;padding:4px 0}
+.sv-ad{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.sv-an{flex:1;min-width:0;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sv-av{font-family:'Poppins',sans-serif;font-weight:700;font-size:14px;color:var(--ink)}
+.sv-delta{min-width:28px;text-align:center;font-family:'Poppins',sans-serif;font-weight:700;font-size:11px;border-radius:99px;padding:2px 6px}
+.sv-delta.up{background:#D8F2E4;color:#00794A}
+.sv-delta.down{background:#FFE0EC;color:#B5264F}
+.sv-delta.eq{background:#EDE1FF;color:var(--violet-deep)}
+.sv-legend{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:10px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--mist)}
+.sv-lg{display:inline-block;width:18px;height:0;border-top:2.4px solid #974AF0;margin-left:8px}
+.sv-lg.prev{border-top:1.6px dashed #A79CBC}
+@media (max-width:360px){ .sv-radar-box{flex-basis:120px} .sv-radar-box .sv-radar{width:120px;height:120px} .sv-face{width:34px;height:34px;font-size:21px} }

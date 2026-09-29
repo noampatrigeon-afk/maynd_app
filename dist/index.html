@@ -1569,6 +1569,60 @@ button:active,.btn:active,.agx-open:active,.conv-item:active,.quest:active,.chal
 /* fiche endormie : le bouton de jeu principal */
 .sleep-play-main{margin-bottom:0}
 .sleep-actions .sleep-qcount{margin:6px 0 12px}
+/* ══════════ SUIVI QUOTIDIEN : HUMEUR + BOUSSOLE — voir l'en-tête de 23-suivi-quotidien.js ══════════ */
+
+/* point du jour : étape boussole dans l'écran d'humeur */
+#mood-screen.ci-wheel .ms-mid{justify-content:flex-start;padding-top:8px;overflow-y:auto}
+#mood-screen.ci-wheel .ms-q{font-size:26px}
+#mood-screen.ci-wheel .ms-date{text-transform:none;margin-bottom:10px}
+.ms-wheel{width:100%;max-width:340px}
+.ci-radar{display:flex;justify-content:center;margin:0 0 6px}
+.ci-radar .sv-radar{width:170px;height:170px}
+.ci-row{display:flex;align-items:center;gap:10px;padding:7px 2px}
+.ci-dot{width:10px;height:10px;border-radius:50%;background:var(--ac);flex-shrink:0}
+.ci-n{width:78px;text-align:left;font-family:'Poppins',sans-serif;font-weight:600;font-size:13.5px;color:var(--ink);flex-shrink:0}
+.ci-row input[type=range]{flex:1;min-width:0;height:28px;-webkit-appearance:none;appearance:none;background:transparent;cursor:pointer}
+.ci-row input[type=range]::-webkit-slider-runnable-track{height:8px;border-radius:99px;background:#EDE1FF}
+.ci-row input[type=range]::-moz-range-track{height:8px;border-radius:99px;background:#EDE1FF}
+.ci-row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:var(--ac);border:3px solid #fff;box-shadow:0 2px 6px rgba(20,12,40,.25);margin-top:-8px}
+.ci-row input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--ac);border:3px solid #fff;box-shadow:0 2px 6px rgba(20,12,40,.25)}
+.ci-v{width:24px;text-align:right;font-family:'Poppins',sans-serif;font-weight:800;font-size:16px;color:var(--ink);flex-shrink:0}
+.ms-bottom .ci-same{margin-top:9px}
+
+/* « Ton suivi » : carte à deux onglets */
+.sv-card{background:#F8F4FF;border:1px solid #EFE6FF;border-radius:20px;padding:14px 14px 16px;box-shadow:var(--sh)}
+.sv-tabs{display:flex;gap:4px;background:#EDE1FF;border-radius:99px;padding:4px;margin-bottom:16px}
+.sv-tab{flex:1;border:none;background:none;border-radius:99px;padding:9px 0;font-family:'Poppins',sans-serif;font-weight:600;font-size:13.5px;color:var(--violet-deep);cursor:pointer}
+.sv-tab.on{background:#974AF0;color:#fff}
+.sv-panel{display:none}
+.sv-card[data-tab="humeur"] .sv-p-humeur,.sv-card[data-tab="boussole"] .sv-p-boussole{display:block}
+
+.sv-week{display:flex;justify-content:space-between;gap:4px}
+.sv-day{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0}
+.sv-face{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:25px;line-height:1}
+.sv-face.empty{border:1.5px dashed #D9C8F5;background:transparent}
+.sv-day.today .sv-face{box-shadow:0 0 0 2.5px #974AF0}
+.sv-dl{font-family:'DM Sans',sans-serif;font-size:11px;color:var(--mist);white-space:nowrap}
+.sv-day.today .sv-dl{color:var(--violet-deep);font-weight:700}
+.sv-sum{font-family:'DM Sans',sans-serif;font-size:13px;color:var(--mist);text-align:center;margin-top:14px;line-height:1.4}
+.sv-act{display:block;width:100%;margin-top:14px;padding:11px 14px;font-size:14px;background:#974AF0;color:#fff}
+
+.sv-wheel{display:flex;align-items:center;gap:10px}
+.sv-radar-box{flex:0 0 150px}
+.sv-radar-box .sv-radar{width:150px;height:150px;display:block}
+.sv-axes{flex:1;min-width:0}
+.sv-axe{display:flex;align-items:center;gap:7px;padding:4px 0}
+.sv-ad{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.sv-an{flex:1;min-width:0;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sv-av{font-family:'Poppins',sans-serif;font-weight:700;font-size:14px;color:var(--ink)}
+.sv-delta{min-width:28px;text-align:center;font-family:'Poppins',sans-serif;font-weight:700;font-size:11px;border-radius:99px;padding:2px 6px}
+.sv-delta.up{background:#D8F2E4;color:#00794A}
+.sv-delta.down{background:#FFE0EC;color:#B5264F}
+.sv-delta.eq{background:#EDE1FF;color:var(--violet-deep)}
+.sv-legend{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:10px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--mist)}
+.sv-lg{display:inline-block;width:18px;height:0;border-top:2.4px solid #974AF0;margin-left:8px}
+.sv-lg.prev{border-top:1.6px dashed #A79CBC}
+@media (max-width:360px){ .sv-radar-box{flex-basis:120px} .sv-radar-box .sv-radar{width:120px;height:120px} .sv-face{width:34px;height:34px;font-size:21px} }
 </style>
 </head>
 <body>
@@ -1611,7 +1665,7 @@ button:active,.btn:active,.agx-open:active,.conv-item:active,.quest:active,.chal
           <span data-i="reassure">Un espace à toi, confidentiel. Tes échanges restent sur cet appareil.</span>
         </div>
         <div class="slogan" id="slogan"></div>
-        <div class="build-tag" id="build-tag">Version 29/09 14:17</div>
+        <div class="build-tag" id="build-tag">Version 29/09 14:45</div>
       </div></div>
     </section>
 
@@ -7757,6 +7811,227 @@ function deckFav(id, ev){
     }catch(e){}
     return r;
   };
+})();
+/* ══════════════════════════════════════════════════════════════════════════
+   SUIVI QUOTIDIEN : HUMEUR + BOUSSOLE — demande du 29/09/2026.
+
+   1. Point du jour : l'écran d'humeur existant (émojis, une fois par jour à la
+      première ouverture, comme avant) enchaîne maintenant sur la boussole :
+      cinq réglettes préremplies avec les dernières valeurs, un radar qui bouge
+      en direct, « Rien n'a bougé » pour valider d'une touche. Puis l'étape de
+      commentaire / « En parler à MIA », inchangée.
+      Choix : une fois par jour, pas à chaque ouverture — ouvrir l'app trois fois
+      dans la journée ne doit pas redemander trois fois la même chose (la personne
+      finirait par tout passer, et le suivi y perdrait).
+   2. Historique de la boussole : state.wheelLog, un relevé par jour (le dernier
+      de la journée remplace les précédents). Absent de defaultState, comme
+      state.gameRuns : créé au premier relevé.
+   3. « Ton suivi », en bas de l'onglet Parcours, redessiné en deux onglets :
+      Humeur (la semaine en émojis) et Boussole (radar du jour superposé à celui
+      d'il y a une semaine, évolution de chaque axe). La section « Ta boussole »
+      du milieu de l'onglet est retirée : elle ferait doublon.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ─────────── historique de la boussole ─────────── */
+function wheelSnapshot(){ var w=getWheel(), o={}; WHEEL.forEach(function(a){ o[a.k]=w[a.k]; }); return o; }
+function logWheel(){
+  state.wheelLog = Array.isArray(state.wheelLog) ? state.wheelLog : [];
+  var dk=todayKey();
+  state.wheelLog = state.wheelLog.filter(function(e){ return e.day!==dk; });
+  state.wheelLog.push({day:dk, v:wheelSnapshot()});
+  if(state.wheelLog.length>370) state.wheelLog=state.wheelLog.slice(-370);
+  persist();
+}
+function wheelTodayLogged(){ return (state.wheelLog||[]).some(function(e){ return e.day===todayKey(); }); }
+/* Relevé de comparaison : le plus récent datant d'au moins 6 jours, sinon le plus ancien
+   disponible avant aujourd'hui. null s'il n'y a rien d'antérieur à aujourd'hui. */
+function wheelCompareEntry(){
+  var log=(state.wheelLog||[]).filter(function(e){ return e.day!==todayKey(); });
+  if(!log.length) return null;
+  var lim=new Date(); lim.setDate(lim.getDate()-6); var limK=todayKey(lim);
+  var older=log.filter(function(e){ return e.day<=limK; });
+  return older.length ? older[older.length-1] : log[0];
+}
+/* Toute retouche depuis la feuille « Ajuster ma boussole » compte comme le relevé du jour. */
+(function(){
+  var base=setWheel;
+  if(typeof base!=='function') return;
+  window.setWheel=function(){ var r=base.apply(this, arguments); logWheel(); return r; };
+})();
+
+/* ─────────── radar ─────────── */
+function svRadarSVG(values, prev, size){
+  var cx=size/2, cy=size/2, R=size/2-12, n=WHEEL.length;
+  function pt(i,rad){ var ang=(-90+i*(360/n))*Math.PI/180; return [cx+rad*Math.cos(ang), cy+rad*Math.sin(ang)]; }
+  function poly(vals){ return WHEEL.map(function(a,i){ return pt(i,R*(vals[a.k]/10)).map(function(v){ return v.toFixed(1); }).join(','); }).join(' '); }
+  var g='';
+  [0.25,0.5,0.75,1].forEach(function(f){ g+='<polygon points="'+WHEEL.map(function(_,i){ return pt(i,R*f).map(function(v){ return v.toFixed(1); }).join(','); }).join(' ')+'" fill="none" stroke="#E7DAFF" stroke-width="1"/>'; });
+  WHEEL.forEach(function(a,i){ var p=pt(i,R); g+='<line x1="'+cx+'" y1="'+cy+'" x2="'+p[0].toFixed(1)+'" y2="'+p[1].toFixed(1)+'" stroke="#E7DAFF" stroke-width="1"/>'; });
+  if(prev) g+='<polygon class="sv-prev" points="'+poly(prev)+'" fill="none" stroke="#A79CBC" stroke-width="1.6" stroke-dasharray="4 4" stroke-linejoin="round"/>';
+  g+='<polygon class="sv-now" points="'+poly(values)+'" fill="rgba(151,74,240,.18)" stroke="#974AF0" stroke-width="2.4" stroke-linejoin="round"/>';
+  WHEEL.forEach(function(a,i){ var p=pt(i,R*(values[a.k]/10)); g+='<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="4.2" fill="'+a.color+'" stroke="#fff" stroke-width="1.5"/>'; });
+  return '<svg class="sv-radar" viewBox="0 0 '+size+' '+size+'" aria-hidden="true">'+g+'</svg>';
+}
+
+/* ─────────── 1. point du jour : l'étape boussole ─────────── */
+var _ciWheel=null;
+function ciEnsureWheelBox(){
+  if($('ms-wheel')) return;
+  var arrows=$('ms-arrows'); if(!arrows) return;
+  arrows.insertAdjacentHTML('afterend','<div class="ms-wheel" id="ms-wheel" style="display:none"></div>');
+}
+function ciRenderWheelStep(){
+  var box=$('ms-wheel'); if(!box) return;
+  var prev=wheelCompareEntry();
+  box.innerHTML='<div class="ci-radar" id="ci-radar">'+svRadarSVG(_ciWheel, null, 170)+'</div>'
+    +WHEEL.map(function(a){
+      return '<div class="ci-row" style="--ac:'+a.color+'"><span class="ci-dot"></span><span class="ci-n">'+wLabel(a)+'</span>'
+        +'<input type="range" min="1" max="10" value="'+_ciWheel[a.k]+'" oninput="ciSet(\''+a.k+'\',this.value)" aria-label="'+wLabel(a)+'">'
+        +'<span class="ci-v" id="ci-v-'+a.k+'">'+_ciWheel[a.k]+'</span></div>';
+    }).join('');
+}
+function ciSet(k,v){
+  _ciWheel[k]=parseInt(v,10)||1;
+  var el=$('ci-v-'+k); if(el) el.textContent=_ciWheel[k];
+  var r=$('ci-radar'); if(r) r.innerHTML=svRadarSVG(_ciWheel, null, 170);
+}
+function ciShowWheelStep(){
+  ciEnsureWheelBox();
+  _ciWheel=wheelSnapshot();
+  $('ms-q').textContent='Et ta boussole ?';
+  $('ms-date').textContent='De 1 à 10. Tes dernières valeurs sont déjà en place.';
+  $('ms-wrap').style.display='none';
+  $('ms-arrows').style.display='none';
+  $('ms-comment').style.display='none';
+  $('mood-screen').classList.add('ci-wheel');
+  ciRenderWheelStep();
+  $('ms-wheel').style.display='';
+  var hadLog=(state.wheelLog||[]).length>0;
+  $('ms-bottom').innerHTML='<button class="btn full" onclick="ciValidateWheel()">Valider ma boussole</button>'
+    +(hadLog?'<button class="btn ghost full ci-same" onclick="ciValidateWheel(true)">Rien n’a bougé</button>':'');
+}
+function ciValidateWheel(same){
+  if(!same && _ciWheel){ getWheel(); WHEEL.forEach(function(a){ state.wheel[a.k]=_ciWheel[a.k]; }); }
+  logWheel();
+  ciLeaveWheelStep();
+  /* étape suivante : celle d'avant ce chantier (commentaire, « En parler à MIA », « Terminer ») */
+  $('ms-q').textContent=t('moodQuestion');
+  renderMoodStatic();
+  $('ms-wrap').style.display='';
+  $('ms-comment').style.display='block';
+  renderMoodBottom('comment');
+  try{ if(activeScreen()==='tab-objectifs') renderObjectives(); }catch(e){}
+}
+function ciLeaveWheelStep(){
+  var w=$('ms-wheel'); if(w) w.style.display='none';
+  var ms=$('mood-screen'); if(ms) ms.classList.remove('ci-wheel');
+}
+/* La boussole reste réservée aux abonnés (encart « Boussole, défis, jalons et objectifs.
+   Réservé aux abonnés » de l'onglet Parcours) : en gratuit, le point du jour s'arrête à
+   l'humeur, comme avant. */
+function wheelIncluded(){ return state.tier!=='free'; }
+(function(){
+  var base=validateMood;
+  if(typeof base!=='function') return;
+  window.validateMood=function(){
+    var r=base.apply(this, arguments);
+    try{ if(wheelIncluded()) ciShowWheelStep(); }catch(e){}
+    return r;
+  };
+})();
+(function(){
+  var base=openMoodScreen;
+  if(typeof base!=='function') return;
+  window.openMoodScreen=function(){
+    try{ ciLeaveWheelStep(); var w=$('ms-wrap'); if(w) w.style.display=''; }catch(e){}
+    return base.apply(this, arguments);
+  };
+})();
+
+/* ─────────── 3. « Ton suivi » en deux onglets ─────────── */
+var _svTab='humeur';
+function svSetTab(tab){
+  _svTab=tab;
+  var card=document.querySelector('#suivi .sv-card'); if(!card) return;
+  card.setAttribute('data-tab', tab);
+  var tabs=card.querySelectorAll('.sv-tab');
+  for(var i=0;i<tabs.length;i++) tabs[i].classList.toggle('on', tabs[i].getAttribute('data-t')===tab);
+}
+function svMoodPanelHTML(){
+  var days=[], now=new Date();
+  for(var i=6;i>=0;i--){ var d=new Date(now); d.setDate(now.getDate()-i); days.push(todayKey(d)); }
+  var count=0, freq={};
+  var row=days.map(function(dk){
+    var e=moodOfDay(dk), m=e?moodByK(e.k):null, today=dk===todayKey();
+    if(m){ count++; freq[m.k]=(freq[m.k]||0)+1; }
+    return '<div class="sv-day'+(today?' today':'')+'">'
+      +(m ? '<span class="sv-face" style="background:'+m.c+'22">'+m.e+'</span>' : '<span class="sv-face empty"></span>')
+      +'<span class="sv-dl">'+dayLabel(dk)+'</span></div>';
+  }).join('');
+  /* « le plus fréquent » seulement s'il y a une vraie majorité : au moins deux fois, et seul en tête */
+  var ks=Object.keys(freq).sort(function(a,b){ return freq[b]-freq[a]; });
+  var top=(ks.length && freq[ks[0]]>=2 && (ks.length===1 || freq[ks[0]]>freq[ks[1]])) ? ks[0] : null;
+  var sum = count
+    ? count+' jour'+(count>1?'s':'')+' noté'+(count>1?'s':'')+' sur 7'+(top?' · le plus fréquent : '+moodByK(top).e:'')
+    : 'Aucune humeur notée cette semaine.';
+  return '<div class="sv-week">'+row+'</div><div class="sv-sum">'+sum+'</div>'
+    +'<button class="cap-edit sv-act" onclick="openMoodScreen(true)">'+(todayMood()?'Changer mon humeur du jour':'Noter mon humeur')+'</button>';
+}
+function svWheelPanelHTML(){
+  var now=wheelSnapshot(), prevE=wheelCompareEntry(), prev=prevE?prevE.v:null;
+  var rows=WHEEL.map(function(a){
+    var d = prev ? now[a.k]-prev[a.k] : 0;
+    var chip = !prev ? '' : (d>0 ? '<span class="sv-delta up">+'+d+'</span>' : (d<0 ? '<span class="sv-delta down">'+d+'</span>' : '<span class="sv-delta eq">=</span>'));
+    return '<div class="sv-axe"><span class="sv-ad" style="background:'+a.color+'"></span><span class="sv-an">'+wLabel(a)+'</span><span class="sv-av">'+now[a.k]+'</span>'+chip+'</div>';
+  }).join('');
+  var foot = prevE
+    ? '<div class="sv-legend"><span class="sv-lg now"></span>Aujourd’hui <span class="sv-lg prev"></span>Le '+prevE.day.slice(8,10)+'/'+prevE.day.slice(5,7)+'</div>'
+    : '<div class="sv-sum">Ta boussole se compare d’un jour à l’autre dès ton deuxième relevé.</div>';
+  return '<div class="sv-wheel"><div class="sv-radar-box">'+svRadarSVG(now, prev, 190)+'</div><div class="sv-axes">'+rows+'</div></div>'+foot
+    +'<button class="cap-edit sv-act" onclick="openWheelSheet()">Ajuster ma boussole</button>';
+}
+function renderSuivi(){
+  var box=$('suivi'); if(!box) return;
+  if(!wheelIncluded()){
+    box.innerHTML='<div class="sv-card" data-tab="humeur"><div class="sv-panel sv-p-humeur">'+svMoodPanelHTML()+'</div></div>';
+    return;
+  }
+  box.innerHTML='<div class="sv-card" data-tab="'+_svTab+'">'
+    +'<div class="sv-tabs"><button class="sv-tab'+(_svTab==='humeur'?' on':'')+'" data-t="humeur" onclick="svSetTab(\'humeur\')">Humeur</button>'
+    +'<button class="sv-tab'+(_svTab==='boussole'?' on':'')+'" data-t="boussole" onclick="svSetTab(\'boussole\')">Boussole</button></div>'
+    +'<div class="sv-panel sv-p-humeur">'+svMoodPanelHTML()+'</div>'
+    +'<div class="sv-panel sv-p-boussole">'+svWheelPanelHTML()+'</div>'
+    +'</div>';
+}
+/* Retire la section « Ta boussole » du milieu de l'onglet (doublon avec l'onglet Boussole
+   de « Ton suivi ») et le lien « Noter mon humeur » du titre (le bouton est dans la carte). */
+(function(){
+  var base=renderObjectives;
+  if(typeof base!=='function') return;
+  window.renderObjectives=function(){
+    var r=base.apply(this, arguments);
+    try{
+      var pad=$('obj-pad'); if(!pad) return r;
+      var heads=pad.querySelectorAll('.section-head h2');
+      for(var i=0;i<heads.length;i++){
+        var tx=heads[i].textContent.trim(), head=heads[i].parentNode;
+        if(tx===t('wheelTitle')){
+          var next=head.nextElementSibling;
+          if(next && next.classList.contains('wheel-card')) next.parentNode.removeChild(next);
+          head.parentNode.removeChild(head);
+        } else if(tx==='Ton suivi'){
+          var link=head.querySelector('.link'); if(link) link.parentNode.removeChild(link);
+        }
+      }
+    }catch(e){}
+    return r;
+  };
+})();
+/* Après la feuille « Ajuster ma boussole », le suivi se met à jour. */
+(function(){
+  var base=objSheetDone;
+  if(typeof base!=='function') return;
+  window.objSheetDone=function(){ var r=base.apply(this, arguments); try{ renderSuivi(); }catch(e){} return r; };
 })();
 </script>
 </body>

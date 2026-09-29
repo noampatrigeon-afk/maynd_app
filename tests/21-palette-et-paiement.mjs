@@ -62,7 +62,7 @@ w.obPay(); await wait(60);
 ok(S().tier==='maynd','la formule est appliquée');
 const after=w.$('obj-pad').innerHTML;
 ok(!after.includes('track-lock'),'l\'onglet se débloque sans changer d\'onglet');
-ok(after.includes('wheel-card'),'la boussole apparaît immédiatement');
+ok(after.includes('sv-wheel') /* boussole dans « Ton suivi » depuis le 29/09 */,'la boussole apparaît immédiatement');
 ok(after.includes('Feuille de route'),'la supervision apparaît immédiatement');
 // même chose depuis un autre onglet
 w.eval("state.tier='free'"); w.showTab('accueil'); await wait(30);

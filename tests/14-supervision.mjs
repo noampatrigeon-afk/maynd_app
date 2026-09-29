@@ -101,7 +101,7 @@ console.log('\n=== 7. non-régression & erreurs ===');
 w.eval("state.tier='plus'"); w.showTab('accueil'); await wait(15);
 ok(w.$('tab-accueil').classList.contains('active'),'accueil intact');
 w.showTab('objectifs'); await wait(15);
-ok(w.$('obj-pad').innerHTML.includes('wheel-card'),'boussole intacte');
+ok(w.$('obj-pad').innerHTML.includes('sv-wheel') /* boussole dans « Ton suivi » depuis le 29/09 */,'boussole intacte');
 const skip=new Set(['this','event','window','document','return','void','true','false','if','let','const','var']);
 const names=new Set();
 for(const h of [...html.matchAll(/\son(?:click|input|change)="([^"]+)"/g)].map(m=>m[1])){

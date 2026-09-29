@@ -119,19 +119,19 @@ w.document.querySelector('#home-goals .hg-step').click(); await wait(40);
 ok(S().objectives[0].progress===before+1,'un pas se coche depuis l\'accueil');
 ok(w.$('home-goals').innerHTML.includes((before+1)+' / 5'),'l\'accueil se met à jour tout seul');
 
-console.log('\n=== 7. HUMEUR : signal discret pour MIA, plus de vitrine nulle part ===');
-ok(!w.$('tab-accueil').innerHTML.includes('id="suivi"'),'pas de courbe d\'humeur sur l\'accueil');
+console.log('\n=== 7. HUMEUR ET BOUSSOLE : « TON SUIVI » VISIBLE EN BAS DU PARCOURS (décision du 29/09) ===');
+ok(!w.$('tab-accueil').innerHTML.includes('id="suivi"'),'pas de suivi sur l\'accueil');
 w.showTab('objectifs'); await wait(40);
-ok(!w.$('suivi'),'pas de courbe d\'humeur dans le parcours non plus (retirée, pas juste déplacée)');
-ok(!w.$('obj-pad').innerHTML.includes('Ton suivi'),'aucune section "Ton suivi" affichée où que ce soit');
-ok(!w.$('obj-pad').innerHTML.includes('suivi-curve'),'aucune courbe visuelle générée');
+ok(!!w.$('suivi') && w.$('obj-pad').innerHTML.includes('Ton suivi'),'« Ton suivi » affiché dans le parcours');
+ok(!w.$('obj-pad').innerHTML.includes('suivi-curve'),'plus de courbe : les émojis de la semaine la remplacent');
+ok(w.$('obj-pad').innerHTML.indexOf('Ton suivi') > w.$('obj-pad').innerHTML.indexOf('Ta supervision'),'le suivi reste en bas de l\'onglet');
 w.showTab('accueil'); await wait(30); w.showTab('objectifs'); await wait(40);
-ok(!w.$('suivi'),'toujours absent après plusieurs passages (pas de réapparition)');
+ok(w.document.querySelectorAll('#suivi').length===1,'une seule section après plusieurs passages (pas de doublon)');
 w.eval("state.moods=[]");
 w.logMood('bien');
-ok(w.eval('todayMood()')==='bien','l\'humeur du jour se logge toujours, en silence, pour nourrir MIA');
+ok(w.eval('todayMood()')==='bien','l\'humeur du jour est bien enregistrée');
 const sysMood=w.composeSystem();
-ok(/humeur du jour/.test(sysMood),'l\'humeur alimente MIA en arrière-plan (contexte système), jamais affichée');
+ok(/humeur du jour/.test(sysMood),'l\'humeur alimente aussi MIA en arrière-plan (contexte système)');
 
 console.log('\n=== 7bis. PERSONNALISATION : cap, profil psychologique et boussole alimentent aussi MIA ===');
 w.eval("state.profile={key:'M',name:'Le Moteur'}; state.cap='Retrouver du calme'; state.capMeta=false; state.wheel={energie:3,serenite:8,confiance:5,lien:5,sens:5}");

@@ -56,7 +56,7 @@ ok(pad.includes('cap-hero') && pad.includes('Test cap'),'cap en héros');
 ok(pad.includes('pf-card') && pad.includes('Le Fédérateur'),'carte profil affichée à côté');
 ok(pad.includes('week-card'),'objectif de la semaine présent');
 ok(pad.indexOf('Ton profil')<pad.indexOf('boussole')||pad.indexOf('Ton profil')<pad.indexOf('Boussole')||pad.includes('pf-week-row'),'profil placé près du cap');
-ok(pad.includes('wheel-card'),'boussole présente (payant)');
+ok(pad.includes('sv-wheel') /* boussole dans « Ton suivi » depuis le 29/09 */,'boussole présente (payant)');
 
 // ── 6. défis & jalons + badges ──
 console.log('\n=== 6. défis (questionnaires) + badges ===');
