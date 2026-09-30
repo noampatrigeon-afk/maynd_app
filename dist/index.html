@@ -1439,14 +1439,36 @@ button:active,.btn:active,.agx-open:active,.conv-item:active,.quest:active,.chal
 
 .game-fill-wrap{position:absolute;left:0;right:0;bottom:0;height:6%;overflow:visible;
   background:linear-gradient(to bottom, var(--ac-91,#fff) 0%, var(--ac-74,#fff) 100%);
-  border-radius:26px 26px 0 0;pointer-events:none}
-.game-wave{position:absolute;left:-8px;top:-7px;width:calc(100% + 16px);height:16px;color:var(--ac-91,#fff);
-  animation:game-wave-move 7s ease-in-out infinite alternate}
-.game-wave path{fill:currentColor}
-@keyframes game-wave-move{from{transform:translateX(-8px)}to{transform:translateX(8px)}}
-.game-pearl{position:absolute;bottom:6%;width:7px;height:7px;border-radius:50%;background:#fff;opacity:0;
-  animation:game-pearl-rise 9s ease-in-out infinite}
-@keyframes game-pearl-rise{0%{opacity:0;transform:translateY(0)}12%{opacity:.9}55%{opacity:.5}100%{opacity:0;transform:translateY(-180px)}}
+  pointer-events:none}
+/* 30/09/2026 : mer agitée. Trois couches de vagues : chaque svg fait deux fois la largeur de
+   l'écran et défile de -50 % en boucle (sans couture), sa couche monte et descend (houle) à son
+   propre rythme. La couche de devant a la couleur du haut du bloc, pour qu'on ne voie pas la
+   jointure. Aplats : aucune de ces couches n'est un dégradé. */
+.gw{position:absolute;left:-8%;right:-8%;bottom:calc(100% - 2px);height:56px;overflow:hidden;pointer-events:none;
+  transform-origin:50% 100%;animation:gw-swell 2.6s ease-in-out infinite alternate}
+.gw svg{display:block;width:200%;height:100%;animation:gw-slide 6s linear infinite}
+.gw path{fill:currentColor}
+.gw1{color:var(--ac-74,#ddd);opacity:.4;height:78px;animation-duration:3.1s;animation-delay:-1.3s}
+.gw1 svg{animation-duration:6.5s}
+.gw2{color:var(--ac-78,#e5e5e5);opacity:.65;height:62px;animation-duration:2.2s;animation-delay:-.5s;animation-direction:alternate-reverse}
+.gw2 svg{animation-duration:3.6s;animation-direction:reverse}
+/* la couche de devant, opaque et de la couleur du haut du bloc, descend 16 px sous la surface :
+   quand les couches penchent, elle recouvre leurs bords inférieurs */
+.gw3{color:var(--ac-91,#f2f2f2);height:60px;bottom:calc(100% - 16px);animation-duration:1.7s}
+.gw3 svg{animation-duration:2.4s}
+@keyframes gw-slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+/* houle et roulis : la surface monte, descend et penche, jamais au même rythme d'une couche à l'autre */
+@keyframes gw-swell{
+  0%{transform:translateY(5px) rotate(-1.6deg) scaleY(.8)}
+  35%{transform:translateY(-6px) rotate(.6deg) scaleY(1.2)}
+  70%{transform:translateY(2px) rotate(1.8deg) scaleY(.9)}
+  100%{transform:translateY(-3px) rotate(-.4deg) scaleY(1.08)}}
+/* bulles : découpées par la surface, elles remontent en ondulant */
+.gbubs{position:absolute;inset:0;overflow:hidden;border-radius:inherit;pointer-events:none}
+.gbub{position:absolute;bottom:-12px;border-radius:50%;background:#fff;opacity:0;
+  animation-name:gbub-rise,gbub-wobble;animation-timing-function:cubic-bezier(.35,.1,.6,1),ease-in-out;animation-iteration-count:infinite,infinite;animation-direction:normal,alternate}
+@keyframes gbub-rise{0%{opacity:0;bottom:-12px}10%{opacity:.85}75%{opacity:.55}100%{opacity:0;bottom:105%}}
+@keyframes gbub-wobble{from{transform:translateX(-7px)}to{transform:translateX(7px)}}
 
 #game-inner .game-opts{padding:18px 20px 0}
 #game-inner .game-opt{box-shadow:0 6px 16px rgba(0,0,0,.05);transition:transform .16s var(--e),box-shadow .16s var(--e)}
@@ -1467,7 +1489,7 @@ button:active,.btn:active,.agx-open:active,.conv-item:active,.quest:active,.chal
 .game-dot.on{width:22px}
 
 @media (prefers-reduced-motion: reduce){
-  .game-clock,.game-wave,.game-pearl,.game-opts .game-opt{animation:none!important}
+  .game-clock,.gw,.gw svg,.gbub,.game-opts .game-opt{animation:none!important}
 }
 /* ══════════════════════════════════════════════════════════════════════════
    FICHE D'UN ACCOMPAGNANT ENDORMI + RÉCAPITULATIF
@@ -1723,28 +1745,11 @@ button:active,.btn:active,.agx-open:active,.conv-item:active,.quest:active,.chal
 .game-voice svg{width:18px;height:18px}
 
 /* discussion */
-.chat-voice svg{width:21px;height:21px}
 .bubble.has-voice{position:relative;padding-right:40px}
 .bubble-voice{position:absolute;right:8px;bottom:8px;width:26px;height:26px;border-radius:50%;border:none;background:#EDE1FF;color:var(--violet-deep);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
 .bubble-voice svg{width:14px;height:14px}
 
-/* écran de conversation orale (coquille) */
-#voice-call{position:absolute;inset:0;z-index:96;opacity:0;pointer-events:none;transition:opacity .3s var(--e,ease);display:flex;align-items:center;justify-content:center;color:#fff}
-#voice-call.show{opacity:1;pointer-events:auto}
-#voice-call.light{color:#000}
-.vc-inner{display:flex;flex-direction:column;align-items:center;text-align:center;padding:40px 28px;max-width:360px}
-.vc-state{font-family:'Poppins',sans-serif;font-weight:800;font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.85}
-.vc-ava-box{position:relative;width:170px;height:170px;margin:34px 0 22px;display:flex;align-items:center;justify-content:center}
-.vc-ava{position:relative;z-index:1;width:112px;height:112px;border-radius:50%;background:rgba(0,0,0,.16);display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-weight:800;font-size:46px}
-.vc-ava svg{width:56px;height:56px}
-.vc-ring{position:absolute;inset:0;border-radius:50%;border:2px solid currentColor;opacity:0;animation:vcRing 2.6s ease-out infinite}
-.vc-ring.r2{animation-delay:1.3s}
-@keyframes vcRing{0%{transform:scale(.62);opacity:.55}100%{transform:scale(1.05);opacity:0}}
-.vc-name{font-family:'Poppins',sans-serif;font-weight:800;font-size:30px}
-.vc-note{margin:12px 0 0;font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.45;opacity:.92}
-.vc-end{margin-top:40px;display:flex;align-items:center;gap:9px;border:none;border-radius:99px;padding:14px 26px;background:rgba(0,0,0,.22);color:inherit;font-family:'Poppins',sans-serif;font-weight:700;font-size:15px;cursor:pointer}
-.vc-end svg{width:19px;height:19px;transform:rotate(135deg)}
-@media (prefers-reduced-motion:reduce){ .vc-ring,.deck-voice.reward{animation:none} .vc-ring{opacity:.3} }
+@media (prefers-reduced-motion:reduce){ .deck-voice.reward{animation:none} }
 /* ══════════ FIN DE JEU, « AUTRE », RÉFLEXION VISIBLE — voir l'en-tête de 33-fin-de-jeu.js ══════════ */
 
 /* « Autre » : la case s'ouvre sur un champ libre et « Valider » */
@@ -1824,7 +1829,7 @@ button:active,.btn:active,.agx-open:active,.conv-item:active,.quest:active,.chal
           <span data-i="reassure">Un espace à toi, confidentiel. Tes échanges restent sur cet appareil.</span>
         </div>
         <div class="slogan" id="slogan"></div>
-        <div class="build-tag" id="build-tag">Version 30/09 16:28</div>
+        <div class="build-tag" id="build-tag">Version 30/09 16:37</div>
       </div></div>
     </section>
 
@@ -7586,6 +7591,14 @@ function entWheel(e){
 function gameClockSVG(){
   return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/></svg>';
 }
+/* Une vague sans couture : 640 de large (deux fois la largeur affichée), période qui divise 320,
+   pour qu'un défilement de -50 % retombe exactement sur le même dessin. */
+function gameWaveHTML(cls, period, amp){
+  var base=amp+2, h=base+amp+30, d='M0 '+base+' Q '+(period/4)+' '+(base-amp)+' '+(period/2)+' '+base;
+  for(var x=period; x<=640; x+=period/2) d+=' T '+x+' '+base;
+  d+=' L 640 '+h+' L 0 '+h+' Z';
+  return '<div class="gw '+cls+'"><svg viewBox="0 0 640 '+h+'" preserveAspectRatio="none"><path d="'+d+'"/></svg></div>';
+}
 function gameRenderQuestion(step){
   clearTimeout(_gameRevealTimer);
   var g=GAMES[_game.theme];
@@ -7594,7 +7607,15 @@ function gameRenderQuestion(step){
   var qKeys=gameOrder().filter(function(s){ return s!=='restitution' && s!=='sortie'; });
   var qIdx=qKeys.indexOf(step);
   var dots=qKeys.map(function(k,i){ return '<span class="game-dot'+(i===qIdx?' on':'')+'"></span>'; }).join('');
-  var pearls=[0,1,2,3].map(function(i){ return '<span class="game-pearl" style="left:'+(16+i*22)+'%;animation-delay:'+(i*2.25)+'s"></span>'; }).join('');
+  /* 30/09/2026 : mer plus agitée. Trois couches de vagues (défilement sans couture, vitesses et
+     sens différents, houle verticale décalée) et des bulles de tailles variées qui remontent en
+     ondulant, découpées par la surface. */
+  var bubbles='';
+  for(var bi=0; bi<14; bi++){
+    var sz=(4+((bi*7)%9)).toFixed(0), left=((bi*37)%92+4), dur=(3.6+((bi*13)%40)/10).toFixed(1), del=(-((bi*1.7)%6)).toFixed(1);
+    bubbles+='<span class="gbub" style="left:'+left+'%;width:'+sz+'px;height:'+sz+'px;animation-duration:'+dur+'s,'+(dur/3).toFixed(1)+'s;animation-delay:'+del+'s,'+del+'s"></span>';
+  }
+  var pearls='<div class="gbubs">'+bubbles+'</div>';
   var optsHtml=gameOptionsHTML(step,q).replace('<div class="game-opts-dropout">', '<div class="game-opts-dropout" style="border-top-color:'+lave(a.color,.5)+'">');
   var h='<div class="game-top"><span class="game-tag" style="color:'+a.color+'">'+escapeHtml(a.name)+'</span>'
     +'<button class="game-exit" onclick="gameAbandon()">Sortir</button></div>'
@@ -7602,7 +7623,7 @@ function gameRenderQuestion(step){
     +'<div class="game-q">'+escapeHtml(q.title)+'</div>'
     +'<div class="game-reflect"><span class="game-clock" style="color:'+a.color+'">'+gameClockSVG()+'</span><span class="game-reflect-note">Réponses dans '+Math.round((g.reflectionMs||0)/1000)+' secondes</span></div>'
     +'<div class="game-fill-wrap" id="game-fill-wrap">'
-      +'<svg class="game-wave" viewBox="0 0 320 16" preserveAspectRatio="none"><path d="M0 10 C 40 2, 80 2, 120 10 S 200 18, 240 10 S 300 2, 320 10 L 320 16 L 0 16 Z"/></svg>'
+      +gameWaveHTML('gw1', 320, 20)+gameWaveHTML('gw2', 160, 14)+gameWaveHTML('gw3', 80, 9)
       +pearls
     +'</div>'
     +'<div class="game-opts" id="game-opts" style="display:none">'+optsHtml+'</div>'
@@ -10596,7 +10617,9 @@ try{ ATTENTION_RULES=ATTENTION_RULES.filter(function(r){ return r.theme==='somme
    Principe produit : réveiller un accompagnant (par son jeu, ou en lui parlant)
    réveille aussi SA voix. Chaque accompagnant aura sa propre voix (ElevenLabs ou
    autre, choix en cours côté porteur du projet). La voix est la récompense des
-   jeux, et mène à la conversation orale.
+   jeux. La conversation orale se fera en messages vocaux, jamais en appel
+   (décision du 30/09 : l'écran d'appel et les boutons « L'appeler » ont été
+   retirés le jour même).
 
    Ce fichier ne pose que les emplacements, prêts à brancher :
    - AGENT_VOICES : une case par accompagnant pour l'identifiant de sa voix ;
@@ -10604,19 +10627,17 @@ try{ ATTENTION_RULES=ATTENTION_RULES.filter(function(r){ return r.theme==='somme
      fournisseur. La clé du fournisseur ne doit JAMAIS vivre dans le navigateur
      (même règle que la clé du modèle, CLAUDE.md section 5) ;
    - speakAgent(id, texte) : lit un texte avec la voix de l'accompagnant. Tant que
-     rien n'est branché, affiche « La voix de X arrive bientôt. » ;
-   - voiceStartCall / voiceEndCall : l'écran de conversation orale (#voice-call),
-     aujourd'hui une coquille.
+     rien n'est branché, affiche « La voix de X arrive bientôt. ».
 
    Où apparaît la voix :
-   1. Fiche de présentation : « Écouter sa voix » et « L'appeler » quand
-      l'accompagnant est réveillé ; « Sa voix dort encore » sinon.
+   1. Fiche de présentation : « Écouter sa voix » quand l'accompagnant est
+      réveillé ; « Sa voix dort encore » sinon.
    2. Fin d'un jeu qui réveille l'accompagnant : cette ligne devient la
       récompense (« Tu as réveillé la voix de Miro »).
    3. Fiche d'un accompagnant endormi : « En le réveillant, tu découvres sa voix. »
    4. Jeu : bouton haut-parleur pour écouter la question, si la voix est réveillée.
-   5. Discussion : bouton d'appel dans l'en-tête, bouton d'écoute sur chaque
-      réponse (discussion à un seul accompagnant).
+   5. Discussion : bouton d'écoute sur chaque réponse (discussion à un seul
+      accompagnant), futur message vocal.
 
    Règles : la voix fait partie de MAYND (formule payante, CLAUDE.md section 1),
    jamais en gratuit. MIA est toujours réveillée, sa voix aussi. Vocabulaire : la
@@ -10655,7 +10676,6 @@ function speakAgent(id, text){
 
 /* ─────────── icônes ─────────── */
 function voiceIconSVG(){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>'; }
-function voiceCallSVG(){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>'; }
 function voiceSleepSVG(){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>'; }
 
 /* ─────────── 1 et 2. fiche de présentation ─────────── */
@@ -10667,9 +10687,7 @@ function deckVoiceHTML(id, reward){
   return '<div class="deck-voice'+(reward?' reward':'')+'">'
     +(reward?'<div class="deck-voice-t">Tu as réveillé la voix de '+escapeHtml(a.name)+'</div>':'')
     +'<div class="deck-voice-row">'
-    +'<button class="deck-voice-btn" onclick="speakAgent(\''+id+'\', voiceSample(\''+id+'\'))">'+voiceIconSVG()+'<span>Écouter sa voix</span></button>'
-    +'<button class="deck-voice-btn" onclick="voiceStartCall(\''+id+'\')">'+voiceCallSVG()+'<span>L’appeler</span></button>'
-    +'</div></div>';
+    +'<button class="deck-voice-btn" onclick="speakAgent(\''+id+'\', voiceSample(\''+id+'\'))">'+voiceIconSVG()+'<span>Écouter sa voix</span></button>'    +'</div></div>';
 }
 function deckVoicePlace(page, id, reward){
   var old=page.querySelector('.deck-voice'); if(old) old.parentNode.removeChild(old);
@@ -10739,22 +10757,6 @@ function gameSpeakQuestion(){
 function chatVoiceAgent(){
   try{ var p=threadParts(); return (p.length===1 && voiceAwake(p[0])) ? p[0] : null; }catch(e){ return null; }
 }
-function chatVoiceSync(){
-  var top=document.querySelector('#tab-chat .chat-top'); if(!top) return;
-  var btn=$('chat-voice');
-  if(!btn){
-    var parts=$('chat-parts'); if(!parts) return;
-    parts.insertAdjacentHTML('beforebegin','<button class="iconbtn chat-voice" id="chat-voice" aria-label="Conversation orale" onclick="voiceCallCurrent()">'+voiceCallSVG()+'</button>');
-    btn=$('chat-voice');
-  }
-  btn.style.display=chatVoiceAgent()?'':'none';
-}
-function voiceCallCurrent(){ var id=chatVoiceAgent(); if(id) voiceStartCall(id); }
-(function(){
-  var base=renderChatHeader;
-  if(typeof base!=='function') return;
-  window.renderChatHeader=function(){ var r=base.apply(this, arguments); try{ chatVoiceSync(); }catch(e){} return r; };
-})();
 (function(){
   var base=bubbleEl;
   if(typeof base!=='function') return;
@@ -10772,35 +10774,6 @@ function voiceCallCurrent(){ var id=chatVoiceAgent(); if(id) voiceStartCall(id);
     return el;
   };
 })();
-
-/* ─────────── écran de conversation orale (coquille) ─────────── */
-function voiceEnsureScreen(){
-  if($('voice-call')) return;
-  var host=$('deck') ? $('deck').parentNode : document.body;
-  var d=document.createElement('div'); d.id='voice-call'; d.setAttribute('role','dialog'); d.setAttribute('aria-label','Conversation orale');
-  host.appendChild(d);
-}
-function voiceStartCall(id){
-  var a=byId(id); if(!a) return;
-  if(!voiceAwake(id)){ toast('Réveille d’abord '+a.name+' pour entendre sa voix.'); return; }
-  voiceEnsureScreen();
-  var light=typeof LIGHT_AGENTS!=='undefined' && LIGHT_AGENTS.indexOf(id)>=0;
-  var v=$('voice-call');
-  v.className=light?'light':'';
-  v.style.background=a.color;
-  v.innerHTML='<div class="vc-inner">'
-    +'<div class="vc-state">Conversation orale</div>'
-    +'<div class="vc-ava-box"><span class="vc-ring r1"></span><span class="vc-ring r2"></span>'
-    +'<span class="vc-ava">'+(id==='mia'?brainSVG():escapeHtml(a.name[0]))+'</span></div>'
-    +'<div class="vc-name">'+escapeHtml(a.name)+'</div>'
-    +'<p class="vc-note">'+(voiceConfigured(id)
-        ? 'Parle, '+escapeHtml(a.name)+' t’écoute.'
-        : 'La voix de '+escapeHtml(a.name)+' arrive bientôt. Tu pourras lui parler à voix haute, comme au téléphone.')+'</p>'
-    +'<button class="vc-end" onclick="voiceEndCall()">'+voiceCallSVG()+'<span>Raccrocher</span></button>'
-    +'</div>';
-  requestAnimationFrame(function(){ v.classList.add('show'); });
-}
-function voiceEndCall(){ voiceStop(); var v=$('voice-call'); if(v) v.classList.remove('show'); }
 /* ══════════════════════════════════════════════════════════════════════════
    FIN DE JEU, RÉPONSE « AUTRE », RÉFLEXION VISIBLE — demande du 30/09/2026
 

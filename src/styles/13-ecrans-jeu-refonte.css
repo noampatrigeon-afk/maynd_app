@@ -22,14 +22,36 @@
 
 .game-fill-wrap{position:absolute;left:0;right:0;bottom:0;height:6%;overflow:visible;
   background:linear-gradient(to bottom, var(--ac-91,#fff) 0%, var(--ac-74,#fff) 100%);
-  border-radius:26px 26px 0 0;pointer-events:none}
-.game-wave{position:absolute;left:-8px;top:-7px;width:calc(100% + 16px);height:16px;color:var(--ac-91,#fff);
-  animation:game-wave-move 7s ease-in-out infinite alternate}
-.game-wave path{fill:currentColor}
-@keyframes game-wave-move{from{transform:translateX(-8px)}to{transform:translateX(8px)}}
-.game-pearl{position:absolute;bottom:6%;width:7px;height:7px;border-radius:50%;background:#fff;opacity:0;
-  animation:game-pearl-rise 9s ease-in-out infinite}
-@keyframes game-pearl-rise{0%{opacity:0;transform:translateY(0)}12%{opacity:.9}55%{opacity:.5}100%{opacity:0;transform:translateY(-180px)}}
+  pointer-events:none}
+/* 30/09/2026 : mer agitée. Trois couches de vagues : chaque svg fait deux fois la largeur de
+   l'écran et défile de -50 % en boucle (sans couture), sa couche monte et descend (houle) à son
+   propre rythme. La couche de devant a la couleur du haut du bloc, pour qu'on ne voie pas la
+   jointure. Aplats : aucune de ces couches n'est un dégradé. */
+.gw{position:absolute;left:-8%;right:-8%;bottom:calc(100% - 2px);height:56px;overflow:hidden;pointer-events:none;
+  transform-origin:50% 100%;animation:gw-swell 2.6s ease-in-out infinite alternate}
+.gw svg{display:block;width:200%;height:100%;animation:gw-slide 6s linear infinite}
+.gw path{fill:currentColor}
+.gw1{color:var(--ac-74,#ddd);opacity:.4;height:78px;animation-duration:3.1s;animation-delay:-1.3s}
+.gw1 svg{animation-duration:6.5s}
+.gw2{color:var(--ac-78,#e5e5e5);opacity:.65;height:62px;animation-duration:2.2s;animation-delay:-.5s;animation-direction:alternate-reverse}
+.gw2 svg{animation-duration:3.6s;animation-direction:reverse}
+/* la couche de devant, opaque et de la couleur du haut du bloc, descend 16 px sous la surface :
+   quand les couches penchent, elle recouvre leurs bords inférieurs */
+.gw3{color:var(--ac-91,#f2f2f2);height:60px;bottom:calc(100% - 16px);animation-duration:1.7s}
+.gw3 svg{animation-duration:2.4s}
+@keyframes gw-slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+/* houle et roulis : la surface monte, descend et penche, jamais au même rythme d'une couche à l'autre */
+@keyframes gw-swell{
+  0%{transform:translateY(5px) rotate(-1.6deg) scaleY(.8)}
+  35%{transform:translateY(-6px) rotate(.6deg) scaleY(1.2)}
+  70%{transform:translateY(2px) rotate(1.8deg) scaleY(.9)}
+  100%{transform:translateY(-3px) rotate(-.4deg) scaleY(1.08)}}
+/* bulles : découpées par la surface, elles remontent en ondulant */
+.gbubs{position:absolute;inset:0;overflow:hidden;border-radius:inherit;pointer-events:none}
+.gbub{position:absolute;bottom:-12px;border-radius:50%;background:#fff;opacity:0;
+  animation-name:gbub-rise,gbub-wobble;animation-timing-function:cubic-bezier(.35,.1,.6,1),ease-in-out;animation-iteration-count:infinite,infinite;animation-direction:normal,alternate}
+@keyframes gbub-rise{0%{opacity:0;bottom:-12px}10%{opacity:.85}75%{opacity:.55}100%{opacity:0;bottom:105%}}
+@keyframes gbub-wobble{from{transform:translateX(-7px)}to{transform:translateX(7px)}}
 
 #game-inner .game-opts{padding:18px 20px 0}
 #game-inner .game-opt{box-shadow:0 6px 16px rgba(0,0,0,.05);transition:transform .16s var(--e),box-shadow .16s var(--e)}
@@ -50,5 +72,5 @@
 .game-dot.on{width:22px}
 
 @media (prefers-reduced-motion: reduce){
-  .game-clock,.game-wave,.game-pearl,.game-opts .game-opt{animation:none!important}
+  .game-clock,.gw,.gw svg,.gbub,.game-opts .game-opt{animation:none!important}
 }

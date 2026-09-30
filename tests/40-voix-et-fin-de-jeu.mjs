@@ -36,7 +36,7 @@ ok(/Tu as réveillé la voix de Miro/.test(w.document.querySelector('.gend-voice
 w.eval("gameEndFiche()"); await wait(20);
 ok(deckCalls[deckCalls.length-1]==='miro','« Ce que Miro peut vraiment faire pour toi » ouvre sa fiche');
 const reward=w.document.querySelector('.deck-page[data-id="miro"] .deck-voice.reward');
-ok(!!reward && /Écouter sa voix/.test(reward.textContent) && /L’appeler/.test(reward.textContent),'et sa fiche garde la récompense : écouter, appeler');
+ok(!!reward && /Écouter sa voix/.test(reward.textContent) && !/appeler/i.test(reward.textContent),'et sa fiche garde la récompense : écouter sa voix (jamais d\'appel, 30/09)');
 w.eval("closeDeck()");
 
 console.log('\n=== 2 bis. « EN PARLER » : RÉCAPITULATIF ENVOYÉ, RÉPONSE DANS LA FOULÉE, ACCOMPAGNANT APPELÉ ===');
@@ -91,18 +91,14 @@ w.openGame('effort'); await wait(10);
 ok(!w.document.querySelector('#game-inner .game-voice'),'accompagnant encore endormi : pas de bouton');
 w.eval("gameAbandon()");
 w.startWithAgent('miro'); await wait(20);
-ok(w.$('chat-voice') && w.$('chat-voice').style.display!=='none','discussion : bouton de conversation orale dans l\'en-tête');
+ok(!w.$('chat-voice') && typeof w.voiceStartCall==='undefined','discussion : aucun bouton d\'appel (la voix passera par des messages vocaux, 30/09)');
 w.eval("addBubbleSplit('assistant','Je suis là.')");
 const last=[...w.document.querySelectorAll('#messages .bubble.assistant')].pop();
 ok(!!last.querySelector('.bubble-voice') && last.textContent==='Je suis là.','bouton d\'écoute sur la réponse, sans texte ajouté');
-w.voiceCallCurrent(); await wait(40);
-ok(w.$('voice-call').classList.contains('show') && /arrive bientôt/.test(w.$('voice-call').textContent),'écran de conversation orale, en attente du fournisseur');
-w.voiceEndCall(); await wait(10);
-ok(!w.$('voice-call').classList.contains('show'),'raccrocher ferme l\'écran');
 w.eval("speakAgent('miro','test')"); await wait(10);
 ok(/La voix de Miro arrive bientôt/.test(w.$('toast').textContent),'tant que rien n\'est branché : « arrive bientôt »');
 w.openAgentDeck('miro'); await wait(20);
-ok(![...w.document.querySelectorAll('.deck-voice, #voice-call')].some(e=>/débloqu/i.test(e.textContent)),'jamais « débloquer » dans les emplacements de voix');
+ok(![...w.document.querySelectorAll('.deck-voice')].some(e=>/débloqu|appeler/i.test(e.textContent)),'jamais « débloquer » ni « appeler » dans les emplacements de voix');
 w.eval("closeDeck()");
 
 ok(w.__errs.length===0,'aucune erreur runtime'+(w.__errs.length?' : '+w.__errs.slice(0,3).join(' | '):''));

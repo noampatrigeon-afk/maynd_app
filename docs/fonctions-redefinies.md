@@ -140,7 +140,7 @@ fond en quittant les deux écrans concernés).
 | `qzPick` | 1 | 1 | 11-palette-enregistree.js (enveloppe) | 00-noyau.js |
 | `renderAgentList` | 2 | 1 | 19-carte-entourage.js (enveloppe) | 04-composant-agents.js, 15-presentation-accompagnants.js |
 | `renderBadges` | 2 | 0 | 05-objectifs-refonte.js | 00-noyau.js |
-| `renderChatHeader` | 1 | 2 | 32-voix.js (enveloppe : bouton de conversation orale) | 00-noyau.js |
+| `renderChatHeader` | 1 | 1 | 11-palette-enregistree.js (enveloppe) | 00-noyau.js |
 | `renderFormules` | 2 | 0 | 00-noyau.js | 00-noyau.js |
 | `renderJRow` | 2 | 0 | 10-couleurs-pleines.js | 10-couleurs-pleines.js |
 | `renderProBlock` | 2 | 0 | 13-teintes-calculees.js | 07-supervision.js |

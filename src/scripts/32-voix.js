@@ -4,7 +4,9 @@
    Principe produit : réveiller un accompagnant (par son jeu, ou en lui parlant)
    réveille aussi SA voix. Chaque accompagnant aura sa propre voix (ElevenLabs ou
    autre, choix en cours côté porteur du projet). La voix est la récompense des
-   jeux, et mène à la conversation orale.
+   jeux. La conversation orale se fera en messages vocaux, jamais en appel
+   (décision du 30/09 : l'écran d'appel et les boutons « L'appeler » ont été
+   retirés le jour même).
 
    Ce fichier ne pose que les emplacements, prêts à brancher :
    - AGENT_VOICES : une case par accompagnant pour l'identifiant de sa voix ;
@@ -12,19 +14,17 @@
      fournisseur. La clé du fournisseur ne doit JAMAIS vivre dans le navigateur
      (même règle que la clé du modèle, CLAUDE.md section 5) ;
    - speakAgent(id, texte) : lit un texte avec la voix de l'accompagnant. Tant que
-     rien n'est branché, affiche « La voix de X arrive bientôt. » ;
-   - voiceStartCall / voiceEndCall : l'écran de conversation orale (#voice-call),
-     aujourd'hui une coquille.
+     rien n'est branché, affiche « La voix de X arrive bientôt. ».
 
    Où apparaît la voix :
-   1. Fiche de présentation : « Écouter sa voix » et « L'appeler » quand
-      l'accompagnant est réveillé ; « Sa voix dort encore » sinon.
+   1. Fiche de présentation : « Écouter sa voix » quand l'accompagnant est
+      réveillé ; « Sa voix dort encore » sinon.
    2. Fin d'un jeu qui réveille l'accompagnant : cette ligne devient la
       récompense (« Tu as réveillé la voix de Miro »).
    3. Fiche d'un accompagnant endormi : « En le réveillant, tu découvres sa voix. »
    4. Jeu : bouton haut-parleur pour écouter la question, si la voix est réveillée.
-   5. Discussion : bouton d'appel dans l'en-tête, bouton d'écoute sur chaque
-      réponse (discussion à un seul accompagnant).
+   5. Discussion : bouton d'écoute sur chaque réponse (discussion à un seul
+      accompagnant), futur message vocal.
 
    Règles : la voix fait partie de MAYND (formule payante, CLAUDE.md section 1),
    jamais en gratuit. MIA est toujours réveillée, sa voix aussi. Vocabulaire : la
@@ -63,7 +63,6 @@ function speakAgent(id, text){
 
 /* ─────────── icônes ─────────── */
 function voiceIconSVG(){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>'; }
-function voiceCallSVG(){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>'; }
 function voiceSleepSVG(){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>'; }
 
 /* ─────────── 1 et 2. fiche de présentation ─────────── */
@@ -75,9 +74,7 @@ function deckVoiceHTML(id, reward){
   return '<div class="deck-voice'+(reward?' reward':'')+'">'
     +(reward?'<div class="deck-voice-t">Tu as réveillé la voix de '+escapeHtml(a.name)+'</div>':'')
     +'<div class="deck-voice-row">'
-    +'<button class="deck-voice-btn" onclick="speakAgent(\''+id+'\', voiceSample(\''+id+'\'))">'+voiceIconSVG()+'<span>Écouter sa voix</span></button>'
-    +'<button class="deck-voice-btn" onclick="voiceStartCall(\''+id+'\')">'+voiceCallSVG()+'<span>L’appeler</span></button>'
-    +'</div></div>';
+    +'<button class="deck-voice-btn" onclick="speakAgent(\''+id+'\', voiceSample(\''+id+'\'))">'+voiceIconSVG()+'<span>Écouter sa voix</span></button>'    +'</div></div>';
 }
 function deckVoicePlace(page, id, reward){
   var old=page.querySelector('.deck-voice'); if(old) old.parentNode.removeChild(old);
@@ -147,22 +144,6 @@ function gameSpeakQuestion(){
 function chatVoiceAgent(){
   try{ var p=threadParts(); return (p.length===1 && voiceAwake(p[0])) ? p[0] : null; }catch(e){ return null; }
 }
-function chatVoiceSync(){
-  var top=document.querySelector('#tab-chat .chat-top'); if(!top) return;
-  var btn=$('chat-voice');
-  if(!btn){
-    var parts=$('chat-parts'); if(!parts) return;
-    parts.insertAdjacentHTML('beforebegin','<button class="iconbtn chat-voice" id="chat-voice" aria-label="Conversation orale" onclick="voiceCallCurrent()">'+voiceCallSVG()+'</button>');
-    btn=$('chat-voice');
-  }
-  btn.style.display=chatVoiceAgent()?'':'none';
-}
-function voiceCallCurrent(){ var id=chatVoiceAgent(); if(id) voiceStartCall(id); }
-(function(){
-  var base=renderChatHeader;
-  if(typeof base!=='function') return;
-  window.renderChatHeader=function(){ var r=base.apply(this, arguments); try{ chatVoiceSync(); }catch(e){} return r; };
-})();
 (function(){
   var base=bubbleEl;
   if(typeof base!=='function') return;
@@ -180,32 +161,3 @@ function voiceCallCurrent(){ var id=chatVoiceAgent(); if(id) voiceStartCall(id);
     return el;
   };
 })();
-
-/* ─────────── écran de conversation orale (coquille) ─────────── */
-function voiceEnsureScreen(){
-  if($('voice-call')) return;
-  var host=$('deck') ? $('deck').parentNode : document.body;
-  var d=document.createElement('div'); d.id='voice-call'; d.setAttribute('role','dialog'); d.setAttribute('aria-label','Conversation orale');
-  host.appendChild(d);
-}
-function voiceStartCall(id){
-  var a=byId(id); if(!a) return;
-  if(!voiceAwake(id)){ toast('Réveille d’abord '+a.name+' pour entendre sa voix.'); return; }
-  voiceEnsureScreen();
-  var light=typeof LIGHT_AGENTS!=='undefined' && LIGHT_AGENTS.indexOf(id)>=0;
-  var v=$('voice-call');
-  v.className=light?'light':'';
-  v.style.background=a.color;
-  v.innerHTML='<div class="vc-inner">'
-    +'<div class="vc-state">Conversation orale</div>'
-    +'<div class="vc-ava-box"><span class="vc-ring r1"></span><span class="vc-ring r2"></span>'
-    +'<span class="vc-ava">'+(id==='mia'?brainSVG():escapeHtml(a.name[0]))+'</span></div>'
-    +'<div class="vc-name">'+escapeHtml(a.name)+'</div>'
-    +'<p class="vc-note">'+(voiceConfigured(id)
-        ? 'Parle, '+escapeHtml(a.name)+' t’écoute.'
-        : 'La voix de '+escapeHtml(a.name)+' arrive bientôt. Tu pourras lui parler à voix haute, comme au téléphone.')+'</p>'
-    +'<button class="vc-end" onclick="voiceEndCall()">'+voiceCallSVG()+'<span>Raccrocher</span></button>'
-    +'</div>';
-  requestAnimationFrame(function(){ v.classList.add('show'); });
-}
-function voiceEndCall(){ voiceStop(); var v=$('voice-call'); if(v) v.classList.remove('show'); }

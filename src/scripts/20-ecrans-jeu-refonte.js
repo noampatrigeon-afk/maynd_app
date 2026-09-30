@@ -19,6 +19,14 @@
 function gameClockSVG(){
   return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/></svg>';
 }
+/* Une vague sans couture : 640 de large (deux fois la largeur affichée), période qui divise 320,
+   pour qu'un défilement de -50 % retombe exactement sur le même dessin. */
+function gameWaveHTML(cls, period, amp){
+  var base=amp+2, h=base+amp+30, d='M0 '+base+' Q '+(period/4)+' '+(base-amp)+' '+(period/2)+' '+base;
+  for(var x=period; x<=640; x+=period/2) d+=' T '+x+' '+base;
+  d+=' L 640 '+h+' L 0 '+h+' Z';
+  return '<div class="gw '+cls+'"><svg viewBox="0 0 640 '+h+'" preserveAspectRatio="none"><path d="'+d+'"/></svg></div>';
+}
 function gameRenderQuestion(step){
   clearTimeout(_gameRevealTimer);
   var g=GAMES[_game.theme];
@@ -27,7 +35,15 @@ function gameRenderQuestion(step){
   var qKeys=gameOrder().filter(function(s){ return s!=='restitution' && s!=='sortie'; });
   var qIdx=qKeys.indexOf(step);
   var dots=qKeys.map(function(k,i){ return '<span class="game-dot'+(i===qIdx?' on':'')+'"></span>'; }).join('');
-  var pearls=[0,1,2,3].map(function(i){ return '<span class="game-pearl" style="left:'+(16+i*22)+'%;animation-delay:'+(i*2.25)+'s"></span>'; }).join('');
+  /* 30/09/2026 : mer plus agitée. Trois couches de vagues (défilement sans couture, vitesses et
+     sens différents, houle verticale décalée) et des bulles de tailles variées qui remontent en
+     ondulant, découpées par la surface. */
+  var bubbles='';
+  for(var bi=0; bi<14; bi++){
+    var sz=(4+((bi*7)%9)).toFixed(0), left=((bi*37)%92+4), dur=(3.6+((bi*13)%40)/10).toFixed(1), del=(-((bi*1.7)%6)).toFixed(1);
+    bubbles+='<span class="gbub" style="left:'+left+'%;width:'+sz+'px;height:'+sz+'px;animation-duration:'+dur+'s,'+(dur/3).toFixed(1)+'s;animation-delay:'+del+'s,'+del+'s"></span>';
+  }
+  var pearls='<div class="gbubs">'+bubbles+'</div>';
   var optsHtml=gameOptionsHTML(step,q).replace('<div class="game-opts-dropout">', '<div class="game-opts-dropout" style="border-top-color:'+lave(a.color,.5)+'">');
   var h='<div class="game-top"><span class="game-tag" style="color:'+a.color+'">'+escapeHtml(a.name)+'</span>'
     +'<button class="game-exit" onclick="gameAbandon()">Sortir</button></div>'
@@ -35,7 +51,7 @@ function gameRenderQuestion(step){
     +'<div class="game-q">'+escapeHtml(q.title)+'</div>'
     +'<div class="game-reflect"><span class="game-clock" style="color:'+a.color+'">'+gameClockSVG()+'</span><span class="game-reflect-note">Réponses dans '+Math.round((g.reflectionMs||0)/1000)+' secondes</span></div>'
     +'<div class="game-fill-wrap" id="game-fill-wrap">'
-      +'<svg class="game-wave" viewBox="0 0 320 16" preserveAspectRatio="none"><path d="M0 10 C 40 2, 80 2, 120 10 S 200 18, 240 10 S 300 2, 320 10 L 320 16 L 0 16 Z"/></svg>'
+      +gameWaveHTML('gw1', 320, 20)+gameWaveHTML('gw2', 160, 14)+gameWaveHTML('gw3', 80, 9)
       +pearls
     +'</div>'
     +'<div class="game-opts" id="game-opts" style="display:none">'+optsHtml+'</div>'
