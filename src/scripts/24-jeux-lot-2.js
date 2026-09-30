@@ -54,19 +54,16 @@ function gameOrder(){
     if(step==='q0' && _game){
       var q=gameQuestionDef('q0'), opt=idx===-1 ? q.dropout : q.options[idx];
       if(opt && opt.direct && byId(opt.direct)){
-        /* bascule directe : la série est enregistrée (une seule réponse), l'accompagnant du jeu
-           est rencontré. Depuis le 30/09, c'est sa fiche qui s'ouvre (fin de jeu = fiche de
-           l'accompagnant du jeu), l'accompagnant indiqué en première pastille. */
-        var g=GAMES[_game.theme], wasAwake=agentAwake(g.agent);
+        /* bascule directe : la série est enregistrée (une seule réponse), et le jeu s'arrête
+           sur son écran de fin (33-fin-de-jeu.js, 30/09) : l'accompagnant du jeu a la réponse
+           et sait que l'accompagnant indiqué (Iris) peut être utile, il le fera venir s'il le
+           faut. */
         _game.answers.q0=opt;
+        try{ _game.titles=_game.titles||{}; _game.titles.q0=q.title; }catch(e){}
         gamePersistRun(_game.theme, null, gameAnswersForStorage(), opt.direct, true);
-        if(typeof isUnlocked!=='function' || isUnlocked(g.agent)) wakeAgent(g.agent);
-        gameClose();
-        if(recapOpen()) entRenderRecap();
-        _gameLastExit=opt.direct;
-        openAgentDeck(g.agent);
-        deckAddSecond(g.agent, [opt.direct]);
-        if(!wasAwake && agentAwake(g.agent) && typeof voiceRewardOnDeck==='function') voiceRewardOnDeck(g.agent);
+        clearTimeout(_gameRevealTimer);
+        _game.step='restitution';
+        gameRenderStep();
         return;
       }
     }

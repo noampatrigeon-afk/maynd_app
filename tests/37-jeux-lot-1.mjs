@@ -25,20 +25,23 @@ const opens=[];
 async function play(theme, labels){
   w.eval("state.awakeAgents=[]"); w.openGame(theme); await wait(10);
   for(const l of labels) await answer(l);
-  const restit=w.document.querySelector('.game-restit p')?.textContent||'';
+  const restit=w.eval('gameRestitText()');
+  const also=w.eval("_gameEnd.useful.map(function(id){return byId(id).name}).join(' ')");
   w.document.querySelector('.game-next')?.click(); await wait(40);
-  // Depuis le 30/09 : table de sortie dans _gameLastExit, fiche ouverte = accompagnant du jeu.
-  opens.push([theme, deckCalls[deckCalls.length-1]]);
-  const r={restit, deck:w.eval('_gameLastExit'), also:[...w.document.querySelectorAll('.deck-also')].map(x=>x.textContent).join(' ')};
+  // Depuis le 30/09 : table de sortie dans _gameLastExit, accompagnants utiles dans _gameEnd.useful,
+  // « En parler » ouvre la discussion avec l'accompagnant du jeu.
+  opens.push([theme, w.eval('threadParts()[0]')]);
+  const r={restit, deck:w.eval('_gameLastExit'), also};
   w.eval("closeDeck()"); return r;
 }
 
 console.log('\n=== 1. TOUS LES ACCOMPAGNANTS ONT LEUR JEU, SAUF NORA ===');
 ok(w.eval("ALL.map(function(a){return a.id}).filter(function(id){return !gameForAgent(id)}).length")===0,'tous les accompagnants ont leur jeu (Nora depuis le 29/09)');
 
-console.log('\n=== 2. SOL : AUCUN CHRONO ===');
+console.log('\n=== 2. SOL : UNE PAUSE, SANS DÉCOMPTE (30/09) ===');
 w.eval("state.awakeAgents=[]"); w.openGame('anxiete'); await wait(10);
-ok(w.$('game-opts').style.display!=='none','les réponses s\'affichent tout de suite');
+ok(w.$('game-opts').style.display==='none' && !!w.$('game-fill-wrap'),'dix secondes de pause, l\'écran se remplit');
+ok(w.document.querySelector('#game-inner .game-reflect').style.visibility==='hidden','ni horloge ni « Réponses dans … secondes »');
 w.eval("gameAbandon()");
 let r=await play('anxiete',['Cette semaine','Ça se sent dans mon corps','Les autres, les situations sociales','Bouger, me dépenser','Essayer quelque chose quand ça monte']);
 ok(r.deck==='iris' && /Otis/.test(r.also),'les autres mènent à Iris, Otis proposé en plus');
@@ -56,7 +59,7 @@ ok(r.deck==='atlas' && /Ava/.test(r.also),'Atlas : ce qui s\'est arrêté reste 
 r=await play('emotions',['Cette semaine','Ça déborde d\'un coup','Une relation qui a changé','Un accompagnement','Mettre des mots dessus']);
 ok(r.deck==='leo','Ava : une relation qui a changé mène à Leo');
 ok(!/étape|phase|progress|encore/i.test(w.eval("JSON.stringify(GAMES.emotions)")),'Ava : jamais d\'étape, de phase ni de progression attendue');
-ok(opens.length===5 && opens.every(([th,id])=>id===w.eval(`GAMES['${th}'].agent`)),'chaque fin de jeu ouvre la fiche de l\'accompagnant du jeu (30/09)');
+ok(opens.length===5 && opens.every(([th,id])=>id===w.eval(`GAMES['${th}'].agent`)),'« En parler » ouvre toujours la discussion avec l\'accompagnant du jeu (30/09)');
 
 ok(w.__errs.length===0,'aucune erreur runtime'+(w.__errs.length?' : '+w.__errs.slice(0,3).join(' | '):''));
 console.log(`\n${pass} réussis, ${fail} échoués`);

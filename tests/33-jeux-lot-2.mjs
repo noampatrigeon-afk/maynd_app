@@ -21,16 +21,18 @@ async function answer(label){
   if(!b) throw new Error('option introuvable : '+label);
   b.click(); await wait(5);
 }
-// Depuis le 30/09, la fin d'un jeu ouvre toujours la fiche de l'accompagnant du jeu : la table de
-// sortie se lit dans _gameLastExit (et en première pastille), la fiche ouverte dans opens.
+// Depuis le 30/09 (33-fin-de-jeu.js) : écran de fin, puis « En parler » ouvre la discussion avec
+// l'accompagnant du jeu. La table de sortie se lit dans _gameLastExit, les accompagnants utiles
+// transmis à l'accompagnant du jeu dans _gameEnd.useful, la discussion ouverte dans opens.
 const opens=[];
 async function play(theme, labels){
   w.eval("state.awakeAgents=[]"); w.openGame(theme); await wait(10);
   for(const l of labels) await answer(l);
-  const restit=w.document.querySelector('.game-restit p')?.textContent||'';
+  const restit=w.eval('gameRestitText()');
+  const also=w.eval("_gameEnd.useful.map(function(id){return byId(id).name}).join(' ')");
   w.document.querySelector('.game-next')?.click(); await wait(40);
-  opens.push([theme, deckCalls[deckCalls.length-1]]);
-  return {restit, deck:w.eval('_gameLastExit'), also:[...w.document.querySelectorAll('.deck-also')].map(x=>x.textContent).join(' ')};
+  opens.push([theme, w.eval('threadParts()[0]')]);
+  return {restit, deck:w.eval('_gameLastExit'), also};
 }
 
 console.log('\n=== 1. QUATRE NOUVEAUX JEUX, UN PAR ACCOMPAGNANT ===');
@@ -41,7 +43,7 @@ w.eval("state.awakeAgents=[]"); w.openGame('relation'); await wait(10);
 ok(w.eval('_game.step')==='q0' && /Avant de commencer/.test(w.$('game-inner').textContent),'le jeu commence par la question préalable, sans numéro');
 w.eval("gameAbandon()");
 let r=await play('relation',['Seul depuis un moment']);
-ok(r.deck==='iris' && /Iris/.test(r.also) && !w.$('game').classList.contains('show'),'« seul depuis un moment » bascule directement vers Iris (première pastille de la fiche de Leo), sans dérouler le jeu');
+ok(r.deck==='iris' && /Iris/.test(r.also) && !w.$('game').classList.contains('show'),'« seul depuis un moment » arrête le jeu tout de suite, Iris transmise à Leo comme accompagnante utile');
 ok(w.eval("agentAwake('leo')"),'Leo est quand même rencontré');
 w.eval("closeDeck()");
 r=await play('relation',['Séparé récemment','Cette semaine','On se dispute souvent','Je réagis trop fort','Attendre que ça passe','Observer ce qui se passe']);
@@ -71,7 +73,7 @@ r=await play('travail',['Je ne sais plus','Ça me va','Depuis quelques mois','Un
 ok(r.deck==='mateo' && /depuis quelques mois/.test(r.restit),'branche courte : on croit la personne, retour vers Mateo');
 w.eval("closeDeck(); state.awakeAgents=[]"); w.openSleepFiche('leo'); await wait(10);
 ok(/Jouer avec Leo/.test(w.$('sleep-body').textContent) && /5 questions/.test(w.$('sleep-body').textContent),'fiche endormie de Leo : jeu proposé, 5 questions (la préalable ne compte pas)');
-ok(opens.length>5 && opens.every(([th,id])=>id===w.eval(`GAMES['${th}'].agent`)),'chaque fin de jeu ouvre la fiche de l\'accompagnant du jeu (30/09)');
+ok(opens.length>5 && opens.every(([th,id])=>id===w.eval(`GAMES['${th}'].agent`)),'« En parler » ouvre toujours la discussion avec l\'accompagnant du jeu (30/09)');
 
 ok(w.__errs.length===0,'aucune erreur runtime'+(w.__errs.length?' : '+w.__errs.slice(0,3).join(' | '):''));
 console.log(`\n${pass} réussis, ${fail} échoués`);

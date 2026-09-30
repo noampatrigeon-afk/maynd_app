@@ -44,8 +44,9 @@ await answer('Ce mois-ci'); await answer('Je stagne'); await answer('Mon travail
 ok(/Depuis quand/.test(w.document.querySelector('.game-q').textContent),'question 4 remplacée par « depuis quand » au premier passage');
 await answer('Depuis quelques mois'); await answer('Lever le pied');
 ok(/Quand tu as posé ton objectif, tu situais ça du côté de tes relations\. Aujourd’hui, c’est le travail\./.test(w.document.querySelector('.game-restit-cmp')?.textContent||''),'premier passage comparé au questionnaire d\'orientation');
+ok(w.eval('_gameLastExit')==='mateo' && w.eval('_gameEnd.useful[0]')==='mateo','le travail mène à Mateo (transmis à MIA, qui peut le faire venir, 30/09)');
 w.document.querySelector('.game-next').click(); await wait(40);
-ok(deckCalls[deckCalls.length-1]==='mateo','le travail mène à Mateo');
+ok(w.eval("threadParts()[0]")==='mia','« En parler » ouvre la discussion avec MIA');
 w.eval("closeDeck()");
 
 console.log('\n=== 3. PASSAGES SUIVANTS ===');
@@ -61,8 +62,8 @@ await answer('Ce mois-ci'); await answer('Je stagne'); await answer('Mes relatio
 const cmp=w.document.querySelector('.game-restit-cmp')?.textContent||'';
 ok(/du côté du travail\. Aujourd’hui, ce sont tes relations\./.test(cmp),'terrain déplacé : comparaison avec le passage précédent');
 ok(!/progr|recul|mieux|moins bien/i.test(cmp),'un déplacement, jamais un progrès ni un recul');
+ok(w.eval('_gameLastExit')==='otis','« mes relations » suit le contexte connu (dernier jeu joué : Otis)');
 w.document.querySelector('.game-next').click(); await wait(40);
-ok(deckCalls[deckCalls.length-1]==='otis','« mes relations » suit le contexte connu (dernier jeu joué : Otis)');
 w.eval("closeDeck()");
 
 console.log('\n=== 4. PROFESSIONNEL ET SIGNAL ===');

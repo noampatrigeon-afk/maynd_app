@@ -52,12 +52,15 @@ ok(w.eval('_game.branch')==='normal', "réponse normale à la question 2 -> bran
 await answer('Ma tête qui tourne');
 await answer('Couper les écrans le soir');
 await answer('Essayer quelque chose de léger');
-const restit=w.document.querySelector('.game-restit p')?.textContent || '';
+// 30/09 : les phrases de restitution ne sont plus affichées (écran de fin, 33-fin-de-jeu.js),
+// mais gameRestitText() les assemble toujours.
+const restit=w.eval('gameRestitText()');
 ok(restit.includes('Cette année') && restit.includes('la nuit') && restit.includes('la tête') && restit.includes('écrans'), "la restitution assemble les réponses données, sans rien inventer ni conclure : "+restit);
+ok(/Miro a tes 5 réponses/.test(w.$('game-inner').textContent) && !w.document.querySelector('.game-restit p'), "écran de fin : Miro a les réponses, plus de résumé qui les répète");
 w.document.querySelector('.game-next')?.click(); await wait(60);
 ok(!w.$('game').classList.contains('show'), "la fin du jeu ferme l'écran plein écran");
-ok(w.$('deck').classList.contains('show') && deckCalls[deckCalls.length-1]==='miro', "la fin du jeu ouvre la fiche de Miro, l'accompagnant du jeu (30/09)");
-ok(w.eval('_gameLastExit')==='felix' && /Felix/.test(w.document.querySelector('.deck-page[data-id="miro"] .deck-also')?.textContent||''), "l'accompagnant proposé par la table (tête qui tourne -> Felix) est en première pastille");
+ok(w.eval("threadParts()[0]")==='miro' && /Je viens de finir ton jeu/.test(w.eval("activeThread().msgs.filter(function(m){return m.role==='user'}).pop().content")), "« En parler » ouvre la discussion avec Miro et y poste le récapitulatif (30/09)");
+ok(w.eval('_gameLastExit')==='felix' && w.eval('_gameEnd.useful[0]')==='felix', "l'accompagnant proposé par la table (tête qui tourne -> Felix) est transmis à Miro");
 ok(w.eval("agentAwake('miro')"), "finir le jeu réveille l'accompagnant du jeu (Miro)");
 const runsA=w.eval("state.gameRuns.sommeil");
 ok(runsA.length===1 && runsA[0].completed===true && runsA[0].exitAgent==='felix', "la couche réponses enregistre la série complète, horodatée, avec le bon accompagnant de sortie");
@@ -70,10 +73,10 @@ await answer('Je dors bien');
 ok(w.eval('_game.branch')==='short', "«je dors bien» -> branche courte");
 await answer('Toujours');
 await answer('Mon activité physique');
-const shortHtml=w.document.querySelector('.game-restit')?.innerHTML || '';
+const shortHtml=w.eval('gameRestitText()');
 ok(!/mise en garde|mais|cependant|il faudrait/i.test(shortHtml), "aucune mise en garde ni suggestion d'amélioration dans la branche courte");
 w.document.querySelector('.game-next')?.click(); await wait(60);
-ok(deckCalls[deckCalls.length-1]==='miro', "branche courte : pas d'autre accompagnant imposé, la fiche s'ouvre sur celui du jeu (question 3 jamais posée)");
+ok(w.eval("threadParts()[0]")==='miro' && w.eval('_gameEnd.useful.length')===0, "branche courte : aucun autre accompagnant suggéré, la discussion s'ouvre avec celui du jeu (question 3 jamais posée)");
 w.eval("closeDeck()"); await wait(10);
 
 console.log('\n=== 4. BRANCHE IRRÉGULIÈRE : LA QUESTION 3 SE REFORMULE ===');
@@ -114,7 +117,7 @@ await answer("Ce qui m'entoure, bruit, lumière, quelqu'un");
 await answer('Bouger davantage dans la journée');
 await answer('Ne rien changer pour l’instant');
 ok(/Voir tes réponses du/.test(w.$('game-inner').innerHTML), "sur la restitution, un lien permet de consulter la série précédente");
-w.document.querySelector('.game-prev-toggle')?.click(); await wait(10);
+w.document.querySelector('.game-prev-toggle[onclick="gameTogglePrev()"]')?.click(); await wait(10);
 // gamePreviousRun remonte la série complétée la plus récente AVANT celle qui vient d'être
 // jouée — pas forcément la toute première du test : ici, celle de la section 4 (branche
 // irrégulière), la série de la section 6 étant écartée car marquée non terminée.

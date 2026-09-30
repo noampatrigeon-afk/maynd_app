@@ -145,7 +145,7 @@ fond en quittant les deux écrans concernés).
 | `renderJRow` | 2 | 0 | 10-couleurs-pleines.js | 10-couleurs-pleines.js |
 | `renderProBlock` | 2 | 0 | 13-teintes-calculees.js | 07-supervision.js |
 | `renderSuivi` | 1 | 1 | 14-palette-et-accueil.js (enveloppe) | 00-noyau.js |
-| `send` | 3 | 0 | 17-refonte-intelligence.js | 00-noyau.js, 17-refonte-intelligence.js |
+| `send` | 3 | 0 | 17-refonte-intelligence.js (depuis le 30/09, la réponse est dans `assistantReply(opts)`, même fichier, appelée aussi par la fin de jeu) | 00-noyau.js, 17-refonte-intelligence.js |
 | `setTier` | 2 | 0 | 00-noyau.js | 00-noyau.js |
 | `sfx` | 2 | 0 | 08-sons-et-icones.js | 06-roulette-et-animations.js |
 | `stepObjective` | 1 | 2 | 16-palette-finale.js (enveloppe) | 00-noyau.js |
@@ -166,9 +166,9 @@ fond en quittant les deux écrans concernés).
 | `renameObjective` | 1 | 0 | 16-palette-finale.js | 16-palette-finale.js |
 | `toggleFav` | 2 | 0 | 13-teintes-calculees.js | 02-favoris-et-focus.js |
 | `togglePart` | 1 | 1 | 11-palette-enregistree.js (enveloppe) | 00-noyau.js |
-| `gameRenderQuestion` | 2 | 3 | 32-voix.js (enveloppe : écouter la question) | 18-moteur-des-jeux.js, 20-ecrans-jeu-refonte.js |
+| `gameRenderQuestion` | 2 | 4 | 33-fin-de-jeu.js (enveloppe : réflexion visible en « Réduire les animations », Sol sans décompte) | 18-moteur-des-jeux.js, 20-ecrans-jeu-refonte.js |
 | `gameShowOptions` | 1 | 1 | 20-ecrans-jeu-refonte.js (enveloppe) | 18-moteur-des-jeux.js |
-| `gameRenderRestitution` | 2 | 2 | 28-jeux-lot-0.js (enveloppe) | 18-moteur-des-jeux.js, 22-retours-du-29-09.js |
+| `gameRenderRestitution` | 2 | 2 | 33-fin-de-jeu.js (remplacement complet, n'appelle plus les versions précédentes : écran de fin) | 18-moteur-des-jeux.js, 22-retours-du-29-09.js |
 | `gameRenderSortie` | 2 | 2 | 27-jeu-mia.js (enveloppe : « revoir mon objectif ») | 18-moteur-des-jeux.js, 22-retours-du-29-09.js |
 | `deckFav` | 2 | 1 | 25-fiches-compactes.js (enveloppe de la déclaration de 22) | 15-presentation-accompagnants.js |
 | `renderSleepFiche` | 2 | 2 | 32-voix.js (enveloppe : « tu découvres sa voix ») | 21-fiche-recapitulatif.js, 22-retours-du-29-09.js |
@@ -182,8 +182,10 @@ fond en quittant les deux écrans concernés).
 | `setWheel` | 1 | 1 | 23-suivi-quotidien.js (enveloppe : relevé du jour) | 00-noyau.js |
 | `objSheetDone` | 1 | 1 | 23-suivi-quotidien.js (enveloppe) | 00-noyau.js |
 | `gameOrder` | 3 | 0 | 28-jeux-lot-0.js (q0, q0b, reprise sans question 2) | 18-moteur-des-jeux.js, 24-jeux-lot-2.js |
-| `openGame` | 1 | 1 | 24-jeux-lot-2.js (enveloppe : démarre sur q0) | 18-moteur-des-jeux.js |
-| `gamePick` | 1 | 3 | 28-jeux-lot-0.js (enveloppe : q0b, sorties de Miro selon le contexte) | 18-moteur-des-jeux.js |
+| `openGame` | 1 | 2 | 33-fin-de-jeu.js (enveloppe : accompagnant déjà réveillé ?, titres posés) | 18-moteur-des-jeux.js |
+| `gamePick` | 1 | 4 | 33-fin-de-jeu.js (enveloppe : garde le titre de chaque question posée) | 18-moteur-des-jeux.js |
+| `gameOptionsHTML` | 1 | 1 | 33-fin-de-jeu.js (enveloppe : case « Autre ») | 18-moteur-des-jeux.js |
+| `gameAnswersForStorage` | 2 | 0 | 33-fin-de-jeu.js (remplacement : texte de « Autre ») | 18-moteur-des-jeux.js |
 | `deckAddSecond` | 1 | 1 | 25-fiches-compactes.js (enveloppe) | 22-retours-du-29-09.js |
 | `closeDeck` | 1 | 1 | 25-fiches-compactes.js (enveloppe) | 15-presentation-accompagnants.js |
 | `gameQuestionDefForKey` | 1 | 3 | 31-jeu-nora-et-signaux.js (enveloppe : question 2 « manger ») | 18-moteur-des-jeux.js |

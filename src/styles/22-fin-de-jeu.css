@@ -1,0 +1,37 @@
+/* ══════════ FIN DE JEU, « AUTRE », RÉFLEXION VISIBLE — voir l'en-tête de 33-fin-de-jeu.js ══════════ */
+
+/* « Autre » : la case s'ouvre sur un champ libre et « Valider » */
+.game-autre{display:flex;flex-direction:column}
+.game-autre-btn{color:var(--ink)}
+.game-autre-box{display:flex;flex-direction:column;gap:8px;padding:12px;border-radius:var(--r-sm);background:var(--ac-94,#F3EDFF);border:1.5px solid var(--ac,#974AF0)}
+.game-autre-box textarea{width:100%;min-height:62px;resize:none;border:none;border-radius:12px;padding:11px 13px;font:inherit;font-size:15px;color:var(--ink);background:var(--ac-78,#EDE1FF);outline:none}
+.game-autre-box textarea::placeholder{color:var(--mist)}
+.game-autre-ok{align-self:flex-end;border:none;border-radius:99px;padding:11px 22px;background:var(--ac,#974AF0);color:#fff;font-family:'Poppins',sans-serif;font-weight:700;font-size:14px;cursor:pointer}
+
+/* réflexion visible même avec « Réduire les animations » (le JS fait monter le bloc par paliers) */
+@media (prefers-reduced-motion:reduce){
+  #game-inner .game-fill-wrap{display:block}
+}
+
+/* écran de fin */
+.gend{flex:1;display:flex;flex-direction:column;padding:10px 24px 8px}
+.gend-head{display:flex;align-items:center;gap:12px}
+.gend-ava{width:48px;height:48px;border-radius:15px;display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Poppins',sans-serif;font-weight:800;font-size:21px;flex-shrink:0}
+.gend-ava.mia{background:#974AF0}
+.gend-ava.mia svg{width:28px;height:28px}
+.gend-name{font-family:'Poppins',sans-serif;font-weight:800;font-size:17px;color:var(--ink)}
+.gend-sub{font-family:'DM Sans',sans-serif;font-size:13px;color:var(--mist)}
+.gend-title{margin:26px 0 0;font-family:'Poppins',sans-serif;font-weight:800;font-size:26px;line-height:1.2;color:var(--ink)}
+.gend-body{margin:12px 0 0;font-family:'DM Sans',sans-serif;font-size:16px;line-height:1.5;color:var(--ink)}
+.gend .game-restit{flex:0 0 auto;padding:0}
+.gend .game-restit:empty{display:none}
+.gend .game-restit .game-restit-cmp{font-size:16px}
+.gend-voice{margin-top:18px;display:flex;align-items:center;gap:9px;align-self:flex-start;border:none;border-radius:99px;padding:10px 16px;background:#EDE1FF;color:var(--violet-deep);font-family:'DM Sans',sans-serif;font-weight:700;font-size:13.5px;cursor:pointer;text-align:left}
+.gend-voice svg{width:17px;height:17px;flex-shrink:0}
+.gend-actions{margin-top:auto;padding-top:26px;display:flex;flex-direction:column;gap:9px}
+.gend-actions .btn,.gend-actions .btn.full.game-next{width:100%;align-self:stretch}
+.gend-mine{margin-top:12px}
+.gend-list{margin-top:4px;display:flex;flex-direction:column;gap:8px}
+.gend-row{display:flex;flex-direction:column;gap:3px;padding:11px 14px;border-radius:14px;background:#F6F1FF}
+.gend-q{font-family:'DM Sans',sans-serif;font-size:12.5px;color:var(--mist);line-height:1.35}
+.gend-a{font-family:'Poppins',sans-serif;font-weight:600;font-size:14.5px;color:var(--ink);line-height:1.35}

@@ -22,20 +22,55 @@ async function answer(label){
   b.click(); await wait(5);
 }
 
-console.log('\n=== 1. FIN DU JEU : TOUJOURS LA FICHE DE L\'ACCOMPAGNANT DU JEU (30/09) ===');
+console.log('\n=== 1. FIN DU JEU : L\'ACCOMPAGNANT DU JEU, JAMAIS UN AUTRE (30/09) ===');
 w.eval("state.awakeAgents=[]; state.gameRuns={}");
 w.openGame('sommeil'); await wait(10);
 for(const l of ['Cette année','Je me réveille la nuit','Je ne sais pas','Couper les écrans le soir','Essayer quelque chose de léger']) await answer(l);
-w.document.querySelector('.game-next').click(); await wait(40);
-ok(deckCalls[deckCalls.length-1]==='miro','« Je ne sais pas » chez Miro : la fiche de Miro, plus celle de MIA');
-ok(!w.document.querySelector('.deck-page[data-id="miro"] .deck-also'),'MIA n\'est jamais proposée en pastille (elle est toujours là)');
-ok(w.eval('_gameLastExit')==='mia','la table de sortie du dossier reste enregistrée');
+const endTxt=w.$('game-inner').textContent;
+ok(/Miro a tes 5 réponses/.test(endTxt) && /Pas besoin de tout réécrire/.test(endTxt),'écran de fin : Miro a les réponses et est là pour en parler');
+ok(/En parler avec Miro maintenant/.test(endTxt) && /Ce que Miro peut vraiment faire pour toi/.test(endTxt),'deux boutons : en parler, découvrir ce qu\'il fait');
+ok(w.eval('_gameEnd.useful.length')===0 && w.eval('_gameLastExit')==='mia','« Je ne sais pas » : MIA n\'est jamais transmise comme accompagnante utile (elle est toujours là)');
 
 console.log('\n=== 2. LA VOIX, RÉCOMPENSE DU JEU ===');
+ok(/Tu as réveillé la voix de Miro/.test(w.document.querySelector('.gend-voice')?.textContent||''),'finir le jeu réveille la voix : récompense sur l\'écran de fin');
+w.eval("gameEndFiche()"); await wait(20);
+ok(deckCalls[deckCalls.length-1]==='miro','« Ce que Miro peut vraiment faire pour toi » ouvre sa fiche');
 const reward=w.document.querySelector('.deck-page[data-id="miro"] .deck-voice.reward');
-ok(!!reward && /Tu as réveillé la voix de Miro/.test(reward.textContent),'finir le jeu réveille la voix : récompense sur la fiche');
-ok(/Écouter sa voix/.test(reward.textContent) && /L’appeler/.test(reward.textContent),'deux boutons : écouter, appeler');
+ok(!!reward && /Écouter sa voix/.test(reward.textContent) && /L’appeler/.test(reward.textContent),'et sa fiche garde la récompense : écouter, appeler');
 w.eval("closeDeck()");
+
+console.log('\n=== 2 bis. « EN PARLER » : RÉCAPITULATIF ENVOYÉ, RÉPONSE DANS LA FOULÉE, ACCOMPAGNANT APPELÉ ===');
+{
+  let calls=0; const systems=[];
+  const saveFetch=w.fetch;
+  w.eval("state.apiKey='x'; GAME_INVITE_DELAY=10");
+  w.fetch=(u,o)=>{ calls++; try{ systems.push(JSON.parse(o.body).system||''); }catch(e){}
+    const txt= calls===1 ? 'Ta tête tourne la nuit. Sol travaille ça, je lui propose de venir. [[SUGGEST:sol]]' : '[[REDIGE:sol]] Miro m’a fait venir. Qu’est-ce qui tourne le plus ?';
+    return Promise.resolve({ok:true,status:200,json:()=>Promise.resolve({content:[{type:'text',text:txt}]})}); };
+  w.openGame('sommeil'); await wait(10);
+  for(const l of ['Cette année','Je me réveille la nuit','Ma tête qui tourne','Couper les écrans le soir','Essayer quelque chose de léger']) await answer(l);
+  w.document.querySelector('.game-next').click(); await wait(200);
+  const msgs=w.eval("JSON.stringify(activeThread().msgs)");
+  ok(w.eval("threadParts()[0]")==='miro' && /Je viens de finir ton jeu « Tes nuits »/.test(msgs) && /Ma tête qui tourne/.test(msgs),'le récapitulatif est posté dans la discussion avec Miro, sans rien retaper');
+  ok(/terminer ton jeu « Tes nuits »/.test(systems[0]||''),'Miro sait qu\'on sort de son jeu');
+  ok(w.eval("threadParts().indexOf('sol')")>=0 && calls===2 && /vient de te faire venir/.test(systems[1]||''),'Miro fait venir Sol, qui répond dans la foulée');
+  ok(/Miro m’a fait venir/.test(msgs) && !/\[\[/.test(msgs),'réponse de Sol affichée, balises retirées');
+  w.fetch=saveFetch; w.eval("state.apiKey=''");
+}
+
+console.log('\n=== 2 ter. « AUTRE » SOUS CHAQUE QUESTION ===');
+w.openGame('sommeil'); await wait(10); w.gameRevealNow(); await wait(5);
+ok(!!w.document.querySelector('#game-autre .game-autre-btn'),'une case « Autre »');
+w.eval("gameAutreOpen()"); w.$('game-autre-tx').value='Je dors par morceaux'; w.eval("gameAutreValidate('q1')"); await wait(5);
+ok(w.eval("_game.step")==='q2','valider passe à la question suivante');
+w.gameRevealNow(); await wait(5); w.eval("gameAutreOpen()"); w.eval("gameAutreValidate('q2')"); await wait(5);
+ok(w.eval("_game.step")==='q3' && w.eval("_game.branch")==='normal','« Autre » sans texte se valide aussi, et suit la branche normale');
+w.eval("gameAbandon()");
+const lastRun=w.eval("state.gameRuns.sommeil[state.gameRuns.sommeil.length-1].answers");
+ok(lastRun.q1==='Autre : Je dors par morceaux' && lastRun.q2==='Autre','le texte libre est enregistré');
+w.openGame('habitudes'); await wait(10); w.gameRevealNow(); await wait(5);
+ok(!w.document.querySelector('#game-autre'),'pas de doublon là où une réponse « Autre chose » existe déjà');
+w.eval("gameAbandon()");
 w.openAgentDeck('miro'); await wait(20);
 ok(!w.document.querySelector('.deck-voice.reward') && /Écouter sa voix/.test(w.document.querySelector('.deck-page[data-id="miro"] .deck-voice').textContent),'ensuite, une simple ligne voix sur sa fiche');
 ok(/Sa voix dort encore/.test(w.document.querySelector('.deck-page[data-id="kael"] .deck-voice').textContent),'un accompagnant endormi : sa voix dort encore');

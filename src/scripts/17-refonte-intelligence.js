@@ -480,10 +480,20 @@ async function send(){
   /* 29/09/2026 : le quota gratuit n'est plus décompté ici, mais seulement quand une réponse
      arrive vraiment (plus bas) — sans clé, clé refusée ou réseau coupé, on ne perdait un
      message sur cinq pour rien. */
-  if(!state.apiKey){ addError(t('needKey')+'<br><a class="keylink" onclick="openProfile()">'+t('openProfileLink')+'</a>'); return; }
+  return assistantReply();
+}
+/* 30/09/2026 : la réponse de l'accompagnant, séparée de send() pour pouvoir être déclenchée
+   sans message tapé (fin d'un jeu : le récapitulatif est posté puis l'accompagnant répond dans
+   la foulée, 33-fin-de-jeu.js). opts.extraSystem s'ajoute en fin de consigne ; opts.onJoin
+   remplace handleJoin quand l'accompagnant propose d'en faire venir un autre. Renvoie la
+   réponse analysée (parseSignals), ou null en cas d'échec. */
+async function assistantReply(opts){
+  opts=opts||{};
+  if(!state.apiKey){ addError(t('needKey')+'<br><a class="keylink" onclick="openProfile()">'+t('openProfileLink')+'</a>'); return null; }
   addTyping();
   try{
-    const sys=composeSystem();
+    let sys=composeSystem();
+    if(opts.extraSystem) sys+=SEP+opts.extraSystem;
     const th=activeThread();
     const allMsgs=th.msgs.filter(m=>m.role).map(m=>({role:m.role,content:m.content}));
     const msgs = allMsgs.length>KEEP_RAW ? allMsgs.slice(-KEEP_RAW) : allMsgs;
@@ -509,12 +519,13 @@ async function send(){
     }
     applyBoucleOutcome(th, r);
     persist();
-    handleJoin(r.joinId);
+    if(opts.onJoin) opts.onJoin(r.joinId); else handleJoin(r.joinId);
     const freshCount=(th.msgs||[]).filter(m=>m.role).length;
     if(freshCount>KEEP_RAW && (freshCount-(th.etatCourantAt||0))>=REGEN_EVERY){
       regenerateEtatCourant(th);
     }
-  }catch(err){ removeTyping(); addError(errText(err)); }
+    return r;
+  }catch(err){ removeTyping(); addError(errText(err)); return null; }
 }
 
 

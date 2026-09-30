@@ -3,9 +3,9 @@
    Avec ce lot, tous les accompagnants ont leur jeu, sauf Nora (en attente de
    relecture par le professionnel).
 
-   - Sol : aucun temps de réflexion (reflectionMs 0, les réponses s'affichent
-     tout de suite — « un compte à rebours sur le jeu de l'anxiété est un
-     contresens »).
+   - Sol : à l'origine aucun temps de réflexion (« un compte à rebours sur le
+     jeu de l'anxiété est un contresens ») ; depuis le 30/09, 10 secondes de
+     pause sans horloge ni décompte affiché (noClock).
    - « X ou Y » dans les sorties : X est la sortie, Y proposé en plus (`second`),
      comme pour les lots précédents.
    - Atlas et Ava : le dossier ne dit pas où mène « Je ne sais pas » ; laissé
@@ -18,8 +18,13 @@
 GAMES.anxiete = {
   agent:'sol',
   label:'Ce qui monte',
-  accroche:'Cinq questions. Aucun chrono ici.',
-  reflectionMs:0,
+  accroche:'Cinq questions. Prends ton temps.',
+  /* 30/09/2026 : le porteur du projet veut une pause avant les réponses, comme ailleurs.
+     Compromis avec le dossier (« un compte à rebours sur le jeu de l'anxiété est un
+     contresens ») : l'écran se remplit, mais ni horloge ni « Réponses dans … secondes »
+     (noClock, 33-fin-de-jeu.js). */
+  reflectionMs:10000,
+  noClock:true,
   q1:{
     title:"La dernière fois que tu t'es senti vraiment tranquille.",
     options:[

@@ -21,20 +21,22 @@ async function answer(label){
   if(!b) throw new Error('option introuvable : '+label);
   b.click(); await wait(5);
 }
-// Depuis le 30/09 : table de sortie dans _gameLastExit, fiche ouverte = accompagnant du jeu.
+// Depuis le 30/09 : table de sortie dans _gameLastExit, accompagnants utiles dans _gameEnd.useful,
+// « En parler » ouvre la discussion avec l'accompagnant du jeu.
 const opens=[];
 async function play(theme, labels){
   w.eval("state.awakeAgents=[]"); w.openGame(theme); await wait(10);
   for(const l of labels) await answer(l);
+  const also=w.eval("_gameEnd.useful.filter(function(id){return id!==_gameLastExit}).map(function(id){return byId(id).name}).join(' ')");
   w.document.querySelector('.game-next')?.click(); await wait(40);
-  opens.push([theme, deckCalls[deckCalls.length-1]]);
-  const r={deck:w.eval('_gameLastExit'), also:[...w.document.querySelectorAll('.deck-also')].map(x=>x.textContent).join(' ')};
+  opens.push([theme, w.eval('threadParts()[0]')]);
+  const r={deck:w.eval('_gameLastExit'), also};
   w.eval("closeDeck()"); return r;
 }
 
 console.log('\n=== 1. QUATRE NOUVEAUX JEUX ===');
 ok(['soren','iris','eden','vince'].every(id=>w.eval(`!!gameForAgent('${id}')`)),'Soren, Iris, Eden et Vince ont chacun leur jeu');
-ok(Object.keys(w.eval('GAMES')).filter(k=>k!=='anxiete').every(k=>w.eval(`GAMES['${k}'].reflectionMs`)===10000),'tous les jeux laissent 10 secondes de réflexion (sauf Sol, sans chrono)');
+ok(Object.keys(w.eval('GAMES')).every(k=>w.eval(`GAMES['${k}'].reflectionMs`)===10000),'tous les jeux laissent 10 secondes de réflexion (Sol aussi depuis le 30/09, sans décompte affiché)');
 
 console.log('\n=== 2. CADRAGES DU DOSSIER ===');
 const soren=w.eval("JSON.stringify(GAMES.parentalite)");
@@ -57,7 +59,7 @@ r=await play('argent',['Cette année','Je dépense pour me sentir mieux','Ma sit
 ok(r.deck==='mateo' && /Neo/.test(r.also),'Vince : « je dépense pour me sentir mieux » ajoute Neo en second (réponse de la question 2)');
 r=await play('lien',['Cette semaine','Elle me convient','Depuis toujours','Quelques liens qui comptent']);
 ok(r.deck==='iris' && !r.also,'Iris : « elle me convient » est une réponse pleine, rien à corriger');
-ok(opens.length===5 && opens.every(([th,id])=>id===w.eval(`GAMES['${th}'].agent`)),'chaque fin de jeu ouvre la fiche de l\'accompagnant du jeu (30/09)');
+ok(opens.length===5 && opens.every(([th,id])=>id===w.eval(`GAMES['${th}'].agent`)),'« En parler » ouvre toujours la discussion avec l\'accompagnant du jeu (30/09)');
 
 ok(w.__errs.length===0,'aucune erreur runtime'+(w.__errs.length?' : '+w.__errs.slice(0,3).join(' | '):''));
 console.log(`\n${pass} réussis, ${fail} échoués`);

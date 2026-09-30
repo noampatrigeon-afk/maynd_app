@@ -16,6 +16,12 @@ Formules (depuis le 25/09/2026, chantier « abonnement unique ») : gratuit (MIA
 
 **Voix (décision du 30/09/2026) :** chaque accompagnant aura sa propre voix (ElevenLabs ou équivalent, choix en cours). Réveiller un accompagnant, par son jeu ou en lui parlant, réveille sa voix : c'est la récompense des jeux, et le chemin vers la conversation orale. Les emplacements sont posés dans `32-voix.js` : fiche, fin de jeu, fiche endormie, question de jeu, discussion, écran d'appel. Rien n'est encore branché. Pour brancher : `VOICE_ENDPOINT` (un serveur, jamais la clé du fournisseur dans le navigateur) et `AGENT_VOICES[id].voiceId`. Pas de voix en gratuit.
 
+**Fin d'un jeu (décision du 30/09/2026) :** plus de résumé qui répète les réponses, et plus de renvoi vers un autre accompagnant. L'écran de fin propose deux choses :
+- « En parler avec X maintenant » : le récapitulatif est posté dans la discussion avec l'accompagnant du jeu, qui répond aussitôt en sachant qu'on sort de son jeu. S'il le juge utile, il fait venir l'accompagnant indiqué par le jeu, qui répond juste après lui.
+- « Ce que X peut vraiment faire pour toi » : sa fiche.
+
+Sous chaque question, une case « Autre » ouvre un champ libre ; le texte est facultatif. Tout cela est dans `33-fin-de-jeu.js`. La reformulation des questions en vraies questions attend validation : voir `docs/questions-des-jeux-propositions.md`.
+
 ## 2. Règles absolues
 
 Elles ne se discutent pas. Une seule violation suffit à casser le positionnement.
