@@ -1,0 +1,52 @@
+/* ══════════ VOIX DES ACCOMPAGNANTS — emplacements, voir l'en-tête de 32-voix.js ══════════ */
+
+/* fiche de présentation : la ligne voix, juste au-dessus de « Parler à … » */
+.deck-voice{margin-top:auto;display:flex;flex-direction:column;gap:calc(8px * var(--k))}
+.deck-voice + .deck-cta{margin-top:calc(10px * var(--k))}
+.deck-voice-row{display:flex;gap:8px}
+.deck-voice-btn{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;gap:7px;background:rgba(255,255,255,.18);color:#fff;border:1.5px solid rgba(255,255,255,.5);border-radius:99px;padding:calc(10px * var(--k)) 10px;font-family:'Poppins',sans-serif;font-weight:600;font-size:calc(13px * var(--k));cursor:pointer;white-space:nowrap}
+.deck-voice-btn svg{width:17px;height:17px;flex-shrink:0}
+.deck-voice.sleeping{flex-direction:row;align-items:center;justify-content:center;gap:7px;color:rgba(255,255,255,.78);font-family:'DM Sans',sans-serif;font-weight:600;font-size:calc(13px * var(--k))}
+.deck-voice.sleeping svg{width:15px;height:15px}
+/* récompense : fin du jeu qui vient de réveiller l'accompagnant */
+.deck-voice.reward{background:rgba(0,0,0,.16);border-radius:20px;padding:calc(12px * var(--k));animation:voiceReward .7s cubic-bezier(.2,.7,.3,1) both}
+.deck-voice-t{text-align:center;color:#fff;font-family:'Poppins',sans-serif;font-weight:800;font-size:calc(15px * var(--k))}
+.deck-voice.reward .deck-voice-btn{background:#fff;color:var(--dc);border-color:#fff}
+@keyframes voiceReward{0%{transform:scale(.9);opacity:0}60%{transform:scale(1.03);opacity:1}100%{transform:none}}
+.deck-page.light .deck-voice-btn{background:rgba(0,0,0,.08);color:#000;border-color:rgba(0,0,0,.4)}
+.deck-page.light .deck-voice.sleeping,.deck-page.light .deck-voice-t{color:#000}
+.deck-page.light .deck-voice.reward{background:rgba(0,0,0,.1)}
+.deck-page.light .deck-voice.reward .deck-voice-btn{background:#000;color:#FFC400;border-color:#000}
+
+/* fiche d'un accompagnant endormi */
+.sleep-voice{display:flex;align-items:center;justify-content:center;gap:7px;margin:10px 0 0;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--violet-deep)}
+.sleep-voice svg{width:16px;height:16px;flex-shrink:0}
+
+/* jeu : écouter la question */
+.game-top .game-tag + .game-voice{margin-right:auto;margin-left:10px}
+.game-voice{width:34px;height:34px;border-radius:50%;border:none;display:flex;align-items:center;justify-content:center;background:var(--ac-94,#F3EDFF);color:var(--ac,#974AF0);cursor:pointer}
+.game-voice svg{width:18px;height:18px}
+
+/* discussion */
+.chat-voice svg{width:21px;height:21px}
+.bubble.has-voice{position:relative;padding-right:40px}
+.bubble-voice{position:absolute;right:8px;bottom:8px;width:26px;height:26px;border-radius:50%;border:none;background:#EDE1FF;color:var(--violet-deep);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
+.bubble-voice svg{width:14px;height:14px}
+
+/* écran de conversation orale (coquille) */
+#voice-call{position:absolute;inset:0;z-index:96;opacity:0;pointer-events:none;transition:opacity .3s var(--e,ease);display:flex;align-items:center;justify-content:center;color:#fff}
+#voice-call.show{opacity:1;pointer-events:auto}
+#voice-call.light{color:#000}
+.vc-inner{display:flex;flex-direction:column;align-items:center;text-align:center;padding:40px 28px;max-width:360px}
+.vc-state{font-family:'Poppins',sans-serif;font-weight:800;font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.85}
+.vc-ava-box{position:relative;width:170px;height:170px;margin:34px 0 22px;display:flex;align-items:center;justify-content:center}
+.vc-ava{position:relative;z-index:1;width:112px;height:112px;border-radius:50%;background:rgba(0,0,0,.16);display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-weight:800;font-size:46px}
+.vc-ava svg{width:56px;height:56px}
+.vc-ring{position:absolute;inset:0;border-radius:50%;border:2px solid currentColor;opacity:0;animation:vcRing 2.6s ease-out infinite}
+.vc-ring.r2{animation-delay:1.3s}
+@keyframes vcRing{0%{transform:scale(.62);opacity:.55}100%{transform:scale(1.05);opacity:0}}
+.vc-name{font-family:'Poppins',sans-serif;font-weight:800;font-size:30px}
+.vc-note{margin:12px 0 0;font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.45;opacity:.92}
+.vc-end{margin-top:40px;display:flex;align-items:center;gap:9px;border:none;border-radius:99px;padding:14px 26px;background:rgba(0,0,0,.22);color:inherit;font-family:'Poppins',sans-serif;font-weight:700;font-size:15px;cursor:pointer}
+.vc-end svg{width:19px;height:19px;transform:rotate(135deg)}
+@media (prefers-reduced-motion:reduce){ .vc-ring,.deck-voice.reward{animation:none} .vc-ring{opacity:.3} }

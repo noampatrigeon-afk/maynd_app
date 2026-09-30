@@ -117,7 +117,7 @@ fond en quittant les deux écrans concernés).
 | `obEnterSkipQuiz` | 1 | 0 | 16-palette-finale.js | 16-palette-finale.js |
 | `objqAfter` | 2 | 1 | 16-palette-finale.js (enveloppe) | 05-objectifs-refonte.js, 09-couleur-questionnaires.js |
 | `objqClose` | 2 | 0 | 09-couleur-questionnaires.js | 05-objectifs-refonte.js |
-| `openAgentDeck` | 1 | 4 | 30-genre.js (enveloppe : accompagnantes au féminin) | 15-presentation-accompagnants.js |
+| `openAgentDeck` | 1 | 5 | 32-voix.js (enveloppe : ligne voix de chaque fiche) | 15-presentation-accompagnants.js |
 | `openChat` | 1 | 1 | 11-palette-enregistree.js (enveloppe) | 00-noyau.js |
 | `openFocusSheet` | 2 | 0 | 02-favoris-et-focus.js | 00-noyau.js |
 | `openFormules` | 2 | 0 | 00-noyau.js | 00-noyau.js |
@@ -140,7 +140,7 @@ fond en quittant les deux écrans concernés).
 | `qzPick` | 1 | 1 | 11-palette-enregistree.js (enveloppe) | 00-noyau.js |
 | `renderAgentList` | 2 | 1 | 19-carte-entourage.js (enveloppe) | 04-composant-agents.js, 15-presentation-accompagnants.js |
 | `renderBadges` | 2 | 0 | 05-objectifs-refonte.js | 00-noyau.js |
-| `renderChatHeader` | 1 | 1 | 11-palette-enregistree.js (enveloppe) | 00-noyau.js |
+| `renderChatHeader` | 1 | 2 | 32-voix.js (enveloppe : bouton de conversation orale) | 00-noyau.js |
 | `renderFormules` | 2 | 0 | 00-noyau.js | 00-noyau.js |
 | `renderJRow` | 2 | 0 | 10-couleurs-pleines.js | 10-couleurs-pleines.js |
 | `renderProBlock` | 2 | 0 | 13-teintes-calculees.js | 07-supervision.js |
@@ -166,12 +166,13 @@ fond en quittant les deux écrans concernés).
 | `renameObjective` | 1 | 0 | 16-palette-finale.js | 16-palette-finale.js |
 | `toggleFav` | 2 | 0 | 13-teintes-calculees.js | 02-favoris-et-focus.js |
 | `togglePart` | 1 | 1 | 11-palette-enregistree.js (enveloppe) | 00-noyau.js |
-| `gameRenderQuestion` | 2 | 2 | 28-jeux-lot-0.js (enveloppe : libellé de q0b) | 18-moteur-des-jeux.js, 20-ecrans-jeu-refonte.js |
+| `gameRenderQuestion` | 2 | 3 | 32-voix.js (enveloppe : écouter la question) | 18-moteur-des-jeux.js, 20-ecrans-jeu-refonte.js |
 | `gameShowOptions` | 1 | 1 | 20-ecrans-jeu-refonte.js (enveloppe) | 18-moteur-des-jeux.js |
 | `gameRenderRestitution` | 2 | 2 | 28-jeux-lot-0.js (enveloppe) | 18-moteur-des-jeux.js, 22-retours-du-29-09.js |
 | `gameRenderSortie` | 2 | 2 | 27-jeu-mia.js (enveloppe : « revoir mon objectif ») | 18-moteur-des-jeux.js, 22-retours-du-29-09.js |
 | `deckFav` | 2 | 1 | 25-fiches-compactes.js (enveloppe de la déclaration de 22) | 15-presentation-accompagnants.js |
-| `renderSleepFiche` | 2 | 1 | 30-genre.js (enveloppe de la déclaration de 22) | 21-fiche-recapitulatif.js, 22-retours-du-29-09.js |
+| `renderSleepFiche` | 2 | 2 | 32-voix.js (enveloppe : « tu découvres sa voix ») | 21-fiche-recapitulatif.js, 22-retours-du-29-09.js |
+| `bubbleEl` | 1 | 1 | 32-voix.js (enveloppe : bouton d'écoute sur les réponses) | 00-noyau.js |
 | `renderGamesSectionHTML` | 2 | 0 | 22-retours-du-29-09.js (renvoie une chaîne vide) | 18-moteur-des-jeux.js |
 | `entTap` | 1 | 1 | 22-retours-du-29-09.js (enveloppe) | 19-carte-entourage.js |
 | `closeRecap` | 1 | 1 | 22-retours-du-29-09.js (enveloppe : désarme « Endormir tout le monde ») | 21-fiche-recapitulatif.js |

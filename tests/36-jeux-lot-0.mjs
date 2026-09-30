@@ -26,7 +26,8 @@ async function finish(){
   const restit=w.document.querySelector('.game-restit p')?.textContent||'';
   w.document.querySelector('.game-next')?.click(); await wait(40);
   const also=[...w.document.querySelectorAll('.deck-also')].map(x=>x.textContent);
-  const r={restit, deck:deckCalls[deckCalls.length-1], also};
+  // Depuis le 30/09 : table de sortie dans _gameLastExit, fiche ouverte = accompagnant du jeu.
+  const r={restit, deck:w.eval('_gameLastExit'), opened:deckCalls[deckCalls.length-1], also};
   w.eval("closeDeck()"); return r;
 }
 
@@ -44,7 +45,8 @@ ok(/Ce qui déclenche/.test(q()),'« tous les jours » : le jeu enchaîne exacte
 await answer("L'ennui, les moments vides"); await answer('Arrêter net'); await answer('Essayer une journée sans');
 let r=await finish();
 ok(/journée sans alcool/.test(r.restit),'la restitution reprend son mot');
-ok(r.deck==='atlas' && r.also.some(t=>/Iris/.test(t)) && r.also.some(t=>/Neo/.test(t)),'l\'ennui mène à Atlas, avec Iris et Neo proposés en plus');
+ok(r.deck==='atlas' && r.also.some(t=>/Iris/.test(t)),'l\'ennui mène à Atlas, avec Iris proposée en plus (Neo : on est sur sa fiche)');
+ok(r.opened==='neo' && /Atlas/.test(r.also[0]||''),'la fin du jeu ouvre la fiche de Neo, Atlas en première pastille (30/09)');
 const all=w.eval("JSON.stringify(GAMES.habitudes)");
 ok(!/addict|dépendan|alcoolique|toxico|sevrage|abus/i.test(all),'aucune étiquette ni mot clinique');
 
@@ -62,7 +64,7 @@ await answer('Cette année');
 ok(/période calme et une période où ça prend de la place/.test(q()),'sur la branche irrégulière, sans repasser par la question 2');
 await answer('Le stress'); await answer("En parler à quelqu'un"); await answer('Observer sans rien changer');
 r=await finish();
-ok(r.deck==='sol' && r.also.some(t=>/Neo/.test(t)),'le stress mène à Sol, Neo reste proposé en plus');
+ok(r.deck==='sol' && r.opened==='neo' && r.also.some(t=>/Sol/.test(t)),'le stress mène à Sol, proposé en pastille sur la fiche de Neo');
 
 console.log('\n=== 3. BRANCHE COURTE : AUCUNE MISE EN GARDE ===');
 w.openGame('habitudes'); await wait(10);

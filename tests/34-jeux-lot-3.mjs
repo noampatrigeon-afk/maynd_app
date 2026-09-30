@@ -21,11 +21,14 @@ async function answer(label){
   if(!b) throw new Error('option introuvable : '+label);
   b.click(); await wait(5);
 }
+// Depuis le 30/09 : table de sortie dans _gameLastExit, fiche ouverte = accompagnant du jeu.
+const opens=[];
 async function play(theme, labels){
   w.eval("state.awakeAgents=[]"); w.openGame(theme); await wait(10);
   for(const l of labels) await answer(l);
   w.document.querySelector('.game-next')?.click(); await wait(40);
-  const r={deck:deckCalls[deckCalls.length-1], also:w.document.querySelector('.deck-also')?.textContent||''};
+  opens.push([theme, deckCalls[deckCalls.length-1]]);
+  const r={deck:w.eval('_gameLastExit'), also:[...w.document.querySelectorAll('.deck-also')].map(x=>x.textContent).join(' ')};
   w.eval("closeDeck()"); return r;
 }
 
@@ -54,6 +57,7 @@ r=await play('argent',['Cette année','Je dépense pour me sentir mieux','Ma sit
 ok(r.deck==='mateo' && /Neo/.test(r.also),'Vince : « je dépense pour me sentir mieux » ajoute Neo en second (réponse de la question 2)');
 r=await play('lien',['Cette semaine','Elle me convient','Depuis toujours','Quelques liens qui comptent']);
 ok(r.deck==='iris' && !r.also,'Iris : « elle me convient » est une réponse pleine, rien à corriger');
+ok(opens.length===5 && opens.every(([th,id])=>id===w.eval(`GAMES['${th}'].agent`)),'chaque fin de jeu ouvre la fiche de l\'accompagnant du jeu (30/09)');
 
 ok(w.__errs.length===0,'aucune erreur runtime'+(w.__errs.length?' : '+w.__errs.slice(0,3).join(' | '):''));
 console.log(`\n${pass} réussis, ${fail} échoués`);

@@ -55,14 +55,18 @@ function gameOrder(){
       var q=gameQuestionDef('q0'), opt=idx===-1 ? q.dropout : q.options[idx];
       if(opt && opt.direct && byId(opt.direct)){
         /* bascule directe : la série est enregistrée (une seule réponse), l'accompagnant du jeu
-           est rencontré, et c'est la fiche de l'accompagnant indiqué qui s'ouvre */
-        var g=GAMES[_game.theme];
+           est rencontré. Depuis le 30/09, c'est sa fiche qui s'ouvre (fin de jeu = fiche de
+           l'accompagnant du jeu), l'accompagnant indiqué en première pastille. */
+        var g=GAMES[_game.theme], wasAwake=agentAwake(g.agent);
         _game.answers.q0=opt;
         gamePersistRun(_game.theme, null, gameAnswersForStorage(), opt.direct, true);
         if(typeof isUnlocked!=='function' || isUnlocked(g.agent)) wakeAgent(g.agent);
         gameClose();
         if(recapOpen()) entRenderRecap();
-        openAgentDeck(opt.direct);
+        _gameLastExit=opt.direct;
+        openAgentDeck(g.agent);
+        deckAddSecond(g.agent, [opt.direct]);
+        if(!wasAwake && agentAwake(g.agent) && typeof voiceRewardOnDeck==='function') voiceRewardOnDeck(g.agent);
         return;
       }
     }

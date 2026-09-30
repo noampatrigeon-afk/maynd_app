@@ -21,12 +21,15 @@ async function answer(label){
   if(!b) throw new Error('option introuvable : '+label);
   b.click(); await wait(5);
 }
+const opens=[];
 async function play(theme, labels){
   w.eval("state.awakeAgents=[]"); w.openGame(theme); await wait(10);
   for(const l of labels) await answer(l);
   const restit=w.document.querySelector('.game-restit p')?.textContent||'';
   w.document.querySelector('.game-next')?.click(); await wait(40);
-  const r={restit, deck:deckCalls[deckCalls.length-1], also:[...w.document.querySelectorAll('.deck-also')].map(x=>x.textContent).join(' ')};
+  // Depuis le 30/09 : table de sortie dans _gameLastExit, fiche ouverte = accompagnant du jeu.
+  opens.push([theme, deckCalls[deckCalls.length-1]]);
+  const r={restit, deck:w.eval('_gameLastExit'), also:[...w.document.querySelectorAll('.deck-also')].map(x=>x.textContent).join(' ')};
   w.eval("closeDeck()"); return r;
 }
 
@@ -53,6 +56,7 @@ ok(r.deck==='atlas' && /Ava/.test(r.also),'Atlas : ce qui s\'est arrêté reste 
 r=await play('emotions',['Cette semaine','Ça déborde d\'un coup','Une relation qui a changé','Un accompagnement','Mettre des mots dessus']);
 ok(r.deck==='leo','Ava : une relation qui a changé mène à Leo');
 ok(!/étape|phase|progress|encore/i.test(w.eval("JSON.stringify(GAMES.emotions)")),'Ava : jamais d\'étape, de phase ni de progression attendue');
+ok(opens.length===5 && opens.every(([th,id])=>id===w.eval(`GAMES['${th}'].agent`)),'chaque fin de jeu ouvre la fiche de l\'accompagnant du jeu (30/09)');
 
 ok(w.__errs.length===0,'aucune erreur runtime'+(w.__errs.length?' : '+w.__errs.slice(0,3).join(' | '):''));
 console.log(`\n${pass} réussis, ${fail} échoués`);

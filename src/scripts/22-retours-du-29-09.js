@@ -157,18 +157,29 @@ function gameRenderRestitution(){
   }
   $('game-inner').innerHTML=h;
 }
+var _gameLastExit=null;
 function gameRenderSortie(){
   var g=GAMES[_game.theme];
   var exitId = _game.branch==='short' ? null : (_game.answers.q3 ? _game.answers.q3.exit : null);
-  var target = (exitId && byId(exitId)) ? exitId : g.agent;
+  /* Demande du 30/09 : la fin d'un jeu ouvre TOUJOURS la fiche de l'accompagnant du jeu (on
+     vient de le réveiller, c'est lui qu'on veut voir). L'accompagnant de sortie de la question 3
+     devient la première pastille « … peut aussi t'accompagner » ; MIA n'en fait jamais l'objet
+     (« Je ne sais pas » → elle est toujours là). Seul le jeu de MIA (point de mesure), dont le
+     but est d'orienter, garde la sortie vers l'accompagnant indiqué. */
+  var target = g.agent;
+  if(g.agent==='mia' && exitId && byId(exitId)) target=exitId;
   /* accompagnants proposés en plus (lots 0 à 3) : portés par la réponse préalable (Leo), la
      question 2 (Vince) ou la sortie de question 3 (Kael, Eden, Neo), une chaîne ou une liste ;
      plus `alsoAlways` au niveau du jeu (Neo : « reste proposé en second dans tous les cas »). */
   var seconds=[];
-  function addS(v){ [].concat(v||[]).forEach(function(id){ if(id && id!==target && byId(id) && seconds.indexOf(id)<0) seconds.push(id); }); }
+  function addS(v){ [].concat(v||[]).forEach(function(id){ if(id && id!=='mia' && id!==target && byId(id) && seconds.indexOf(id)<0) seconds.push(id); }); }
+  if(target===g.agent) addS(exitId);
+  var nExit=seconds.length; /* la sortie ne compte pas dans les « au plus deux » des dossiers */
   ['q0','q2','q3'].forEach(function(k){ var a=_game.answers[k]; if(a && a.second && !(k==='q3' && _game.branch==='short')) addS(a.second); });
   addS(g.alsoAlways);
-  seconds=seconds.slice(0,2);
+  seconds=seconds.slice(0,2+nExit);
+  _gameLastExit=(exitId && byId(exitId)) ? exitId : g.agent; /* la table de sortie, lue par les tests */
+  var wasAwake=agentAwake(g.agent);
   var theme=_game.theme;
   if(typeof isUnlocked!=='function' || isUnlocked(g.agent)) wakeAgent(g.agent);
   if(seconds.length){ var runs=(state.gameRuns||{})[theme]||[]; if(runs.length){ runs[runs.length-1].exitAgent2=seconds[0]; if(seconds[1]) runs[runs.length-1].exitAgent3=seconds[1]; persist(); } }
@@ -176,6 +187,8 @@ function gameRenderSortie(){
   if(recapOpen()) entRenderRecap();
   openAgentDeck(target);
   if(seconds.length) deckAddSecond(target, seconds);
+  /* récompense : la voix de l'accompagnant se réveille avec lui (32-voix.js) */
+  if(!wasAwake && agentAwake(g.agent) && typeof voiceRewardOnDeck==='function') voiceRewardOnDeck(g.agent);
 }
 /* Sur la fiche de l'accompagnant proposé, une pastille par accompagnant proposé en plus. */
 function deckAddSecond(target, seconds){

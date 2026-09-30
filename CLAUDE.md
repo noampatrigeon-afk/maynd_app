@@ -14,6 +14,8 @@ Trois couches, dans cet ordre :
 
 Formules (depuis le 25/09/2026, chantier « abonnement unique ») : gratuit (MIA seule, 5 messages/jour) et MAYND à 60 € par mois (les seize accompagnants, la voix, la supervision, 700 messages/mois). Les deux anciens paliers payants (MAYND 49 €, MAYND+ 69 €) ont fusionné. Le multi-accompagnants (jusqu'à trois) et le mode vocal ne sont plus liés au prix : ils se gagnent par la progression dans le parcours — un chantier séparé, pas encore livré. En attendant, une bascule de test dans le profil (section Démonstration, `state.multiUnlocked`) permet de basculer entre les deux comportements. Vocabulaire : un accompagnant ne se « débloque » jamais, il se découvre ou se rencontre — ce mot est proscrit partout dans l'interface.
 
+**Voix (décision du 30/09/2026) :** chaque accompagnant aura sa propre voix (ElevenLabs ou équivalent, choix en cours). Réveiller un accompagnant, par son jeu ou en lui parlant, réveille sa voix : c'est la récompense des jeux, et le chemin vers la conversation orale. Les emplacements sont posés dans `32-voix.js` : fiche, fin de jeu, fiche endormie, question de jeu, discussion, écran d'appel. Rien n'est encore branché. Pour brancher : `VOICE_ENDPOINT` (un serveur, jamais la clé du fournisseur dans le navigateur) et `AGENT_VOICES[id].voiceId`. Pas de voix en gratuit.
+
 ## 2. Règles absolues
 
 Elles ne se discutent pas. Une seule violation suffit à casser le positionnement.
