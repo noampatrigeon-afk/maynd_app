@@ -73,7 +73,7 @@ ok(!/[0-9]|kilo|calorie|régime|poids|maigr|IMC|anorex|boulim|priv|contrôl|réd
 ok(!w.eval("JSON.stringify(GAMES.corps)").includes("'neo'") && !/"(exit|second|alsoAlways)":"neo"/.test(w.eval("JSON.stringify(GAMES.corps)")),'jamais Neo en sortie');
 w.openGame('corps'); await wait(10);
 await answer('Mon rapport à ce que je mange'); await answer('Cette année');
-ok(/En ce moment, manger/.test(w.$('game-inner').textContent),'branche alimentation : la question 2 devient « manger »');
+ok(/moments où tu manges/.test(w.$('game-inner').textContent),'branche alimentation : la question 2 devient « manger »');
 w.eval("gameAbandon()");
 w.openGame('corps'); await wait(10);
 await answer('Le regard que je porte sur moi'); await answer('Jamais vraiment'); await answer('Ça prend beaucoup de place dans ma tête');

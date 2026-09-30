@@ -20,7 +20,7 @@ Formules (depuis le 25/09/2026, chantier « abonnement unique ») : gratuit (MIA
 - « En parler avec X maintenant » : le récapitulatif est posté dans la discussion avec l'accompagnant du jeu, qui répond aussitôt en sachant qu'on sort de son jeu. S'il le juge utile, il fait venir l'accompagnant indiqué par le jeu, qui répond juste après lui.
 - « Ce que X peut vraiment faire pour toi » : sa fiche.
 
-Sous chaque question, une case « Autre » ouvre un champ libre ; le texte est facultatif. Tout cela est dans `33-fin-de-jeu.js`. La reformulation des questions en vraies questions attend validation : voir `docs/questions-des-jeux-propositions.md`.
+Sous chaque question, une case « Autre » ouvre un champ libre ; le texte est facultatif. Tout cela est dans `33-fin-de-jeu.js`. Les questions des jeux sont de vraies questions, avec leur point d'interrogation et leur sujet rappelé. Elles sont regroupées dans `34-questions-des-jeux.js`, un seul endroit pour les relire. Un test vérifie qu'aucune ne finit sans « ? ».
 
 ## 2. Règles absolues
 

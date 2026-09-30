@@ -42,7 +42,7 @@ ok(/journée entière sans alcool/.test(q()),'la question 1 reprend son mot');
 await answer('Cette semaine');
 ok(/la place que prend l'alcool/.test(q()),'la question 2 aussi, jamais un terme plus large');
 await answer("C'est tous les jours");
-ok(/Ce qui déclenche/.test(q()),'« tous les jours » : le jeu enchaîne exactement comme pour les autres réponses');
+ok(/te pousse vers l'alcool/.test(q()),'« tous les jours » : le jeu enchaîne exactement comme pour les autres réponses');
 await answer("L'ennui, les moments vides"); await answer('Arrêter net'); await answer('Essayer une journée sans');
 let r=await finish();
 ok(/journée sans alcool/.test(r.restit),'la restitution reprend son mot');
@@ -54,7 +54,7 @@ ok(!/addict|dépendan|alcoolique|toxico|sevrage|abus/i.test(all),'aucune étique
 console.log('\n=== 2. RIEN NE PREND TROP DE PLACE ===');
 w.openGame('habitudes'); await wait(10);
 await answer('Rien ne prend trop de place en ce moment');
-ok(/déjà été le cas/.test(q()),'une seule question : est-ce que ça a déjà été le cas');
+ok(/déjà pris trop de place/.test(q()),'une seule question : est-ce que ça a déjà été le cas');
 await answer("Oui, et c'est derrière moi");
 ok(/On s.arrête là/.test(w.$('game-inner').textContent) && !w.document.querySelector('#game-opts'),'fermeture immédiate, aucune question sur ce que c\'était');
 w.eval("gameClose()");

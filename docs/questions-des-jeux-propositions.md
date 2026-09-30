@@ -1,4 +1,6 @@
-# Questions des jeux : propositions à valider (30/09/2026)
+# Questions des jeux : propositions (30/09/2026)
+
+> **Appliqué le 30/09 :** toutes les propositions A sont en place, dans `src/scripts/34-questions-des-jeux.js`. C'est ce fichier qui fait foi. Pour changer une question, c'est là qu'il faut la modifier ; les variantes B restent ici comme réserve.
 
 Pourquoi ce document :
 - les questions actuelles n'ont pas de point d'interrogation ;

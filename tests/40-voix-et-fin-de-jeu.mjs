@@ -101,6 +101,13 @@ w.openAgentDeck('miro'); await wait(20);
 ok(![...w.document.querySelectorAll('.deck-voice')].some(e=>/débloqu|appeler/i.test(e.textContent)),'jamais « débloquer » ni « appeler » dans les emplacements de voix');
 w.eval("closeDeck()");
 
+console.log('\n=== 4. DE VRAIES QUESTIONS (30/09) ===');
+const titles=JSON.parse(w.eval(`JSON.stringify((function(){ var out=[]; Object.keys(GAMES).forEach(function(k){ var g=GAMES[k];
+  ['q0','q0b','q1','q2','q3','q4','q5','q4First','q2Food'].forEach(function(q){ if(g[q]){ out.push(k+'.'+q+' '+g[q].title); if(g[q].titleIrregular) out.push(k+'.irr '+g[q].titleIrregular); } });
+  if(g.short){ out.push(k+'.c1 '+g.short.q1.title); out.push(k+'.c2 '+g.short.q2.title); } }); return out; })())`));
+const sans=titles.filter(t=>!/\?$/.test(t));
+ok(titles.length>140 && sans.length===0,'chaque question des 17 jeux finit par un point d\'interrogation'+(sans.length?' : '+sans.slice(0,3).join(' | '):''));
+
 ok(w.__errs.length===0,'aucune erreur runtime'+(w.__errs.length?' : '+w.__errs.slice(0,3).join(' | '):''));
 console.log(`\n${pass} réussis, ${fail} échoués`);
 process.exit(fail?1:0);
