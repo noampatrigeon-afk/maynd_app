@@ -20,7 +20,7 @@ var GAMES = {
     agent: 'miro',
     label: 'Tes nuits',
     accroche: "Cinq questions sur tes nuits. Prends ton temps.",
-    reflectionMs: 20000, /* 30 s à l'origine, ramené à 20 s le 29/09/2026 */
+    reflectionMs: 10000, /* 30 s à l'origine, 20 s le 29/09/2026, 10 s le 30/09/2026 */
     q1: {
       title: "La dernière fois que tu t'es réveillé vraiment reposé.",
       options: [

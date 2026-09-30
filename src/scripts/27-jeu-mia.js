@@ -45,7 +45,7 @@ GAMES.point = {
   agent:'mia',
   label:'Ton point de mesure',
   accroche:'Cinq questions sur là où tu en es.',
-  reflectionMs:20000,
+  reflectionMs:10000,
   q1:{
     title:'La dernière fois que tu as senti que tu avançais.',
     options:[

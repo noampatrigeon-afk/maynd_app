@@ -1735,7 +1735,7 @@ button:active,.btn:active,.agx-open:active,.conv-item:active,.quest:active,.chal
           <span data-i="reassure">Un espace à toi, confidentiel. Tes échanges restent sur cet appareil.</span>
         </div>
         <div class="slogan" id="slogan"></div>
-        <div class="build-tag" id="build-tag">Version 29/09 22:05</div>
+        <div class="build-tag" id="build-tag">Version 30/09 09:30</div>
       </div></div>
     </section>
 
@@ -6882,7 +6882,7 @@ var GAMES = {
     agent: 'miro',
     label: 'Tes nuits',
     accroche: "Cinq questions sur tes nuits. Prends ton temps.",
-    reflectionMs: 20000, /* 30 s à l'origine, ramené à 20 s le 29/09/2026 */
+    reflectionMs: 10000, /* 30 s à l'origine, 20 s le 29/09/2026, 10 s le 30/09/2026 */
     q1: {
       title: "La dernière fois que tu t'es réveillé vraiment reposé.",
       options: [
@@ -8227,7 +8227,7 @@ GAMES.relation = {
   agent:'leo',
   label:'Ta relation',
   accroche:"Cinq questions sur ta relation. On parle de toi, pas de l'autre.",
-  reflectionMs:20000,
+  reflectionMs:10000,
   q0:{
     title:'Où tu en es côté relation.',
     options:[
@@ -8316,7 +8316,7 @@ GAMES.affirmation = {
   agent:'otis',
   label:'Ce que tu dis',
   accroche:'Cinq questions sur ce que tu arrives à dire.',
-  reflectionMs:20000,
+  reflectionMs:10000,
   q1:{
     title:'La dernière fois que tu as dit non sans culpabiliser.',
     options:[
@@ -8397,7 +8397,7 @@ GAMES.effort = {
   agent:'kael',
   label:"Ton rapport à l'effort",
   accroche:"Cinq questions sur ton rapport à l'effort.",
-  reflectionMs:20000,
+  reflectionMs:10000,
   q1:{
     title:'La dernière fois que tu as pris du plaisir à bouger.',
     options:[
@@ -8479,7 +8479,7 @@ GAMES.travail = {
   agent:'mateo',
   label:'Ton travail',
   accroche:'Cinq questions sur ton travail.',
-  reflectionMs:20000,
+  reflectionMs:10000,
   q1:{
     title:'La dernière fois que tu as fini une journée satisfait.',
     options:[
@@ -8695,7 +8695,7 @@ GAMES.parentalite = {
   agent:'soren',
   label:'Ta vie de parent',
   accroche:'Cinq questions sur ce que ça change pour toi.',
-  reflectionMs:20000,
+  reflectionMs:10000,
   q0:{
     title:'Où tu en es.',
     options:[
@@ -8788,7 +8788,7 @@ GAMES.lien = {
   agent:'iris',
   label:'Les gens autour de toi',
   accroche:'Cinq questions sur les gens autour de toi.',
-  reflectionMs:20000,
+  reflectionMs:10000,
   q1:{
     title:'La dernière fois que tu as vu quelqu’un avec plaisir.',
     options:[
@@ -8870,7 +8870,7 @@ GAMES.intimite = {
   agent:'eden',
   label:'Ton intimité',
   accroche:'Cinq questions. Zéro jugement, et tu peux t’arrêter quand tu veux.',
-  reflectionMs:20000,
+  reflectionMs:10000,
   q1:{
     title:'La dernière fois que tu t’es senti bien là-dessus.',
     options:[
@@ -8952,7 +8952,7 @@ GAMES.argent = {
   agent:'vince',
   label:"Ton rapport à l'argent",
   accroche:"Cinq questions sur ton rapport à l'argent.",
-  reflectionMs:20000,
+  reflectionMs:10000,
   q1:{
     title:'La dernière fois que tu t’es senti tranquille avec ça.',
     options:[
@@ -9076,7 +9076,7 @@ GAMES.point = {
   agent:'mia',
   label:'Ton point de mesure',
   accroche:'Cinq questions sur là où tu en es.',
-  reflectionMs:20000,
+  reflectionMs:10000,
   q1:{
     title:'La dernière fois que tu as senti que tu avançais.',
     options:[
@@ -9404,7 +9404,7 @@ GAMES.habitudes = {
   agent:'neo',
   label:'Ce qui prend de la place',
   accroche:'Pas d’étiquette, pas de morale. Cinq questions, et tu peux t’arrêter quand tu veux.',
-  reflectionMs:20000,
+  reflectionMs:10000,
   alsoAlways:'neo',
   q0:{
     title:'Ce qui prend trop de place en ce moment.',
@@ -9740,7 +9740,7 @@ GAMES.confiance = {
   agent:'felix',
   label:'La voix dans ta tête',
   accroche:'Cinq questions sur la voix que tu as dans la tête.',
-  reflectionMs:20000,
+  reflectionMs:10000,
   q1:{
     title:'La dernière fois que tu as été fier de toi.',
     options:[
@@ -9821,7 +9821,7 @@ GAMES.discipline = {
   agent:'naoki',
   label:'Ce que tu tiens',
   accroche:'Cinq questions sur ce que tu arrives à tenir.',
-  reflectionMs:20000,
+  reflectionMs:10000,
   q1:{
     title:"La dernière fois que tu as tenu quelque chose jusqu'au bout.",
     options:[
@@ -9902,7 +9902,7 @@ GAMES.sens = {
   agent:'atlas',
   label:'Ce qui compte pour toi',
   accroche:'Cinq questions sur ce qui compte pour toi.',
-  reflectionMs:20000,
+  reflectionMs:10000,
   q1:{
     title:"La dernière fois que tu t'es senti vraiment à ta place.",
     options:[
@@ -9982,7 +9982,7 @@ GAMES.emotions = {
   agent:'ava',
   label:'Ce que tu ressens',
   accroche:'Cinq questions. Tu peux t’arrêter quand tu veux.',
-  reflectionMs:20000,
+  reflectionMs:10000,
   q1:{
     title:'La dernière fois que tu as laissé sortir ce que tu ressentais.',
     options:[
@@ -10290,7 +10290,7 @@ GAMES.corps = {
   agent:'nora',
   label:'Ton rapport au corps',
   accroche:'Cinq questions. Aucun conseil, aucun jugement, et tu peux t’arrêter quand tu veux.',
-  reflectionMs:20000,
+  reflectionMs:10000,
   q0:{
     title:'Ce dont tu veux parler.',
     options:[

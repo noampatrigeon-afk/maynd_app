@@ -100,7 +100,7 @@ GAMES.confiance = {
   agent:'felix',
   label:'La voix dans ta tête',
   accroche:'Cinq questions sur la voix que tu as dans la tête.',
-  reflectionMs:20000,
+  reflectionMs:10000,
   q1:{
     title:'La dernière fois que tu as été fier de toi.',
     options:[
@@ -181,7 +181,7 @@ GAMES.discipline = {
   agent:'naoki',
   label:'Ce que tu tiens',
   accroche:'Cinq questions sur ce que tu arrives à tenir.',
-  reflectionMs:20000,
+  reflectionMs:10000,
   q1:{
     title:"La dernière fois que tu as tenu quelque chose jusqu'au bout.",
     options:[
@@ -262,7 +262,7 @@ GAMES.sens = {
   agent:'atlas',
   label:'Ce qui compte pour toi',
   accroche:'Cinq questions sur ce qui compte pour toi.',
-  reflectionMs:20000,
+  reflectionMs:10000,
   q1:{
     title:"La dernière fois que tu t'es senti vraiment à ta place.",
     options:[
@@ -342,7 +342,7 @@ GAMES.emotions = {
   agent:'ava',
   label:'Ce que tu ressens',
   accroche:'Cinq questions. Tu peux t’arrêter quand tu veux.',
-  reflectionMs:20000,
+  reflectionMs:10000,
   q1:{
     title:'La dernière fois que tu as laissé sortir ce que tu ressentais.',
     options:[

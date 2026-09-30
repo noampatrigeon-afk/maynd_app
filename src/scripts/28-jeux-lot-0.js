@@ -57,7 +57,7 @@ GAMES.habitudes = {
   agent:'neo',
   label:'Ce qui prend de la place',
   accroche:'Pas d’étiquette, pas de morale. Cinq questions, et tu peux t’arrêter quand tu veux.',
-  reflectionMs:20000,
+  reflectionMs:10000,
   alsoAlways:'neo',
   q0:{
     title:'Ce qui prend trop de place en ce moment.',

@@ -28,7 +28,7 @@ GAMES.parentalite = {
   agent:'soren',
   label:'Ta vie de parent',
   accroche:'Cinq questions sur ce que ça change pour toi.',
-  reflectionMs:20000,
+  reflectionMs:10000,
   q0:{
     title:'Où tu en es.',
     options:[
@@ -121,7 +121,7 @@ GAMES.lien = {
   agent:'iris',
   label:'Les gens autour de toi',
   accroche:'Cinq questions sur les gens autour de toi.',
-  reflectionMs:20000,
+  reflectionMs:10000,
   q1:{
     title:'La dernière fois que tu as vu quelqu’un avec plaisir.',
     options:[
@@ -203,7 +203,7 @@ GAMES.intimite = {
   agent:'eden',
   label:'Ton intimité',
   accroche:'Cinq questions. Zéro jugement, et tu peux t’arrêter quand tu veux.',
-  reflectionMs:20000,
+  reflectionMs:10000,
   q1:{
     title:'La dernière fois que tu t’es senti bien là-dessus.',
     options:[
@@ -285,7 +285,7 @@ GAMES.argent = {
   agent:'vince',
   label:"Ton rapport à l'argent",
   accroche:"Cinq questions sur ton rapport à l'argent.",
-  reflectionMs:20000,
+  reflectionMs:10000,
   q1:{
     title:'La dernière fois que tu t’es senti tranquille avec ça.',
     options:[

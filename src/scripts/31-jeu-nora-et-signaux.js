@@ -44,7 +44,7 @@ GAMES.corps = {
   agent:'nora',
   label:'Ton rapport au corps',
   accroche:'Cinq questions. Aucun conseil, aucun jugement, et tu peux t’arrêter quand tu veux.',
-  reflectionMs:20000,
+  reflectionMs:10000,
   q0:{
     title:'Ce dont tu veux parler.',
     options:[
