@@ -29,7 +29,9 @@
 .gend-voice{margin-top:18px;display:flex;align-items:center;gap:9px;align-self:flex-start;border:none;border-radius:99px;padding:10px 16px;background:#EDE1FF;color:var(--violet-deep);font-family:'DM Sans',sans-serif;font-weight:700;font-size:13.5px;cursor:pointer;text-align:left}
 .gend-voice svg{width:17px;height:17px;flex-shrink:0}
 .gend-actions{margin-top:auto;padding-top:26px;display:flex;flex-direction:column;gap:9px}
-.gend-actions .btn,.gend-actions .btn.full.game-next{width:100%;align-self:stretch}
+/* margin:0 : .game-next garde de l'ancien écran une marge de 20 px (11-moteur-des-jeux.css) qui,
+   ajoutée à la largeur pleine, décalait le bouton vers la droite (retour du 01/10) */
+.gend-actions .btn,.gend-actions .btn.full.game-next{width:100%;align-self:stretch;margin:0;box-sizing:border-box}
 .gend-mine{margin-top:12px}
 .gend-list{margin-top:4px;display:flex;flex-direction:column;gap:8px}
 .gend-row{display:flex;flex-direction:column;gap:3px;padding:11px 14px;border-radius:14px;background:#F6F1FF}
