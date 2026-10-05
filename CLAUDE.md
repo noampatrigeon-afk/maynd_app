@@ -14,7 +14,19 @@ Trois couches, dans cet ordre :
 
 Formules (depuis le 25/09/2026, chantier « abonnement unique ») : gratuit (MIA seule, 5 messages/jour) et MAYND à 60 € par mois (les seize accompagnants, la voix, la supervision, 700 messages/mois). Les deux anciens paliers payants (MAYND 49 €, MAYND+ 69 €) ont fusionné. Le multi-accompagnants (jusqu'à trois) et le mode vocal ne sont plus liés au prix : ils se gagnent par la progression dans le parcours — un chantier séparé, pas encore livré. En attendant, une bascule de test dans le profil (section Démonstration, `state.multiUnlocked`) permet de basculer entre les deux comportements. Vocabulaire : un accompagnant ne se « débloque » jamais, il se découvre ou se rencontre — ce mot est proscrit partout dans l'interface.
 
-**Voix (décision du 30/09/2026) :** chaque accompagnant aura sa propre voix (ElevenLabs ou équivalent, choix en cours). Réveiller un accompagnant, par son jeu ou en lui parlant, réveille sa voix : c'est la récompense des jeux, et le chemin vers la conversation orale. La conversation orale se fera en **messages vocaux**, jamais en appel : pas de bouton téléphone ni d'« appeler » (décision du 30/09). Les emplacements sont posés dans `32-voix.js` : fiche (« Écouter sa voix »), fin de jeu, fiche endormie, question de jeu, écoute des réponses dans la discussion. Rien n'est encore branché. Pour brancher : `VOICE_ENDPOINT` (un serveur, jamais la clé du fournisseur dans le navigateur) et `AGENT_VOICES[id].voiceId`. Pas de voix en gratuit.
+**Voix (décision du 30/09/2026, prête à brancher depuis le 05/10) :**
+- Chaque accompagnant aura sa propre voix. ElevenLabs est écarté, trop cher ; le fournisseur reste à choisir.
+- Réveiller un accompagnant, par son jeu ou en lui parlant, réveille sa voix : c'est la récompense des jeux, et le chemin vers la conversation orale.
+- La conversation orale se fera en **messages vocaux**, jamais en appel : pas de bouton téléphone ni d'« appeler » (décision du 30/09).
+- Les emplacements sont dans `32-voix.js`. Le moteur est dans `36-voix-prete.js` : une fiche de voix par accompagnant, une doublure du navigateur réglée différemment pour chacun en attendant le fournisseur, un cache audio, et un décompte des caractères par mois.
+- Pour brancher : `VOICE_ENDPOINT` (un serveur, jamais la clé du fournisseur dans le navigateur) et `AGENT_VOICES[id].voiceId`. Contrat d'échange, coûts et fiches dans `docs/voix.md`.
+- L'écoute se fait à la demande ; la lecture automatique est une option, désactivée par défaut. Pas de voix en gratuit.
+
+**Décisions du 05/10/2026 (dossier « Expérience et intelligence », `docs/consignes-v2-propositions.md`) :**
+- **Entrée par la conversation.** « Commencer » ouvre directement la discussion avec MIA. Le cap naît de cette première discussion : MIA le propose, la personne le valide. Cela remplace le questionnaire de cap obligatoire de la spécification du 10/08, qui reste accessible dans le Parcours. Le compte est proposé au troisième échange, en version courte ; l'accès rapide l'est au deuxième lancement. Code : `39-entree-par-conversation.js`.
+- **Gratuit : un message de prévention, sans humain derrière.** Un message à risque n'ouvre jamais l'écran d'abonnement et n'alerte personne. Pour un abonné, une alerte réelle part vers son professionnel, sous la forme du signal « blocage ». Les accompagnants ne disent « ton professionnel est prévenu » que dans ce cas. Code : `35-securite-et-confiance.js`.
+- **Écran de crise : le vocabulaire médical reste** (psychologues, séances), parce qu'il sert à réorienter vers le soin. C'est la seule exception aux règles de positionnement ci-dessous.
+- **Consignes v2** (`37-consignes-v2.js`) et **dossier de la personne, pas datés, lecture des messages** (`38-dossier-et-suivi.js`) : voir la section 3.
 
 **Fin d'un jeu (décision du 30/09/2026) :** plus de résumé qui répète les réponses, et plus de renvoi vers un autre accompagnant. L'écran de fin propose deux choses :
 - « En parler avec X maintenant » : le récapitulatif est posté dans la discussion avec l'accompagnant du jeu, qui répond aussitôt en sachant qu'on sort de son jeu. S'il le juge utile, il fait venir l'accompagnant indiqué par le jeu, qui répond juste après lui.
@@ -27,7 +39,7 @@ Sous chaque question, une case « Autre » ouvre un champ libre ; le texte est f
 Elles ne se discutent pas. Une seule violation suffit à casser le positionnement.
 
 **Positionnement**
-- Jamais de vocabulaire médical ou clinique. Ni pour les agents, ni pour le professionnel, ni dans les textes. Pas de « thérapie », « patient », « diagnostic », « psychologue », « santé mentale ».
+- Jamais de vocabulaire médical ou clinique. Ni pour les agents, ni pour le professionnel, ni dans les textes. Pas de « thérapie », « patient », « diagnostic », « psychologue », « santé mentale ». Seule exception, décidée le 05/10/2026 : l'écran de crise, qui réoriente vers le soin.
 - Aucun titre réglementé. Le libellé exact est « professionnel référent certifié ».
 - Aucun rendez-vous, nulle part. Le sans-rendez-vous est un argument commercial. Le mot « séance » est proscrit. Le professionnel intervient sur signal, sans créneau à réserver.
 - Quatre signaux, ceux du plan d'affaires : stagnation, blocage, désalignement, progression à consolider. Ne pas en inventer d'autres.
@@ -107,6 +119,22 @@ Couleurs des accompagnants, choisies par thème :
 
 Deux contraintes tenues par les tests : jamais deux couleurs identiques côte à côte dans la liste affichée, et contraste suffisant pour une lettre blanche. Seul le jaune de Felix passe en lettre noire, via `LIGHT_AGENTS`.
 
+**L'intelligence (depuis le 05/10/2026)**
+
+- **L'appel au modèle part en trois blocs**, du plus stable au plus changeant. Les deux premiers sont mis en cache (`cache_control`), le troisième jamais.
+  1. Le socle et la fiche de l'accompagnant.
+  2. Le dossier de la personne.
+  3. La consigne du tour, calculée par le code : moment, sécurité, règle des questions, longueur, pas à suivre, dernier message gratuit, cap à proposer.
+
+  `composeSystem()` renvoie toujours une seule chaîne (les tests la lisent) ; `composeSystemBlocs()` donne les blocs envoyés à l'API (`37-consignes-v2.js`).
+- **Le protocole de sécurité** (`SOCLE_SECURITE`) est hors du socle modifiable : le Studio ne peut pas l'effacer.
+- **Modèles.**
+  - Réponses : `claude-sonnet-5-5`, en effort bas, avec `max_tokens` à 2 000 : la longueur se règle par la consigne, plus en coupant.
+  - Lecture des messages : `claude-haiku-4-5`, en différé et groupée.
+  - Les anciens identifiants sont migrés au chargement.
+- **Balises.** `ACTE` porte une échéance (`[[ACTE:texte|quand]]`) qui alimente les pas datés et « Ton pas » sur l'accueil. `CHOIX` affiche des réponses en boutons, `JEU` une carte de jeu, `CAP` la proposition de cap (`38-dossier-et-suivi.js`).
+- **Le dossier de la personne** (`state.dossier`) est commun à tous les accompagnants. Il est visible et corrigeable dans le profil (« Ce que MAYND retient de toi »), et une ligne effacée n'est jamais réécrite.
+
 **État**
 
 Un seul objet `state`, en portée lexicale, pas exposé sur `window`.
@@ -118,8 +146,10 @@ Un seul objet `state`, en portée lexicale, pas exposé sur `window`.
 **Cycle**
 ```bash
 npm run build    # assemble src/ -> dist/index.html
-npm test         # 15 suites
+npm test         # 32 suites, 991 vérifications au 05/10/2026
 ```
+
+> **Windows (05/10/2026) :** `build.mjs`, `serve.mjs`, `watch.mjs` et `tests/run.mjs` calculent maintenant leurs chemins avec `fileURLToPath`, ce qui les rend justes aussi sous Windows (lettre de lecteur, espaces dans « Margot Purkart »). Avant, `npm test` échouait sur cette machine même avec Node installé. Pour lancer les tests ici, il suffit d'installer Node (version LTS), puis de faire `npm install` et `npm test`.
 
 > **Note :** ce document mentionnait auparavant `dist/maynd.html`. Le fichier livrable s'appelle en réalité `dist/index.html` (cohérent avec `build.mjs`, `serve.mjs` et l'ensemble des fichiers de `tests/`) — corrigé ici.
 
@@ -149,6 +179,8 @@ Si c'est un vrai bug, le corriger et ajouter une vérification qui l'aurait attr
 > **Contrainte d'environnement constatée le 21/07/2026 :** Node.js n'est pas installé sur cette machine de développement (introuvable dans `Program Files`, `AppData`, le registre Windows). `npm run build` et `npm test` ne peuvent donc pas être exécutés depuis l'environnement de l'assistant de code — le porteur du projet doit les lancer lui-même pour valider toute modification. En attendant, les changements sont répercutés à la main dans `dist/index.html` en parallèle de `src/`, ce qui est un pis-aller, pas le workflow prévu par ce document.
 >
 > **Précision du 29/09/2026 :** le site en ligne est construit par GitHub Actions (`.github/workflows/pages.yml` lance `npm run build`) à partir de `src/`. Le `dist/index.html` commité ne part donc pas en ligne. Seul `src/` fait foi. Pour tester en local sans Node, un équivalent PowerShell de `build.mjs` (concaténation dans l'ordre alphabétique, UTF-8 sans BOM) produit un fichier identique au site en ligne. La recopie à la main n'est plus nécessaire. Le `dist/index.html` reste versionné, parce qu'il permet d'ouvrir l'app sans Node (voir le README). Il faut simplement le régénérer après chaque modification de `src/`.
+>
+> **Précision du 05/10/2026 :** Node n'est toujours pas installé sur cette machine. Pour vérifier les changements du jour, l'assistant de code a utilisé un Node portable (LTS v24.21.0, archive officielle dont l'empreinte a été vérifiée), décompressé dans un dossier temporaire, sans rien installer dans le système. Les 32 suites passent avec le vrai `npm test`. Le dossier `node_modules/` (jsdom) créé dans le dépôt est ignoré par git.
 >
 > **Tests sur GitHub (29/09/2026) :** `.github/workflows/tests.yml` lance `npm test` à chaque envoi sur `main`. Le résultat apparaît dans l'onglet Actions (workflow « Tests ») : bilan en clair dans le résumé, vérifications en échec en annotation. Ce contrôle ne bloque pas encore la mise en ligne. Il le deviendra une fois toutes les suites au vert.
 

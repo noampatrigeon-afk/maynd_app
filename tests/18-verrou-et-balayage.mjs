@@ -24,7 +24,11 @@ async function clickMain(){
   const main=btns.find(b=>b.className.includes('btn') && !b.className.includes('ghost')) || btns[0];
   main.click(); await wait(60); return cur();
 }
-ok(await clickMain()==='ob-signup','1 accueil -> inscription (pas de saut)');
+/* 05/10/2026 : « Commencer » ouvre la discussion avec MIA ; l'inscription complète part de son
+   propre écran (bouton « Inscription » de l'accueil, ou proposée dans la discussion). */
+ok(/Commencer/.test(w.$('ob-welcome').querySelector('.btn:not(.ghost)').textContent),'1 accueil : « Commencer » en premier');
+w.obShow('ob-signup'); await wait(60);
+ok(cur()==='ob-signup','1 bis inscription complète');
 w.$('ob-email').value='a@b.fr'; w.$('ob-pwd').value='motdepasse1'; w.obToggleCgu();
 ok(await clickMain()==='ob-verify-choice','2 inscription -> vérification');
 ok(await clickMain()==='ob-verify-code','3 vérification -> code');
@@ -60,16 +64,10 @@ ok(w.eval("Object.keys(OB_SAT).length")===15,'15 écrans en couleur pleine');
 const obc=w.eval("Object.keys(OB_SAT).map(function(k){return OB_SAT[k]})");
 ok(new Set(obc).size>=5,new Set(obc).size+' couleurs différentes dans l\'inscription');
 
-console.log('\n=== 4. CARROUSEL : 5 paires toutes différentes ===');
+console.log('\n=== 4. ACCUEIL : la rangée « Aller vers » est retirée (05/10) ===');
 w = boot(); await wait(90); w.enterApp(false); await wait(30); w.eval("state.tier='plus'");
 w.showTab('accueil'); await wait(25);
-const cards=[...w.$('jrow').querySelectorAll('.jcard')];
-ok(cards.length===5,'5 cartes');
-const pairs=cards.map(c=>c.style.getPropertyValue('--jc')+'|'+c.style.getPropertyValue('--ja'));
-ok(new Set(pairs).size===5,'5 paires uniques');
-const accents=cards.map(c=>c.style.getPropertyValue('--ja'));
-ok(new Set(accents).size===5,'5 accents différents : '+accents.join(' '));
-ok(pairs.includes('#00A862|#FFC400'),'la paire vert et jaune est conservée');
+ok(!w.$('jrow'),'plus de carrousel de cinq cartes : il doublait les onglets');
 
 console.log('\n=== 5. COULEURS DES ACCOMPAGNANTS ===');
 const cols=w.eval("ALL.map(function(a){return a.id+':'+a.color}).join(',')").split(',');

@@ -29,12 +29,15 @@ ok(pad.includes('En préparation'),'état en préparation');
 ok(pad.includes('Feuille de route'),'feuille de route annoncée');
 ok(pad.includes('Faire mon questionnaire'),'action pour la déclencher');
 
-console.log('\n=== 3. abonné avec parcours : feuille signée ===');
-w.eval("state.questionnaireDone=true; state.cap='Être plus serein au travail'; state.focus={agent:'mateo'}; state.favorites=['mateo','sol']");
+console.log('\n=== 3. abonné avec parcours : feuille préparée, signée seulement quand le professionnel signe (05/10) ===');
+w.eval("state.questionnaireDone=true; state.cap='Être plus serein au travail'; state.focus={agent:'mateo'}; state.favorites=['mateo','sol']; state.roadmapSigned=null");
 w.renderObjectives(); pad=w.$('obj-pad').innerHTML;
-ok(pad.includes('Signée'),'état signé');
+ok(pad.includes('À signer') && pad.includes('En attente de la signature'),'feuille prête : en attente de signature, jamais « Signée » d\'office');
+ok(!/Signée le/.test(pad),'aucune date de signature inventée');
 ok(pad.includes('Être plus serein au travail'),'le cap est repris dans la feuille de route');
-ok(/Signée le \d{2}\/\d{2}\/\d{4}/.test(pad),'date de signature');
+w.eval("signRoadmap()"); w.renderObjectives(); pad=w.$('obj-pad').innerHTML;
+ok(pad.includes('Signée'),'état signé après la signature du professionnel');
+ok(/Signée le \d{2}\/\d{2}\/\d{4}/.test(pad),'date de signature réelle');
 ok(pad.includes('Ouvrir mon espace de suivi'),'accès à l\'espace de suivi');
 ok(pad.includes('Mateo')||pad.includes('Sol'),'les accompagnants du parcours sont dans la feuille');
 
@@ -45,10 +48,16 @@ ok(w.$('pro-sheet').classList.contains('show'),'espace de suivi ouvert');
 ok(sh.includes('Feuille de route'),'feuille de route');
 ok(sh.includes('Bilan'),'bilan mensuel');
 ok(sh.includes('Signaux'),'section signaux');
-ok(sh.includes('Relu et signé'),'bilan signé');
+ok(sh.includes('une fois relu et signé') && !sh.includes('Relu et signé par'),'bilan : en préparation tant que personne ne l\'a signé (05/10)');
 ok(sh.includes('stagnation') && sh.includes('blocage') && sh.includes('désalignement'),'les 4 signaux du business plan nommés');
 w.closePro(); await wait(20);
 ok(!w.$('pro-sheet').classList.contains('show'),'fermeture');
+w.openProDashboard(); await wait(10);
+w.eval("signBilan()"); await wait(10);
+w.eval("closeProDashboard()"); w.openPro(); await wait(10);
+const shSigne=w.$('pro-sheet-body').innerHTML;
+ok(shSigne.includes('Bilans signés par ton professionnel') && /Signé le \d{2}\/\d{2}\/\d{4}/.test(shSigne),'un bilan réellement signé dans la vue professionnel apparaît, avec sa date');
+w.closePro(); await wait(20);
 
 console.log('\n=== 5. les signaux viennent du parcours réel (principal, délai, échanges) ===');
 const DAY=86400000;

@@ -3,8 +3,9 @@
 import http from 'http';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
-const root = path.dirname(new URL(import.meta.url).pathname);
+const root = path.dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT || 5173;
 const TYPES = { '.html':'text/html; charset=utf-8', '.css':'text/css', '.js':'text/javascript',
                 '.svg':'image/svg+xml', '.png':'image/png', '.json':'application/json' };

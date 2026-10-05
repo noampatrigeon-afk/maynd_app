@@ -67,8 +67,34 @@ fond en quittant les deux écrans concernés).
 > de l'accompagnant du jeu, fermeture, ouverture de la fiche de présentation). Les enveloppes de `20`
 > capturent ces nouvelles déclarations au hissage, sans rien à changer de leur côté.
 
+> **Mise à jour du 05/10/2026 (fichiers 35 à 39, dossier « Expérience et intelligence ») :**
+> - `composeSystem` n'est plus une pile d'enveloppes. `37-consignes-v2.js` réassigne `window.composeSystem` après toutes les autres couches (16, 17, 30) : leurs enveloppes ne s'appliquent plus. Le contexte de 16 (profil, cap, objectif, boussole, humeur), celui de 17 (ancrage, état courant, pas, boucles) et la consigne d'accord de 30 sont repris dans le bloc « dossier » de `consigneDossier()`.
+> - `getSocle` / `isEditedSocle` passent sur `SOCLE_V2`. Le protocole de sécurité (`SOCLE_SECURITE`) est ajouté hors du socle modifiable.
+> - `send`, `assistantReply`, `parseSignals`, `renderMessages`, `callClaude` et `callDeepSeek` ont une nouvelle déclaration tardive, qui remplace celle de 17 au hissage.
+> - Les lignes ajoutées au tableau ci-dessous l'emportent sur les anciennes.
+
 | Fonction | Déclarations | Enveloppes | Version qui s'applique | Fichiers concernés |
 |---|---|---|---|---|
+| `send` | 4 | 0 | 35-securite-et-confiance.js (le risque passe avant la limite du gratuit) | 00-noyau.js, 17-refonte-intelligence.js |
+| `assistantReply` | 2 | 0 | 38-dossier-et-suivi.js (blocs mis en cache, consigne du tour, pas, cartes, lecture différée) | 17-refonte-intelligence.js |
+| `parseSignals` | 3 | 0 | 38-dossier-et-suivi.js (ACTE avec échéance, CHOIX, JEU, CAP) | 00-noyau.js, 17-refonte-intelligence.js |
+| `renderMessages` | 3 | 0 | 38-dossier-et-suivi.js (cartes de prévention, de jeu, de cap, de compte ; outils de la dernière réponse) | 00-noyau.js, 17-refonte-intelligence.js |
+| `callClaude` / `callDeepSeek` | 3 | 0 | 37-consignes-v2.js (consigne en blocs, effort, modèle au choix pour la lecture) | 00-noyau.js, 17-refonte-intelligence.js |
+| `composeSystem` | 2 | 3 + réassignation | 37-consignes-v2.js (`window.composeSystem` réassignée : les enveloppes de 16, 17 et 30 ne s'appliquent plus) | 00-noyau.js, 16, 17, 30 |
+| `getSocle` / `isEditedSocle` | 2 | 0 | 37-consignes-v2.js | 00-noyau.js |
+| `setProvider` | 2 | 0 | 37-consignes-v2.js (claude-sonnet-5-5) | 00-noyau.js |
+| `loadState` | 1 | 1 | 37-consignes-v2.js (enveloppe : migration des identifiants de modèle) | 00-noyau.js |
+| `renderProBlock` | 3 | 0 | 35-securite-et-confiance.js (« À signer » tant que le professionnel n'a pas signé) | 07-supervision.js, 13-teintes-calculees.js |
+| `renderProSheet` | 2 | 3 | 35 (déclaration de base : bilan en préparation tant que rien n'est signé) ; les enveloppes de 16 s'y ajoutent | 07-supervision.js |
+| `proSignals` | 2 | 4 | 38-dossier-et-suivi.js (enveloppe : signaux lus dans les échanges, pas repoussé trois fois) ; 35 ajoute les alertes de sécurité | 07-supervision.js, 16-palette-finale.js |
+| `renderProDashboard` | 1 | 3 | 35-securite-et-confiance.js (enveloppe : signer la feuille de route) | 16-palette-finale.js |
+| `renderProfile` | 1 | 5 | 38-dossier-et-suivi.js (enveloppe : « Ce que MAYND retient de toi ») ; 35 range le Studio, 36 ajoute la voix, 37 les modèles | 00-noyau.js |
+| `renderHomeGoals` | 2 | 2 | 39-entree-par-conversation.js (enveloppe : accès rapide) ; 38 ajoute « Ton pas » | 14-palette-et-accueil.js, 16-palette-finale.js |
+| `speakAgent` / `voiceStop` | 2 | 0 | 36-voix-prete.js (moteurs serveur et navigateur, cache, plafond) | 32-voix.js |
+| `bubbleEl` | 1 | 2 | 36-voix-prete.js (enveloppe : écoute qui s'arrête au second appui) | 00-noyau.js |
+| `init` | 2 | 1 | 38-dossier-et-suivi.js (enveloppe : date de la dernière visite, nombre de lancements) | 00-noyau.js |
+| `obShow` | 1 | 8 | 39-entree-par-conversation.js (enveloppe : fin de l'accès rapide) | 00-noyau.js |
+| `obSignupNext` / `obSaveFirstname` / `closeInscription` / `checkQuizReminder` | 1 | 1 | 39-entree-par-conversation.js (version courte du compte ; pas de rappel du questionnaire pour qui entre par la conversation) | 00-noyau.js |
 | `obShow` | 1 | 7 | 15-presentation-accompagnants.js (enveloppe) | 00-noyau.js |
 | `renderObjectives` | 4 | 8 | 27-jeu-mia.js (enveloppe : carte du point de mesure) | 00-noyau.js (x2), 03-cap-et-objectifs.js, 05-objectifs-refonte.js |
 | `qzRenderCrisis` | 2 | 3 | 10-couleurs-pleines.js (enveloppe) | 00-noyau.js, 01-freemium-et-crise.js |

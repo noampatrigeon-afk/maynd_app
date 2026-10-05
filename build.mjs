@@ -11,8 +11,10 @@
  */
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
-const root = path.dirname(new URL(import.meta.url).pathname);
+/* fileURLToPath : chemins justes aussi sous Windows (lettre de lecteur, espaces). */
+const root = path.dirname(fileURLToPath(import.meta.url));
 const read = (dir) => fs.readdirSync(path.join(root, dir))
   .filter(f => !f.startsWith('.'))
   .sort()

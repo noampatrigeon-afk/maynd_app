@@ -99,12 +99,19 @@ ok(ch.includes('Mon soutien psy'),'crise: Mon soutien psy');
 ok(ch.includes("n\u2019est pas adapté"),'crise: message honnête v17');
 ok(ch.includes('version gratuite'),'crise: accès version gratuite');
 ok(typeof w2.qzCrisisClose==='function','crise: bouton fonctionnel');
-// via Q1 réelle
+// 05/10/2026 : la question d'exclusion disparaît du questionnaire (elle excluait jusqu'à qui
+// préférait ne pas répondre) ; le risque se repère dans la discussion, à chaque message.
 w2.startQuiz();
-const labels=[...w2.document.querySelectorAll('.qz2-opt span:last-child')].map(s=>s.textContent);
-const oui=labels.indexOf('Oui');
-let trig=false; if(oui>=0){ w2.qzPick(oui); trig=w2.$('quiz-inner').innerHTML.includes('3114'); }
-ok(trig,'répondre "Oui" en Q1 -> écran de crise');
+const q1=(w2.document.querySelector('#quiz-inner .qz2-q')||{}).textContent||'';
+ok(q1 && !/faire du mal/i.test(q1),'le questionnaire ne commence plus par la question d\'exclusion (05/10)');
+w2.eval("qzClose()");
+w2.enterApp(false); await wait(20);
+w2.eval("state.tier='free'; state.freeDay=todayKey(); state.freeCount=5"); w2.showTab('chat'); await wait(10);
+w2.$('chat-input').value="des fois je me dis que ce serait plus simple si je n'étais plus là"; w2.send(); await wait(20);
+ok(!w2.$('paywall-sheet').classList.contains('show'),'gratuit, limite atteinte : un message à risque n\'ouvre jamais l\'écran d\'abonnement');
+const prev=w2.document.querySelector('#messages .prev-card');
+ok(!!prev && /3114/.test(prev.textContent) && /SOS Amitié/.test(prev.textContent) && /SAMU/.test(prev.textContent),'carte de prévention dans la discussion : 3114, SOS Amitié, SAMU');
+ok(!!prev && !/prévenu/.test(prev.textContent),'gratuit : aucun professionnel annoncé comme prévenu (décision du 05/10 : pas d\'humain derrière le gratuit)');
 
 // ══════ 7. POLICES ══════
 console.log('\n=== 7. polices (v17) ===');

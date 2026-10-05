@@ -48,16 +48,11 @@ ok(html.includes('#quiz.tinted .qz2-opt,#orient.tinted .qz2-opt{background:var(-
 console.log('\n=== 3. CARTES DE L\'ACCUEIL ===');
 w=boot(); await wait(90); w.enterApp(false); await wait(30); w.eval("state.tier='plus'");
 w.showTab('accueil'); await wait(25);
-const cards=[...w.$('jrow').querySelectorAll('.jcard')];
-const hum=cards.find(c=>c.textContent.includes('Comment tu vas'));
-ok(hum && hum.style.getPropertyValue('--ja')==='#8FB4FF','humeur : rond bleu clair, plus de blanc');
-const sup=cards.find(c=>c.textContent.includes('Qui te suit'));
-ok(sup && sup.style.getPropertyValue('--jc')==='#E8467F','supervision : rose soutenu');
-ok(sup && sup.style.getPropertyValue('--ja')==='#FFAFCF','supervision : accent rose clair');
-ok(sup && !sup.classList.contains('dark'),'supervision : texte blanc comme les autres');
-const accents=cards.map(c=>c.style.getPropertyValue('--ja'));
-ok(!accents.includes('#FFFFFF'),'plus aucun accent blanc');
-ok(new Set(cards.map(c=>c.style.getPropertyValue('--jc'))).size===5,'5 fonds différents');
+/* 05/10/2026 : la rangée « Aller vers » est retirée (doublon des onglets). L'humeur reste dans
+   le Parcours (« Ton suivi »), la supervision aussi. */
+ok(!w.$('jrow'),'cartes « Aller vers » retirées de l\'accueil');
+w.showTab('objectifs'); await wait(25);
+ok(w.$('obj-pad').innerHTML.includes('Ta supervision') && w.$('obj-pad').innerHTML.includes('Ton suivi'),'supervision et humeur toujours accessibles dans le Parcours');
 
 console.log('\n=== 4. PAIEMENT : texte lisible ===');
 ok(!html.includes(".pr-tag{background:var(--orange-soft)"),'ancienne règle fautive supprimée');
@@ -84,7 +79,8 @@ async function step(){
   main.click(); await wait(70); return c2();
 }
 ok(c2()==='ob-welcome','a. accueil');
-ok(await step()==='ob-signup','b. inscription');
+w2.obShow('ob-signup'); await wait(70); /* 05/10 : « Commencer » ouvre la discussion ; l'inscription complète part de son écran */
+ok(c2()==='ob-signup','b. inscription');
 w2.$('ob-email').value='a@b.fr'; w2.$('ob-pwd').value='motdepasse1'; w2.obToggleCgu();
 ok(await step()==='ob-verify-choice','c. vérification');
 ok(await step()==='ob-verify-code','d. code');

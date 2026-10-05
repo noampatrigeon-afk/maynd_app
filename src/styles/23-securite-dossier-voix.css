@@ -1,0 +1,65 @@
+/* ══════════ SÉCURITÉ, DOSSIER, VOIX, ENTRÉE PAR LA CONVERSATION — 05/10/2026 ══════════
+   Voir les en-têtes de 35 à 39 dans src/scripts. Aplats uniquement, teintes claires
+   de la palette des questionnaires, aucun rectangle blanc sur fond coloré. */
+
+/* ─────────── Studio : plus dans l'en-tête de la discussion (section Démonstration du profil) ─────────── */
+#chat-studio{display:none}
+
+/* ─────────── carte de prévention ─────────── */
+.prev-card{align-self:stretch;margin:4px 0;padding:16px 16px 14px;border-radius:20px;background:#E6D9FF;color:#1E1B24;display:flex;flex-direction:column;gap:8px;animation:msgin .34s cubic-bezier(.2,.7,.3,1) both}
+.prev-t{font-family:'Poppins',sans-serif;font-weight:800;font-size:16px;line-height:1.25;color:#3D1A78}
+.prev-x{font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.45;margin-bottom:2px}
+.prev-num{display:flex;flex-direction:column;gap:1px;padding:11px 14px;border-radius:14px;background:#6F2FC0;color:#fff;text-decoration:none}
+.prev-nm{font-family:'Poppins',sans-serif;font-weight:700;font-size:15px}
+.prev-sub{font-family:'DM Sans',sans-serif;font-size:12.5px;opacity:.86}
+.prev-pro{font-family:'DM Sans',sans-serif;font-size:13px;line-height:1.45;color:#3D1A78;margin-top:2px}
+
+/* ─────────── supervision : feuille en attente de signature ─────────── */
+.pro-sign.pending{color:var(--mist,#76727E);font-weight:600}
+.pd-roadmap{margin-top:10px}
+
+/* ─────────── discussion : choix en boutons, « Ça ne me parle pas » ─────────── */
+.choix-row{align-self:flex-start;display:flex;flex-wrap:wrap;gap:7px;max-width:92%;margin:2px 0 0}
+.choix-b{border:1.5px solid #974AF0;background:#EDE1FF;color:#3D1A78;border-radius:99px;padding:8px 14px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:13.5px;cursor:pointer;text-align:left}
+.choix-b:active{transform:scale(.97)}
+.rep-outils{align-self:flex-start;display:flex;flex-direction:column;align-items:stretch;gap:8px;width:92%}
+.rep-outils .choix-row{max-width:100%}
+.rep-pasjuste{align-self:flex-start;border:none;border-radius:99px;padding:5px 11px;background:#F6F1FF;font-family:'DM Sans',sans-serif;font-weight:700;font-size:11.5px;color:#3D1A78;cursor:pointer}
+.rep-pasjuste:disabled{color:var(--mist,#76727E);cursor:default;font-weight:600}
+/* dans la discussion, chips, cartes et outils prennent la teinte claire de l'accompagnant (aucun blanc sur fond coloré) */
+#tab-chat .choix-b{background:var(--chat-tint,#EDE1FF);border-color:rgba(15,15,20,.16);color:#1E1B24}
+#tab-chat .chat-carte{background:var(--chat-tint,#EDE1FF)}
+#tab-chat .rep-pasjuste{background:var(--chat-tint,#F6F1FF)}
+
+/* ─────────── discussion : cartes (jeu, cap, compte, fin du gratuit) ─────────── */
+.chat-carte{--cc:#974AF0;align-self:stretch;margin:4px 0;padding:15px 16px;border-radius:20px;background:#EDE1FF;display:flex;flex-direction:column;gap:8px;animation:msgin .34s cubic-bezier(.2,.7,.3,1) both}
+.chat-carte .cc-t{font-family:'Poppins',sans-serif;font-weight:800;font-size:15px;line-height:1.3;color:#1E1B24}
+.chat-carte .cc-x{font-family:'DM Sans',sans-serif;font-size:13.5px;line-height:1.45;color:#2E2D36}
+.chat-carte .cc-cap{font-family:'Poppins',sans-serif;font-weight:700;font-size:17px;line-height:1.35;color:#3D1A78}
+.chat-carte .cc-btns{display:flex;gap:8px;flex-wrap:wrap}
+.chat-carte .cc-b{align-self:flex-start;border:none;border-radius:99px;padding:10px 16px;background:var(--cc);color:#fff;font-family:'Poppins',sans-serif;font-weight:700;font-size:13.5px;cursor:pointer}
+.chat-carte .cc-b.ghost{background:transparent;color:#3D1A78;border:1.5px solid #974AF0}
+.chat-carte.doux{background:#F4F1EB}
+.chat-carte.doux .cc-b{background:#974AF0}
+
+/* ─────────── accueil : « Ton pas » et l'accès rapide ─────────── */
+.pas-card{--pc:#974AF0;margin:0 0 12px;padding:16px 16px 14px;border-radius:var(--r,22px);background:var(--pc);color:#fff;display:flex;flex-direction:column;gap:4px}
+.pas-lbl{font-family:'Poppins',sans-serif;font-weight:800;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;opacity:.85}
+.pas-txt{font-family:'Poppins',sans-serif;font-weight:800;font-size:19px;line-height:1.25}
+.pas-meta{font-family:'DM Sans',sans-serif;font-size:12.5px;opacity:.88}
+.pas-btns{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap}
+.pas-b{border:1.5px solid rgba(255,255,255,.7);background:transparent;color:#fff;border-radius:99px;padding:8px 13px;font-family:'Poppins',sans-serif;font-weight:700;font-size:12.5px;cursor:pointer}
+.pas-b.main{background:#fff;color:var(--pc);border-color:#fff}
+
+/* ─────────── profil : « Ce que MAYND retient de toi » ─────────── */
+.block.retient{padding:12px 16px;display:flex;flex-direction:column;gap:8px}
+.ret-note{font-size:12.5px;line-height:1.45;color:var(--mist,#76727E)}
+.ret-vide{font-size:13px;line-height:1.45;color:var(--ink-2,#2E2D36);padding:6px 0}
+.ret-l{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:14px;background:#F4F1EB}
+.ret-tx{flex:1;min-width:0;font-size:13.5px;line-height:1.4;color:var(--ink,#0F0F14)}
+.ret-sub{display:block;margin-top:2px;font-size:11.5px;color:var(--mist,#76727E)}
+.ret-x{flex-shrink:0;border:none;background:none;padding:2px 0;font-family:'DM Sans',sans-serif;font-weight:800;font-size:11px;color:var(--violet-deep,#6F2FC0);text-decoration:underline;text-decoration-style:dotted;cursor:pointer}
+
+/* ─────────── voix : bouton d'écoute en cours de lecture ─────────── */
+.bubble-voice.playing{background:#6F2FC0;color:#fff}
+.deck-voice-btn.playing,.gend-voice.playing{opacity:.8}

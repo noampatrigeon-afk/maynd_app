@@ -7,8 +7,9 @@
 import { watch } from 'fs';
 import { spawnSync } from 'child_process';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
-const root = path.dirname(new URL(import.meta.url).pathname);
+const root = path.dirname(fileURLToPath(import.meta.url));
 const src = path.join(root, 'src');
 
 function build() {

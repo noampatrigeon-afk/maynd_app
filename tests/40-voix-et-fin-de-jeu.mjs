@@ -44,7 +44,8 @@ console.log('\n=== 2 bis. « EN PARLER » : RÉCAPITULATIF ENVOYÉ, RÉPONSE DAN
   let calls=0; const systems=[];
   const saveFetch=w.fetch;
   w.eval("state.apiKey='x'; GAME_INVITE_DELAY=10");
-  w.fetch=(u,o)=>{ calls++; try{ systems.push(JSON.parse(o.body).system||''); }catch(e){}
+  /* 05/10/2026 : la consigne système part en blocs (mise en cache du socle et du dossier) ; on relit leur texte. */
+  w.fetch=(u,o)=>{ calls++; try{ const s=JSON.parse(o.body).system||''; systems.push(Array.isArray(s)?s.map(b=>b.text).join('\n'):s); }catch(e){}
     const txt= calls===1 ? 'Ta tête tourne la nuit. Sol travaille ça, je lui propose de venir. [[SUGGEST:sol]]' : '[[REDIGE:sol]] Miro m’a fait venir. Qu’est-ce qui tourne le plus ?';
     return Promise.resolve({ok:true,status:200,json:()=>Promise.resolve({content:[{type:'text',text:txt}]})}); };
   w.openGame('sommeil'); await wait(10);

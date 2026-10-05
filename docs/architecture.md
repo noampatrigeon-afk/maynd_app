@@ -48,6 +48,12 @@ modularisation réelle.
 | `14-palette-et-accueil.js` | Rose dans la palette, objectifs sur l'accueil, humeur déplacée |
 | `15-presentation-accompagnants.js` | Fiches détaillées des seize accompagnants |
 | `16-palette-finale.js` | Attribution finale des couleurs par thème |
+| `17` à `34` | Intelligence (17), jeux et entourage (18 à 29, 31, 33, 34), genre (30), emplacements de la voix (32) |
+| `35-securite-et-confiance.js` | Risque repéré dans chaque message, carte de prévention, alerte au professionnel, signatures réelles, Studio rangé (05/10/2026) |
+| `36-voix-prete.js` | Voix prête à brancher : fiches de voix, doublure du navigateur, serveur avec cache, décompte et plafond |
+| `37-consignes-v2.js` | Consignes v2, protocole de sécurité non modifiable, appel en blocs mis en cache, modèles |
+| `38-dossier-et-suivi.js` | Dossier de la personne, pas datés, consigne du tour, lecture des messages, choix en boutons, « Ton pas » |
+| `39-entree-par-conversation.js` | « Commencer » vers MIA, cap proposé dans la discussion, compte en version courte, accès rapide |
 
 Les feuilles de style suivent la même logique : `00-base.css` porte l'essentiel, les suivantes
 sont des passes correctives. Dans une feuille de style, c'est la **dernière règle de même
@@ -69,8 +75,10 @@ Un seul objet `state`, en portée lexicale (il n'est pas exposé sur `window`).
 | `moods[]`, `streak`, `quests` | Suivi |
 | `pro` | Professionnel référent |
 
-La persistance est **désactivée volontairement** : `persist()` ne fait rien et `loadState()`
-purge. Chaque lancement repart de zéro, comportement voulu pour les démonstrations.
+La persistance est **active depuis le 21/07/2026** : `persist()` écrit l'état dans `localStorage` et
+`loadState()` le restaure (voir CLAUDE.md, section 3). Depuis le 05/10/2026, `dossier` (mémoire de la
+personne, pas datés), `alertes`, `risque`, `signauxConversation`, `roadmapSigned` et `voixUsage`
+s'y ajoutent.
 
 ## Calibrage des accompagnants
 

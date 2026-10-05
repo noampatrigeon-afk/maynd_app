@@ -152,8 +152,37 @@ async function step(){
   const main=btns.find(b=>b.className.includes('btn') && !b.className.includes('ghost')) || btns[0];
   main.click(); await wait(70); return c2();
 }
-ok(await step()==='ob-signup','a. inscription');
+/* 05/10/2026 : on commence par parler à MIA. Le cap naît de la conversation, le compte est
+   proposé au troisième échange, en version courte. */
+let nRep=0;
+w2.fetch=()=>{ nRep++; const txt= nRep===2 ? 'Je t’entends.\n[[CAP:Retrouver du calme au travail]]' : 'Je t’entends.';
+  return Promise.resolve({ok:true,status:200,json:()=>Promise.resolve({content:[{type:'text',text:txt}]})}); };
+w2.eval("state.apiKey='x'");
+const welcomeMain=w2.$('ob-welcome').querySelector('.btn:not(.ghost)');
+ok(/Commencer/.test(welcomeMain.textContent),'a. l\'accueil propose de commencer tout de suite');
+welcomeMain.click(); await wait(90);
+ok(w2.$('onboarding').classList.contains('done') && w2.eval('activeScreen()')==='tab-chat','a2. directement dans la discussion avec MIA, sans formulaire');
+ok(!w2.$('mood-screen').classList.contains('show'),'a3. pas d\'écran d\'humeur avant le premier échange');
+const portes=[...w2.document.querySelectorAll('#messages .choix-row .choix-b')];
+ok(/Qu’est-ce qui t’amène/.test(w2.$('messages').textContent) && portes.length===4,'a4. MIA demande ce qui l\'amène, avec quatre portes d\'entrée');
+portes[1].click(); await wait(150);
+ok(w2.eval("activeThread().msgs.filter(function(m){return m.role==='user'}).length")===1 && nRep===1 && !w2.document.querySelector('#messages > .choix-row'),'a5. une porte d\'entrée envoie le premier message, MIA répond');
+for(const t of ['Je dors mal depuis que j’ai changé d’équipe','Je voudrais retrouver du calme au travail']){ w2.$('chat-input').value=t; await w2.send(); await wait(150); }
+const capCard=w2.document.querySelector('#messages .chat-carte.cap');
+ok(!!capCard && /Retrouver du calme au travail/.test(capCard.textContent),'a6. MIA propose un cap, avec ses mots');
+[...capCard.querySelectorAll('button')].find(b=>/C’est ça/.test(b.textContent)).click(); await wait(40);
+ok(w2.eval('state.cap')==='Retrouver du calme au travail' && /Ton cap est posé/.test(w2.$('messages').textContent),'a7. le cap naît de la conversation');
+const garde=w2.document.querySelector('#messages .chat-carte.garde');
+ok(!!garde,'a8. au troisième échange, MIA propose de garder le fil');
+[...garde.querySelectorAll('button')].find(b=>/Créer mon compte/.test(b.textContent)).click(); await wait(70);
+ok(!w2.$('onboarding').classList.contains('done') && c2()==='ob-signup','a9. création de compte, au moment où elle a du sens');
 w2.$('ob-email').value='a@b.fr'; w2.$('ob-pwd').value='motdepasse1'; w2.obToggleCgu();
+ok(await step()==='ob-firstname','a10. version courte : du courriel directement au prénom');
+w2.$('ob-firstname-input').value='Noam'; w2.obValidateName();
+await step();
+ok(w2.$('onboarding').classList.contains('done') && w2.eval('state.name')==='Noam' && w2.eval('state.account.email')==='a@b.fr','a11. compte créé, retour dans la discussion');
+/* L'inscription complète reste disponible (bouton « Inscription » de l'accueil). */
+w2.openInscription(); await wait(30); w2.obShow('ob-signup'); await wait(70);
 ok(await step()==='ob-verify-choice','b. vérification');
 ok(await step()==='ob-verify-code','c. code');
 ok(await step()==='ob-access','d. sécurité');

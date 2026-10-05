@@ -21,31 +21,19 @@ const bgs=w.eval("QTHEME.map(function(t){return t.bg}).join(',')");
 ok(bgs.includes('#00A862') && bgs.includes('#FFC400'),'vert et jaune dans les questionnaires');
 ok(w.eval("MC.violet")==='#974AF0' && w.eval("QTHEME[0].bg")==='#974AF0','violet MAYND toujours en tête');
 
-console.log('\n=== 2. équilibre : une paire par carte, pas de surcharge ===');
+console.log('\n=== 2. accueil : la rangée « Aller vers » est retirée (05/10) ===');
 w.showTab('accueil'); await wait(20);
-const cards=[...w.$('jrow').querySelectorAll('.jcard')];
-ok(cards.length===5,'5 cartes');
-const pal=['#974AF0','#224CF2','#00A862','#FE6601','#FFC400','#6F2FC0','#FFFFFF','#FFDBC2','#E8467F','#FFAFCF','#8FB4FF'];
-const bg=cards.map(c=>c.style.getPropertyValue('--jc'));
-const ac=cards.map(c=>c.style.getPropertyValue('--ja'));
-ok(new Set(bg).size===5,'5 fonds distincts : '+bg.join(' '));
-ok(bg.every(c=>pal.includes(c)) && ac.every(c=>pal.includes(c)),'uniquement des couleurs de la palette');
-ok(cards.every(c=>c.style.getPropertyValue('--jc')!==c.style.getPropertyValue('--ja')),'chaque carte = 2 couleurs qui s\'accordent');
-ok(bg.includes('#00A862') && ac.includes('#FFC400'),'vert en fond et jaune en accent sur l\'accueil');
+ok(!w.$('jrow'),'plus de rangée de cinq cartes : elle doublait les onglets');
 
 console.log('\n=== 3. lisibilité sur fond clair ===');
-const lc=cards.find(c=>c.style.getPropertyValue('--jc')==='#E8467F');
-ok(lc && !lc.classList.contains('dark'),'carte rose en texte blanc');
-ok(html.includes('.jcard.dark .jcard-t{color:#000}'),'règle de texte noir');
 ok(w.eval("QTHEME[5].dark")===true,'question jaune en texte noir');
 ok(html.includes('#quiz.tinted.dark .qz2-q'),'questionnaire clair lisible');
 ok(w.eval("OB_DARK['ob-pay-success']")===true,'écran de paiement jaune en texte noir');
 
 console.log('\n=== 4. accueil aéré ===');
 ok(html.includes('#tab-accueil .section-head{margin:32px 2px 14px}'),'sections espacées');
-ok(html.includes('Aller vers'),'les cartes ont leur propre section');
 const pad=w.$('tab-accueil').innerHTML;
-ok(pad.indexOf('Aller vers')>pad.indexOf('mia-cta'),'séparation entre MIA et les cartes');
+ok(!pad.includes('Aller vers') && pad.indexOf('agent-strip')>pad.indexOf('mia-cta'),'après MIA, directement tes accompagnants (« Aller vers » retiré le 05/10)');
 ok(html.includes('#tab-accueil .greet-hi,#tab-objectifs .greet-hi{font-size:29px'),'salutation agrandie');
 ok(html.includes('#tab-accueil .mia-cta{padding:20px 18px'),'carte MIA plus généreuse');
 

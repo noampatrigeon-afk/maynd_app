@@ -89,7 +89,8 @@ async function step(){
   const main=btns.find(b=>b.className.includes('btn') && !b.className.includes('ghost')) || btns[0];
   main.click(); await wait(70); return c2();
 }
-ok(await step()==='ob-signup','a. inscription');
+w2.obShow('ob-signup'); await wait(70); /* 05/10 : « Commencer » ouvre la discussion ; l'inscription complète part de son écran */
+ok(c2()==='ob-signup','a. inscription');
 w2.$('ob-email').value='a@b.fr'; w2.$('ob-pwd').value='motdepasse1'; w2.obToggleCgu();
 ok(await step()==='ob-verify-choice','b. vérification');
 ok(await step()==='ob-verify-code','c. code');

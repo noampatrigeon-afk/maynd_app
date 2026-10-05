@@ -3,13 +3,15 @@
 import { readdirSync } from 'fs';
 import { spawnSync } from 'child_process';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
-const dir = path.dirname(new URL(import.meta.url).pathname);
+/* fileURLToPath et process.execPath : marche aussi sous Windows, même sans node dans le PATH. */
+const dir = path.dirname(fileURLToPath(import.meta.url));
 const files = readdirSync(dir).filter(f => f.endsWith('.mjs') && f !== 'run.mjs').sort();
 let total = 0, failed = 0, suites = 0;
 
 for (const f of files) {
-  const r = spawnSync('node', [path.join(dir, f)], { encoding: 'utf8' });
+  const r = spawnSync(process.execPath, [path.join(dir, f)], { encoding: 'utf8' });
   const out = r.stdout || '';
   const m = out.match(/(\d+) réussis, (\d+) échoués/) || out.match(/(\d+) réussis, (\d+) échoués/);
   const p = m ? +m[1] : 0, e = m ? +m[2] : 0;
