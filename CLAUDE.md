@@ -132,6 +132,7 @@ Deux contraintes tenues par les tests : jamais deux couleurs identiques côte à
   - Réponses : `claude-sonnet-5-5`, en effort bas, avec `max_tokens` à 2 000 : la longueur se règle par la consigne, plus en coupant.
   - Lecture des messages : `claude-haiku-4-5`, en différé et groupée.
   - Les anciens identifiants sont migrés au chargement.
+  - DeepSeek, l'autre fournisseur du profil : `deepseek-flash` répond et lit les messages, réflexion coupée ; `deepseek-v4-pro`, au choix, garde sa réflexion. `deepseek-chat` et `deepseek-reasoner` ne figurent plus dans la documentation officielle (06/10/2026) : ils sont migrés au chargement.
 - **Balises.** `ACTE` porte une échéance (`[[ACTE:texte|quand]]`) qui alimente les pas datés et « Ton pas » sur l'accueil. `CHOIX` affiche des réponses en boutons, `JEU` une carte de jeu, `CAP` la proposition de cap (`38-dossier-et-suivi.js`).
 - **Le dossier de la personne** (`state.dossier`) est commun à tous les accompagnants. Il est visible et corrigeable dans le profil (« Ce que MAYND retient de toi »), et une ligne effacée n'est jamais réécrite.
 
@@ -146,7 +147,7 @@ Un seul objet `state`, en portée lexicale, pas exposé sur `window`.
 **Cycle**
 ```bash
 npm run build    # assemble src/ -> dist/index.html
-npm test         # 32 suites, 991 vérifications au 05/10/2026
+npm test         # 32 suites, 1 000 vérifications au 06/10/2026
 ```
 
 > **Windows (05/10/2026) :** `build.mjs`, `serve.mjs`, `watch.mjs` et `tests/run.mjs` calculent maintenant leurs chemins avec `fileURLToPath`, ce qui les rend justes aussi sous Windows (lettre de lecteur, espaces dans « Margot Purkart »). Avant, `npm test` échouait sur cette machine même avec Node installé. Pour lancer les tests ici, il suffit d'installer Node (version LTS), puis de faire `npm install` et `npm test`.

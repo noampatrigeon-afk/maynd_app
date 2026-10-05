@@ -432,7 +432,7 @@ Format exact :
 
 var LECTURE_DELAI_MS=8000;
 var _lectureTimer=null;
-function modeleLecture(){ return state.provider==='deepseek' ? (state.model||'deepseek-chat') : 'claude-haiku-4-5'; }
+function modeleLecture(){ return state.provider==='deepseek' ? 'deepseek-flash' : 'claude-haiku-4-5'; }
 function programmerLecture(th){
   if(!th) return;
   clearTimeout(_lectureTimer);

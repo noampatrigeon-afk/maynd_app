@@ -213,6 +213,32 @@ w.showTab('objectifs'); await wait(30);
 const pill=(w.document.querySelector('#obj-pad .streak-pill')||{}).textContent||'';
 ok(/1 jour ce mois-ci/.test(pill) && !/affilée/.test(pill),'le Parcours compte les jours du mois où elle a pris soin d\'elle, jamais une série qui casse');
 
+console.log('\n=== 11 ter. DEEPSEEK : LES MODÈLES DE LA DOCUMENTATION ===');
+/* 06/10/2026 : deepseek-chat et deepseek-reasoner ne figurent plus dans la documentation officielle,
+   et la réflexion y est activée par défaut. */
+const ds=[];
+w.fetch=(u,o)=>{ ds.push({u, b:JSON.parse(o.body)}); return Promise.resolve({ok:true,status:200,json:()=>Promise.resolve({choices:[{message:{role:'assistant',content:'OK',reasoning_content:'(réflexion)'},finish_reason:'stop'}]})}); };
+w.eval("state.apiKeys={deepseek:'sk-test'}; setProvider('deepseek')");
+ok(w.eval('state.model')==='deepseek-flash','DeepSeek : Flash par défaut');
+w.eval("state.model='deepseek-chat'");
+const repDS=await w.eval("callClaude('Réponds juste OK.',[{role:'user',content:'ping'}])");
+ok(repDS==='OK' && ds.length===1 && ds[0].u==='https://api.deepseek.com/chat/completions','DeepSeek : la réponse est lue, jamais la réflexion');
+ok(ds[0].b.model==='deepseek-flash' && ds[0].b.thinking && ds[0].b.thinking.type==='disabled' && ds[0].b.max_tokens===1200,'un ancien « deepseek-chat » part en deepseek-flash, réflexion coupée');
+ok(w.eval("MODELES_MIGRES['deepseek-chat']")==='deepseek-flash' && w.eval("MODELES_MIGRES['deepseek-reasoner']")==='deepseek-v4-pro','les anciens noms sont migrés au chargement');
+w.eval("setModel('deepseek-v4-pro')");
+await w.eval("callClaude(composeSystemBlocs(),[{role:'user',content:'ping'}],2000,{effort:'low'})");
+const corpsPro=ds[1].b;
+ok(corpsPro.model==='deepseek-v4-pro' && corpsPro.thinking.type==='enabled' && corpsPro.max_tokens>=8000,'Pro : réflexion gardée, avec la place pour ne jamais couper la réponse');
+ok(corpsPro.messages[0].role==='system' && /SOCLE COMMUN MAYND/.test(corpsPro.messages[0].content) && /Consigne pour cette réponse/.test(corpsPro.messages[0].content) && !corpsPro.output_config && !corpsPro.system,'les trois blocs partent en un seul message système, sans réglage propre à Claude');
+await w.eval("callClaude(LECTURE_SYSTEM,[{role:'user',content:'{}'}],900,{model:modeleLecture()})");
+ok(ds[2].b.model==='deepseek-flash' && ds[2].b.thinking.type==='disabled','la lecture des messages reste sur Flash, même quand Pro répond');
+w.openProfile(); await wait(10);
+const profDS=w.$('profile-body').innerHTML;
+ok(/setModel\('deepseek-flash'\)/.test(profDS) && /setModel\('deepseek-v4-pro'\)/.test(profDS) && /DeepSeek Flash/.test(profDS) && /DeepSeek Pro/.test(profDS) && !/deepseek-chat|deepseek-reasoner/.test(profDS),'profil : les deux modèles DeepSeek de la documentation, plus les anciens');
+w.closeProfile();
+w.eval("setProvider('anthropic'); state.apiKey='x'");
+ok(w.eval('state.model')==='claude-sonnet-5-5','retour à Claude : claude-sonnet-5-5');
+
 console.log('\n=== 12. DIRECTION ARTISTIQUE ET INTÉGRITÉ ===');
 ok((html.match(/(linear|radial)-gradient/g)||[]).length===4,'aucun nouveau dégradé');
 ok(!/débloqu/i.test(fs.readFileSync(new URL('../src/scripts/36-voix-prete.js', import.meta.url),'utf8').replace(/« débloque »/g,'')),'la voix se réveille, elle ne se « débloque » jamais');

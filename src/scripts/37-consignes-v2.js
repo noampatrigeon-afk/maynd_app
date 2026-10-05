@@ -199,12 +199,22 @@ async function callClaude(system, messages, maxTokens, opts){
   var data=await res.json();
   return (data.content||[]).filter(function(c){ return c.type==='text'; }).map(function(c){ return c.text; }).join('\n').trim();
 }
+/* DeepSeek (documentation officielle, consultée le 06/10/2026) : deux modèles, deepseek-flash et
+   deepseek-v4-pro. deepseek-chat et deepseek-reasoner n'y figurent plus : ils sont migrés plus bas.
+   La réflexion y est activée par défaut. On la coupe sur Flash, pour répondre vite comme l'ancien
+   « Chat ». On la garde sur Pro, comme l'ancien « Reasoner », avec assez de place pour que la réponse
+   ne soit jamais coupée après la réflexion. */
+var DS_MODELES=['deepseek-flash','deepseek-v4-pro'];
+function modeleDeepSeek(m){ m=MODELES_MIGRES[m]||m; return DS_MODELES.indexOf(m)>=0 ? m : 'deepseek-flash'; }
 async function callDeepSeek(system, messages, maxTokens, opts){
+  opts=opts||{};
+  var model=modeleDeepSeek(DS_MODELES.indexOf(opts.model)>=0 ? opts.model : state.model);
+  var reflexion=(model==='deepseek-v4-pro');
   var tokens=maxTokens||1200;
   var res=await fetch('https://api.deepseek.com/chat/completions',{
     method:'POST',
     headers:{'content-type':'application/json','authorization':'Bearer '+state.apiKey},
-    body:JSON.stringify({model:state.model||'deepseek-chat', max_tokens:tokens, messages:[{role:'system',content:texteSysteme(system)}].concat(messages)})
+    body:JSON.stringify({model:model, max_tokens:reflexion?Math.max(tokens,8000):tokens, thinking:{type:reflexion?'enabled':'disabled'}, messages:[{role:'system',content:texteSysteme(system)}].concat(messages)})
   });
   if(!res.ok){ var e=new Error('http '+res.status); e.status=res.status; try{ e.body=await res.json(); }catch(_){ e.body=null; } throw e; }
   var data=await res.json();
@@ -213,7 +223,8 @@ async function callDeepSeek(system, messages, maxTokens, opts){
 }
 
 /* ─────────── modèles : migration et choix dans le profil ─────────── */
-var MODELES_MIGRES={'claude-sonnet-4-6':'claude-sonnet-5-5','claude-sonnet-5':'claude-sonnet-5-5','claude-opus-4-8':'claude-opus-5-5'};
+var MODELES_MIGRES={'claude-sonnet-4-6':'claude-sonnet-5-5','claude-sonnet-5':'claude-sonnet-5-5','claude-opus-4-8':'claude-opus-5-5',
+  'deepseek-chat':'deepseek-flash','deepseek-reasoner':'deepseek-v4-pro'};
 (function(){
   var base=loadState;
   if(typeof base!=='function') return;
@@ -229,7 +240,7 @@ function setProvider(p){
   state.provider=p;
   if(!state.apiKeys||typeof state.apiKeys!=='object') state.apiKeys={};
   state.apiKey=state.apiKeys[p]||'';
-  state.model=(p==='deepseek')?'deepseek-chat':'claude-sonnet-5-5';
+  state.model=(p==='deepseek')?'deepseek-flash':'claude-sonnet-5-5';
   persist();
   renderProfile();
 }
@@ -239,14 +250,17 @@ function setProvider(p){
   window.renderProfile=function(){
     var r=base.apply(this, arguments);
     try{
-      if(state.provider==='deepseek') return r;
+      var ds=state.provider==='deepseek';
       var opts=document.querySelectorAll('#profile-body .modelopt');
-      var ids=['claude-sonnet-5-5','claude-opus-5-5'];
+      var ids=ds?DS_MODELES:['claude-sonnet-5-5','claude-opus-5-5'];
+      var noms=['DeepSeek Flash','DeepSeek Pro'];
       for(var i=0;i<opts.length && i<2;i++){
-        (function(b, id){
+        (function(b, id, k){
           b.setAttribute('onclick', "setModel('"+id+"')");
           b.classList.toggle('on', state.model===id);
-        })(opts[i], ids[i]);
+          var mt=b.querySelector('.mt');
+          if(ds && mt) mt.textContent=noms[k];
+        })(opts[i], ids[i], i);
       }
     }catch(e){}
     return r;
