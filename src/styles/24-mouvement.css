@@ -1,0 +1,18 @@
+/* ═══ Mouvement — attente de la réponse et arrivée des choix (test utilisateurs) ═══
+   Aplats uniquement, aucun dégradé. Le mouvement réduit est déjà coupé globalement
+   par la règle de 00-base.css (animation:none!important). */
+
+@keyframes mv-choix-in{from{opacity:0;transform:translateY(8px) scale(.96)}to{opacity:1;transform:none}}
+@keyframes mv-wait-in{from{opacity:0;transform:translateX(-4px)}to{opacity:1;transform:none}}
+
+/* Les choix rapides arrivent en cascade, comme une personne qui les pose un à un. */
+.choix-row .choix-b{animation:mv-choix-in .42s var(--e) both}
+.choix-row .choix-b:nth-child(2){animation-delay:.07s}
+.choix-row .choix-b:nth-child(3){animation-delay:.14s}
+.choix-row .choix-b:nth-child(4){animation-delay:.21s}
+.choix-row .choix-b:nth-child(n+5){animation-delay:.28s}
+
+/* Attente longue : la bulle de frappe s'ouvre sur une phrase qui rassure. */
+.typing{align-items:center}
+.typing.mv-long{gap:10px;max-width:84%}
+.typing .mv-wait{font-size:13px;line-height:1.35;color:var(--mist);animation:mv-wait-in .4s var(--e) both}
