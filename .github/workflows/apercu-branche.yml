@@ -1,0 +1,35 @@
+name: Aperçu de branche
+
+# À chaque envoi sur une branche autre que main (et à chaque proposition de
+# modification), construit l'application, la rend téléchargeable, puis lance les tests.
+# Ne touche JAMAIS au site en ligne : celui-ci reste géré par pages.yml, sur main uniquement.
+# Pour récupérer l'aperçu : onglet Actions > cliquer sur l'exécution > section « Artifacts »
+# en bas de page > télécharger « apercu », décompresser, ouvrir index.html d'un double-clic.
+
+on:
+  push:
+    branches-ignore: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  apercu:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install
+      - run: npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: apercu
+          path: dist/index.html
+          retention-days: 14
+      # Les tests passent après la mise à disposition : un échec affiche une croix
+      # rouge mais l'aperçu reste téléchargeable.
+      - run: npm test
