@@ -28,9 +28,17 @@ ok(html.includes('.pf-card{background:var(--blue)'),'carte profil en bleu plein'
 
 console.log('\n=== 3. cartes pleine couleur sur l\'accueil ===');
 w.showTab('accueil'); await wait(20);
-/* 05/10/2026 : la rangée « Aller vers » (cinq cartes) est retirée, elle doublait les onglets.
-   L'accueil répond à une seule question : « Qu'est-ce que je fais maintenant ? » (carte « Ton pas »). */
-ok(!w.$('jrow') && !w.$('tab-accueil').innerHTML.includes('Aller vers'),'rangée « Aller vers » retirée (doublon des onglets)');
+/* 16/10/2026 : la rangée « Aller vers » (cinq cartes), retirée le 05/10, est rétablie à la
+   demande du porteur du projet. La carte « Ton pas » reste en tête de l'accueil. */
+const row=w.$('jrow');
+ok(!!row && w.$('tab-accueil').innerHTML.includes('Aller vers'),'rangée « Aller vers » présente');
+const cards=[...row.querySelectorAll('.jcard')];
+ok(cards.length===5,'5 cartes colorées');
+const colors=cards.map(c=>c.style.getPropertyValue('--jc'));
+ok(new Set(colors).size===5,'5 couleurs distinctes : '+colors.join(' '));
+ok(colors.every(c=>['#974AF0','#224CF2','#00A862','#FE6601','#FFC400','#6F2FC0','#FFFFFF','#FFDBC2','#E8467F','#FFAFCF','#8FB4FF'].includes(c)),'uniquement des couleurs de la palette');
+ok(row.innerHTML.includes('jcard-lb') && row.innerHTML.includes('jcard-go'),'étiquette blanche + flèche blanche');
+ok(html.includes('.jcard::before') && html.includes('.jcard::after'),'formes rondes qui se chevauchent');
 w.eval("state.dossier={pas:[{id:'p1',texte:'Appeler Julie',agent:'otis',statut:'en_cours',echeance:Date.now()+86400000,evoques:[]}]}");
 w.showTab('accueil'); await wait(20);
 const pasCard=w.document.querySelector('#home-goals .pas-card');

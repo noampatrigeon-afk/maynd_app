@@ -15,9 +15,14 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
 let w=boot(); await wait(90); const S=()=>w.eval('state');
 w.enterApp(false); await wait(30); w.eval("state.tier='plus'");
 
-console.log('\n=== 1. accueil : rangée « Aller vers » retirée (05/10) ===');
+/* 16/10/2026 : la rangée « Aller vers », retirée le 05/10, est rétablie à la demande du porteur du projet. */
+console.log('\n=== 1. carte supervision en blanc ===');
 w.showTab('accueil'); await wait(25);
-ok(!w.$('jrow'),'plus de cartes « Aller vers » : elles doublaient les onglets');
+const cards=[...w.$('jrow').querySelectorAll('.jcard')];
+const sup=cards.find(c=>c.textContent.includes('Qui te suit'));
+ok(sup && !sup.classList.contains('dark'),'texte blanc comme les autres cartes');
+ok(sup && sup.style.getPropertyValue('--jc')==='#E8467F','rose assez soutenu pour du texte blanc');
+ok(cards.every(c=>!c.classList.contains('dark')),'les 5 cartes en texte blanc');
 
 console.log('\n=== 2. avatar de supervision ===');
 const a=w.proBadgeSVG();

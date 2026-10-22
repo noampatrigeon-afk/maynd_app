@@ -48,9 +48,18 @@ ok(html.includes('#quiz.tinted .qz2-opt,#orient.tinted .qz2-opt{background:var(-
 console.log('\n=== 3. CARTES DE L\'ACCUEIL ===');
 w=boot(); await wait(90); w.enterApp(false); await wait(30); w.eval("state.tier='plus'");
 w.showTab('accueil'); await wait(25);
-/* 05/10/2026 : la rangée « Aller vers » est retirée (doublon des onglets). L'humeur reste dans
-   le Parcours (« Ton suivi »), la supervision aussi. */
-ok(!w.$('jrow'),'cartes « Aller vers » retirées de l\'accueil');
+/* 16/10/2026 : la rangée « Aller vers », retirée le 05/10, est rétablie à la demande du porteur du
+   projet. L'humeur et la supervision restent aussi accessibles dans le Parcours. */
+const cards=[...w.$('jrow').querySelectorAll('.jcard')];
+const hum=cards.find(c=>c.textContent.includes('Comment tu vas'));
+ok(hum && hum.style.getPropertyValue('--ja')==='#8FB4FF','humeur : rond bleu clair, plus de blanc');
+const sup=cards.find(c=>c.textContent.includes('Qui te suit'));
+ok(sup && sup.style.getPropertyValue('--jc')==='#E8467F','supervision : rose soutenu');
+ok(sup && sup.style.getPropertyValue('--ja')==='#FFAFCF','supervision : accent rose clair');
+ok(sup && !sup.classList.contains('dark'),'supervision : texte blanc comme les autres');
+const accents=cards.map(c=>c.style.getPropertyValue('--ja'));
+ok(!accents.includes('#FFFFFF'),'plus aucun accent blanc');
+ok(new Set(cards.map(c=>c.style.getPropertyValue('--jc'))).size===5,'5 fonds différents');
 w.showTab('objectifs'); await wait(25);
 ok(w.$('obj-pad').innerHTML.includes('Ta supervision') && w.$('obj-pad').innerHTML.includes('Ton suivi'),'supervision et humeur toujours accessibles dans le Parcours');
 
