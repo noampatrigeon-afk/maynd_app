@@ -34,6 +34,11 @@ Formules (depuis le 25/09/2026, chantier « abonnement unique ») : gratuit (MIA
 
 Sous chaque question, une case « Autre » ouvre un champ libre ; le texte est facultatif. Tout cela est dans `33-fin-de-jeu.js`. Les questions des jeux sont de vraies questions, avec leur point d'interrogation et leur sujet rappelé. Elles sont regroupées dans `34-questions-des-jeux.js`, un seul endroit pour les relire. Un test vérifie qu'aucune ne finit sans « ? ».
 
+**Trois applications dans le dépôt (13/11/2026) :**
+- **MAYND**, `src/` → `dist/index.html` : l'application d'origine, publiée en ligne. Tout ce qui suit dans ce document la concerne.
+- **Le Tunnel**, `app-guidee/` : parcours d'entrée guidé (46 questions, compte-rendu corrigeable), créé le 13/11. Ne pas y travailler : il a servi de brouillon à App mix.
+- **App mix**, `app-mix/` : la fusion des deux, **l'application cible**. Tunnel en entrée, intérieur refait (Aujourd'hui, Discussion, Toi), professionnel référent très visible, jeux et voix repris. Architecture propre : fichiers séparés, aucune fonction redéfinie, état `etat` en portée lexicale. Vérification : `node app-mix/verifier.mjs` ; assemblage : `node app-mix/assembler.mjs`. Notice : `app-mix/docs/LISEZMOI.md` ; serveur à venir : `app-mix/docs/serveur.md`. Décisions du 13/11 : compte créé au résultat du profil (flouté), sans paiement ; gratuit avec parcours complet (MIA seule, 5 messages par jour) ; formule à 60 € au premier accompagnant ou au sixième message ; le cap vient du questionnaire (l'entrée par la conversation du 05/10 n'y existe pas) ; les signaux font écrire le professionnel dans la discussion (ses messages sont rédigés par le modèle en prototype) ; de côté : série, points, défis, favoris, accompagnant de la semaine, carte de l'entourage, écran d'humeur au lancement. Les consignes du modèle y sont des copies de celles de `src/` : toute modification doit être reportée dans les deux.
+
 ## 2. Règles absolues
 
 Elles ne se discutent pas. Une seule violation suffit à casser le positionnement.

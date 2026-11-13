@@ -131,3 +131,15 @@ Ces tarifs bougent souvent. Il faut les revérifier sur les pages officielles au
 - Chaque accompagnant garde toujours la même voix de base. Sa hauteur et son débit propres le distinguent des autres.
 - Sur certains navigateurs, les voix françaises sont distantes (par exemple « Google français » dans Chrome) : le texte part alors chez l'éditeur du navigateur. C'est acceptable pour une démonstration, pas pour de vrais abonnés. Une fois le fournisseur branché, la doublure ne sert plus.
 - Sans aucune synthèse vocale disponible, l'application affiche « La voix de X arrive bientôt. »
+
+## 6. Les voix choisies
+
+Choix en cours depuis le 13/11/2026, dans la bibliothèque de Cartesia (play.cartesia.ai). Les identifiants sont rangés dans `VOIX_CHOISIES` (`src/scripts/36-voix-prete.js`). Ils ne servent qu'une fois `VOICE_ENDPOINT` renseigné.
+
+| Accompagnant | Voix Cartesia | Identifiant | Choisie le |
+|---|---|---|---|
+| MIA | Inès | `7c58f4a4-a72c-42fa-a503-41b9408820f3` | 13/11/2026 |
+| Naoki | Gerard | `5deeaea9-c3cf-4288-82ec-22d8f04eb158` | 13/11/2026 |
+| Felix | Vincent | `80e11491-2d8a-4361-ac61-c4f3e0a4f7e7` | 13/11/2026 |
+| Ava | Solène | à relever sur Cartesia | 13/11/2026 |
+| Leo | Friendly French Man | `ab7c61f5-3daa-47dd-a23b-4ac0aac5f5c3` | 13/11/2026 |

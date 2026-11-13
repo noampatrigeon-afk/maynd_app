@@ -1,0 +1,241 @@
+/* MAYND, parcours guidé — 13/11/2026
+   Immersif et calme : une idée par écran, aplats de couleur, transitions lentes.
+   Zéro dégradé. Aucun rectangle blanc sur fond coloré : réponses, cartes et champs
+   prennent la teinte claire de leur fond. Écrans montrés par opacité. */
+
+:root{
+  --fond:#974AF0; --encre:#FFFFFF; --teinte:#EDE1FF; --sombre:#1B1530;
+  --titre:'Poppins', system-ui, sans-serif; --corps:'DM Sans', system-ui, sans-serif;
+}
+*{box-sizing:border-box}
+html{background:var(--fond); transition:background-color .8s ease}
+body{margin:0; min-height:100vh; min-height:100dvh; background:var(--fond); color:var(--encre);
+  font:400 17px/1.5 var(--corps); transition:background-color .8s ease, color .8s ease;
+  -webkit-font-smoothing:antialiased; -webkit-tap-highlight-color:transparent}
+button{font:inherit; color:inherit; cursor:pointer}
+button:disabled{cursor:default}
+:focus-visible{outline:3px solid var(--encre); outline-offset:3px}
+.sans-script{padding:24px; font-family:var(--titre)}
+
+/* ─────────── la scène ─────────── */
+.scene{display:flex; justify-content:center; min-height:100vh; min-height:100dvh}
+.ecran{width:100%; max-width:620px; min-height:100vh; min-height:100dvh; padding:20px 20px calc(32px + env(safe-area-inset-bottom));
+  display:flex; flex-direction:column; opacity:1; transform:none; transition:opacity .6s ease, transform .6s ease}
+.ecran.entree{opacity:0; transform:translateY(14px); transition:none}
+.ecran.sortie{opacity:0; transform:translateY(-10px); pointer-events:none}
+.centre{flex:1; display:flex; flex-direction:column; justify-content:center; padding:24px 0}
+
+/* ─────────── typographie ─────────── */
+h1, h2{font-family:var(--titre); margin:0}
+.marque{font:800 56px/1 var(--titre); letter-spacing:.02em}
+.slogan{font:600 18px/1.3 var(--titre); margin:12px 0 28px; opacity:.9}
+.grand{font:800 32px/1.15 var(--titre); margin:6px 0 16px}
+.geant{font:800 44px/1.05 var(--titre); margin:6px 0 16px}
+.q-titre{font:700 27px/1.22 var(--titre); margin:4px 0 10px}
+.sur{font:600 13px/1.3 var(--titre); letter-spacing:.06em; text-transform:uppercase; opacity:.85; margin:0 0 6px}
+.texte{font-size:18px; margin:0 0 14px; max-width:34em}
+.aide{margin:0 0 18px; opacity:.88}
+.mesure{font:600 15px var(--titre); opacity:.85; margin:4px 0 28px}
+.petit{font-size:14px; opacity:.85}
+
+/* ─────────── boutons et liens ─────────── */
+.btn{align-self:flex-start; margin-top:14px; border:0; border-radius:999px; padding:16px 30px; background:var(--sombre); color:#FFFFFF;
+  font:700 17px var(--titre); transition:transform .2s ease, opacity .2s ease}
+.btn:hover{transform:translateY(-1px)}
+.btn:disabled{opacity:.35; transform:none}
+.lien{align-self:flex-start; background:none; border:0; padding:12px 4px; margin-top:6px; color:var(--encre);
+  font:600 16px var(--titre); text-decoration:underline; text-underline-offset:4px}
+.lien-inline{background:none; border:0; padding:0; font:inherit; font-weight:700; color:inherit; text-decoration:underline; text-underline-offset:3px}
+.lien-discret{background:none; border:0; padding:6px 0; font:600 14px var(--titre); color:var(--encre); opacity:.8}
+.pied{display:flex; justify-content:space-between; align-items:center; font-size:13px; opacity:.85}
+
+/* ─────────── barre du haut ─────────── */
+.barre{display:flex; align-items:center; gap:14px; padding:4px 0 8px}
+.b-retour{background:none; border:0; color:var(--encre); font:700 22px/1 var(--titre); padding:8px 4px}
+.progression{position:relative; flex:1; height:6px; border-radius:6px; overflow:hidden}
+.progression::before{content:''; position:absolute; inset:0; background:var(--encre); opacity:.22}
+.progression span{position:absolute; left:0; top:0; bottom:0; background:var(--encre); border-radius:6px; transition:width .6s ease}
+
+/* ─────────── questions ─────────── */
+.question{flex:1; display:flex; flex-direction:column; padding:28px 0 12px}
+/* centrée quand elle est courte, en haut quand elle est longue (marges automatiques : rien n'est jamais rogné) */
+.question > .sur{margin-top:auto}
+.question > :last-child{margin-bottom:auto}
+.options{display:flex; flex-direction:column; gap:10px; margin-top:8px}
+.options.multi{flex-direction:row; flex-wrap:wrap}
+.opt{border:0; border-radius:16px; padding:16px 18px; background:var(--teinte); color:var(--sombre); text-align:left;
+  font:500 17px/1.35 var(--corps); transition:transform .15s ease, box-shadow .15s ease}
+.opt:hover{transform:translateX(3px)}
+.opt.choisi{box-shadow:inset 0 0 0 3px var(--sombre); font-weight:700}
+.options.multi .opt{border-radius:999px; padding:12px 16px}
+.options.multi .opt:hover{transform:none}
+.autre{display:flex; flex-direction:column; gap:8px}
+.autre[hidden]{display:none}
+.champ{width:100%; border:0; border-radius:16px; padding:16px 18px; background:var(--teinte); color:var(--sombre);
+  font:500 18px/1.4 var(--corps); resize:vertical}
+.champ::placeholder{color:var(--sombre); opacity:.5}
+.champ:focus{outline:3px solid var(--sombre); outline-offset:0}
+.actions{display:flex; align-items:center; gap:16px; flex-wrap:wrap; margin-top:12px}
+.actions .btn{margin-top:0}
+.compte{font:600 14px var(--titre); opacity:.9}
+.compte.vibre{animation:vibre .35s}
+@keyframes vibre{0%,100%{transform:none} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)}}
+.idees{display:flex; flex-wrap:wrap; gap:8px; margin:0 0 12px}
+.idee{border:0; border-radius:999px; padding:10px 14px; background:var(--teinte); color:var(--sombre); font:500 15px var(--corps)}
+
+/* échelle entre deux pôles : les points rapetissent vers le milieu */
+.echelle{margin-top:18px}
+.echelle .poles, .note .poles{display:flex; justify-content:space-between; gap:16px; font:600 15px/1.3 var(--titre); margin-bottom:14px}
+.echelle .poles span:last-child, .note .poles span:last-child{text-align:right}
+.note .poles{margin:0}
+.points{display:flex; justify-content:space-between; align-items:center; padding:0 2px}
+.point{width:56px; height:56px; border:0; border-radius:50%; background:var(--teinte); display:grid; place-items:center; transition:transform .2s ease}
+.point:nth-child(2), .point:nth-child(4){width:46px; height:46px}
+.point:nth-child(3){width:38px; height:38px}
+.point i{width:16px; height:16px; border-radius:50%; background:var(--sombre); opacity:0; transition:opacity .2s ease}
+.point:hover{transform:scale(1.06)}
+.point.choisi i{opacity:1}
+
+/* note de 1 à 10 */
+.chiffres{display:grid; grid-template-columns:repeat(10, 1fr); gap:6px; margin:18px 0 12px}
+.chiffre{aspect-ratio:1; border:0; border-radius:12px; background:var(--teinte); color:var(--sombre); font:700 17px var(--titre)}
+.chiffre.choisi{background:var(--sombre); color:#FFFFFF}
+
+/* boussole */
+.boussole{display:flex; flex-direction:column; gap:6px; margin-top:6px}
+.curseur{display:grid; grid-template-columns:9.5em 1fr 2em; align-items:center; gap:12px; background:var(--teinte); color:var(--sombre); border-radius:14px; padding:10px 14px}
+.c-nom{font:600 15px var(--titre)}
+.curseur output{font:700 16px var(--titre); text-align:right}
+input[type=range]{-webkit-appearance:none; appearance:none; width:100%; height:28px; background:transparent; margin:0}
+input[type=range]::-webkit-slider-runnable-track{height:6px; border-radius:6px; background:rgba(27,21,48,.2)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none; width:24px; height:24px; border-radius:50%; background:var(--sombre); margin-top:-9px; border:0}
+input[type=range]::-moz-range-track{height:6px; border-radius:6px; background:rgba(27,21,48,.2)}
+input[type=range]::-moz-range-thumb{width:24px; height:24px; border-radius:50%; background:var(--sombre); border:0}
+input[type=range]:focus-visible{outline:3px solid var(--sombre); outline-offset:2px}
+
+/* ─────────── restitutions et portrait ─────────── */
+.retenu{list-style:none; padding:0; margin:8px 0 10px; display:flex; flex-direction:column; gap:10px}
+.retenu li{background:var(--teinte); color:var(--sombre); border-radius:16px; padding:14px 16px; font-size:16.5px}
+.jauges{display:flex; flex-direction:column; gap:10px; margin:6px 0 10px; max-width:420px}
+.jauge{display:grid; grid-template-columns:7em 1fr; align-items:center; gap:12px; font:600 15px var(--titre)}
+.jauge b{position:relative; display:block; height:10px; border-radius:10px; overflow:hidden}
+.jauge b::before{content:''; position:absolute; inset:0; background:var(--encre); opacity:.22}
+.jauge i{position:absolute; left:0; top:0; bottom:0; background:var(--encre); border-radius:10px}
+.lecture{background:var(--teinte); color:var(--sombre); border-radius:20px; padding:20px 22px; font-size:17px; line-height:1.6; margin:6px 0 8px; transition:opacity .4s ease}
+.lecture p{margin:0 0 10px}
+.lecture p:last-child{margin:0}
+.lecture.attente{opacity:.7}
+.cartes{display:flex; flex-direction:column; gap:10px; margin:6px 0 4px}
+.carte-ag{display:flex; gap:14px; align-items:flex-start; background:var(--teinte); color:var(--sombre); border-radius:18px; padding:14px 16px}
+.carte-ag strong{display:block; font:800 17px var(--titre)}
+.carte-ag > div > span{font:600 13px var(--titre); opacity:.7}
+.carte-ag p{margin:4px 0 0; font-size:15.5px}
+.signaux{list-style:none; padding:0; margin:0 0 6px; display:grid; gap:8px}
+.signaux li{background:var(--teinte); color:var(--sombre); border-radius:14px; padding:12px 16px; font-size:15.5px}
+.signaux strong{display:block; font:700 16px var(--titre)}
+.note-pas{background:var(--teinte); color:var(--sombre); border-radius:14px; padding:12px 16px; margin:0 0 12px}
+
+/* ─────────── le compte-rendu : une page claire, une carte par partie, à la couleur de son étape ─────────── */
+.ecran.ecran-document{max-width:680px}
+.document{padding:28px 0 12px}
+.cr-etat{min-height:1px; margin:0 0 10px; font:600 14px var(--titre); opacity:.75}
+.cr-liste{display:flex; flex-direction:column; gap:12px; margin:8px 0 14px}
+.cr-carte{background:var(--t); color:var(--sombre); border-radius:18px; border-left:6px solid var(--c); padding:16px 18px 14px}
+.cr-carte header{display:flex; justify-content:space-between; align-items:baseline; gap:12px; margin-bottom:6px}
+.cr-carte h2, .panneau .cr-carte h2{margin:0; font:800 18px/1.25 var(--titre)}
+.cr-carte header .lien-inline{font:700 14px var(--titre); white-space:nowrap}
+.cr-texte p{margin:0 0 8px; font-size:16.5px; line-height:1.6}
+.cr-texte p:last-child{margin:0}
+.cr-note{margin:10px 0 0; font-size:13.5px; opacity:.8}
+.cr-carte .etiquette{font-weight:600; opacity:.8}
+.cr-champ, .panneau .cr-champ{min-height:9em; background:rgba(27,21,48,.07); font-size:16.5px}
+.cr-carte .actions .btn{margin-top:0}
+.document > .btn{margin-top:4px}
+
+/* ─────────── avatars ─────────── */
+.av{display:inline-grid; place-items:center; flex:none; width:44px; height:44px; border-radius:50%; font:800 20px var(--titre)}
+.av.grand{width:84px; height:84px; font-size:38px; margin-bottom:18px; box-shadow:0 0 0 4px var(--encre)}
+.av.petit{width:32px; height:32px; font-size:15px}
+
+/* ─────────── la discussion ─────────── */
+.ecran.ecran-chat{max-width:720px; height:100vh; height:100dvh; min-height:0; padding:0}
+.chat-tete{display:flex; align-items:center; gap:10px; padding:12px 16px; border-bottom:1px solid rgba(27,21,48,.08)}
+.presents{flex:1; display:flex; gap:8px; overflow-x:auto}
+.present{display:flex; align-items:center; gap:8px; border:0; border-radius:999px; padding:4px 12px 4px 4px; background:transparent; color:var(--sombre); font:700 15px var(--titre); white-space:nowrap}
+.present.actif{background:var(--teinte)}
+.b-menu{width:44px; height:44px; border:0; border-radius:50%; background:none; color:var(--sombre); font-size:26px; line-height:1}
+.fil{flex:1; overflow-y:auto; padding:18px 16px 8px; display:flex; flex-direction:column; gap:12px}
+.msg{display:flex; gap:10px; align-items:flex-end; max-width:88%}
+.msg.moi{align-self:flex-end}
+.bulle{padding:12px 16px; font-size:16.5px; line-height:1.5}
+.bulle p{margin:0 0 8px}
+.bulle p:last-child{margin:0}
+.msg.moi .bulle{background:#974AF0; color:#FFFFFF; border-radius:20px 20px 6px 20px}
+.msg.ag .bulle{background:var(--t); color:var(--sombre); border-radius:20px 20px 20px 6px}
+.qui{display:block; font:700 13px var(--titre); color:var(--sombre); opacity:.65; margin-bottom:2px}
+.choix{display:flex; flex-wrap:wrap; gap:8px; padding-left:42px}
+.choix-b{border:0; border-radius:999px; padding:10px 16px; background:#974AF0; color:#FFFFFF; font:600 15px var(--titre)}
+.info{align-self:center; margin:2px 0; font:600 13px var(--titre); opacity:.65; text-align:center}
+.info.erreur{display:flex; gap:10px; align-items:center; opacity:1; background:#FFE0EC; color:var(--sombre); border-radius:12px; padding:8px 14px}
+.carte{align-self:stretch; border-radius:18px; padding:14px 16px; background:var(--teinte); color:var(--sombre)}
+.carte p{margin:4px 0 8px}
+.carte .sur{opacity:.7}
+.carte-pas.fait{opacity:.6}
+.carte-pas .ok{font:700 14px var(--titre)}
+.carte-signal{background:#D8F2E4}
+.carte-crise{background:#FFE0EC}
+.tel{display:block; margin:6px 0; padding:10px 14px; border-radius:12px; background:#FFCADB; color:var(--sombre); text-decoration:none}
+.tel strong{display:block; font:700 16px var(--titre)}
+.tel span{font-size:14px}
+.points-ecrit{display:inline-flex; gap:5px; padding:4px 0}
+.points-ecrit i{width:8px; height:8px; border-radius:50%; background:var(--sombre); opacity:.3; animation:souffle 1.4s infinite ease-in-out}
+.points-ecrit i:nth-child(2){animation-delay:.2s}
+.points-ecrit i:nth-child(3){animation-delay:.4s}
+@keyframes souffle{0%,100%{opacity:.25} 50%{opacity:.8}}
+.saisie{display:flex; gap:10px; align-items:flex-end; padding:10px 14px calc(12px + env(safe-area-inset-bottom)); border-top:1px solid rgba(27,21,48,.08)}
+.saisie textarea{flex:1; max-height:160px; border:0; border-radius:22px; padding:12px 16px; background:var(--teinte); color:var(--sombre); font:400 16.5px/1.4 var(--corps); resize:none}
+.saisie textarea::placeholder{color:var(--sombre); opacity:.5}
+.b-envoi{flex:none; width:46px; height:46px; border:0; border-radius:50%; background:#974AF0; color:#FFFFFF; font:800 20px var(--titre)}
+.ecran-chat :focus-visible{outline-color:#974AF0}
+
+/* ─────────── couches : menu, réglages, portrait, pause ─────────── */
+.couche{position:fixed; inset:0; z-index:10; display:flex; align-items:flex-end; justify-content:center; background:rgba(27,21,48,.55); opacity:0; pointer-events:none; transition:opacity .35s ease}
+.couche.ouverte{opacity:1; pointer-events:auto}
+.panneau{position:relative; width:100%; max-width:620px; max-height:88vh; max-height:88dvh; overflow-y:auto; background:var(--teinte); color:var(--sombre);
+  border-radius:26px 26px 0 0; padding:26px 22px calc(26px + env(safe-area-inset-bottom)); transform:translateY(24px); transition:transform .35s ease}
+.couche.ouverte .panneau{transform:none}
+.panneau h2{font:800 24px/1.2 var(--titre); margin:0 44px 12px 0}
+.panneau .lien, .panneau .lien-discret{color:var(--sombre)}
+.panneau .champ{background:rgba(27,21,48,.07)}
+.panneau .note-pas{background:rgba(27,21,48,.07)}
+.panneau :focus-visible{outline-color:var(--sombre)}
+.panneau .lecture{background:rgba(27,21,48,.06)}
+.fermer{position:absolute; top:12px; right:14px; width:44px; height:44px; border:0; background:none; color:var(--sombre); font-size:28px; line-height:1}
+.etiquette{display:block; margin:6px 0; font:700 14px var(--titre)}
+.menu{display:flex; flex-direction:column; align-items:flex-start}
+details{margin:8px 0; padding:10px 14px; border-radius:14px; background:rgba(27,21,48,.06)}
+summary{font:700 15px var(--titre); cursor:pointer}
+details ul{margin:8px 0 0; padding-left:18px}
+
+/* ─────────── petits écrans, mouvement réduit ─────────── */
+@media (max-width:480px){
+  .grand{font-size:28px}
+  .geant{font-size:38px}
+  .q-titre{font-size:24px}
+  .marque{font-size:48px}
+  .chiffres{grid-template-columns:repeat(5, 1fr)}
+  .curseur{grid-template-columns:1fr 2em}
+  .c-nom{grid-row:1; grid-column:1}
+  .curseur output{grid-row:1; grid-column:2}
+  .curseur input{grid-row:2; grid-column:1 / -1}
+  .point{width:50px; height:50px}
+  .point:nth-child(2), .point:nth-child(4){width:42px; height:42px}
+  .point:nth-child(3){width:34px; height:34px}
+}
+@media (min-width:700px){
+  .couche{align-items:center}
+  .panneau{border-radius:26px}
+}
+@media (prefers-reduced-motion:reduce){
+  *, .ecran{transition:none !important; animation:none !important}
+}

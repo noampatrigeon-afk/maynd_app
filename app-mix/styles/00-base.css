@@ -1,0 +1,111 @@
+/* APP MIX — BASE (13/11/2026)
+   Jetons, typographie, scène, couche, toast, composants partagés.
+   Direction artistique : aplats de la palette MAYND, couleurs vives, zéro dégradé,
+   aucun rectangle blanc sur fond coloré, écrans montrés par opacité. */
+
+:root{
+  /* palette MAYND */
+  --violet:#974AF0; --violet-profond:#6F2FC0; --bleu:#224CF2; --rose:#E8467F; --vert:#00A862; --orange:#FE6601; --jaune:#FFC400;
+  /* couleurs vives ajoutées (demande du 13/11 : à la façon de Headspace) */
+  --corail:#FF5C5C; --turquoise:#1BC7B9; --lilas:#B388FF; --ciel:#4DA3FF;
+  /* teintes claires associées */
+  --lavande:#EDE1FF; --violet-clair:#E6D9FF; --bleu-clair:#DFE8FF; --rose-clair:#FFE0EC; --vert-clair:#D8F2E4; --peche:#FFE6D2; --creme-jaune:#FFEBCB;
+  /* intérieur */
+  --creme:#FBFAF7; --sombre:#1B1530; --gris:#5E5873; --trait:rgba(27,21,48,.09); --voile-sombre:rgba(27,21,48,.55);
+  /* dynamiques : posées par theme() */
+  --fond:#974AF0; --encre:#FFFFFF; --teinte:#EDE1FF;
+  --titre:'Poppins', system-ui, sans-serif; --corps:'DM Sans', system-ui, sans-serif;
+  --rayon:18px; --rayon-grand:26px;
+}
+*{box-sizing:border-box}
+html{background:var(--fond); transition:background-color .8s ease}
+body{margin:0; min-height:100vh; min-height:100dvh; background:var(--fond); color:var(--encre);
+  font:400 17px/1.5 var(--corps); transition:background-color .8s ease, color .8s ease;
+  -webkit-font-smoothing:antialiased; -webkit-tap-highlight-color:transparent}
+button{font:inherit; color:inherit; cursor:pointer}
+button:disabled{cursor:default}
+:focus-visible{outline:3px solid var(--encre); outline-offset:3px}
+.sans-script{padding:24px; font-family:var(--titre)}
+h1, h2, h3{font-family:var(--titre); margin:0}
+
+/* ─────────── la scène ─────────── */
+.scene{display:flex; justify-content:center; min-height:100vh; min-height:100dvh}
+.ecran{width:100%; max-width:620px; min-height:100vh; min-height:100dvh; padding:20px 20px calc(32px + env(safe-area-inset-bottom));
+  display:flex; flex-direction:column; opacity:1; transform:none; transition:opacity .6s ease, transform .6s ease}
+.ecran.entree{opacity:0; transform:translateY(14px); transition:none}
+.ecran.sortie{opacity:0; transform:translateY(-10px); pointer-events:none}
+.centre{flex:1; display:flex; flex-direction:column; justify-content:center; padding:24px 0}
+
+/* ─────────── typographie ─────────── */
+.marque{font:800 56px/1 var(--titre); letter-spacing:.02em}
+.slogan{font:600 18px/1.3 var(--titre); margin:12px 0 28px; opacity:.9}
+.grand{font:800 32px/1.15 var(--titre); margin:6px 0 16px}
+.geant{font:800 44px/1.05 var(--titre); margin:6px 0 16px}
+.sur{font:600 13px/1.3 var(--titre); letter-spacing:.06em; text-transform:uppercase; opacity:.85; margin:0 0 6px}
+.texte{font-size:18px; margin:0 0 14px; max-width:34em}
+.petit{font-size:14px; opacity:.85}
+.etiquette{display:block; margin:10px 0 6px; font:700 14px var(--titre)}
+.erreur-champ{min-height:1.2em; margin:6px 0 0; font:600 14px var(--titre); color:#B3002D}
+
+/* ─────────── boutons et champs ─────────── */
+.btn{align-self:flex-start; margin-top:14px; border:0; border-radius:999px; padding:16px 30px; background:var(--sombre); color:#FFFFFF;
+  font:700 17px var(--titre); transition:transform .2s ease, opacity .2s ease}
+.btn:hover{transform:translateY(-1px)}
+.btn:disabled{opacity:.35; transform:none}
+.btn.clair{background:var(--teinte); color:var(--sombre)}
+.btn.violet{background:var(--violet); color:#FFFFFF}
+.lien{align-self:flex-start; background:none; border:0; padding:12px 4px; margin-top:6px; color:var(--encre); font:600 16px var(--titre); text-decoration:underline; text-underline-offset:4px}
+.lien-inline{background:none; border:0; padding:0; font:inherit; font-weight:700; color:inherit; text-decoration:underline; text-underline-offset:3px}
+.lien-discret{background:none; border:0; padding:6px 0; font:600 14px var(--titre); color:var(--encre); opacity:.8}
+.champ{width:100%; border:0; border-radius:16px; padding:16px 18px; background:var(--teinte); color:var(--sombre); font:500 18px/1.4 var(--corps); resize:vertical}
+.champ::placeholder{color:var(--sombre); opacity:.5}
+.champ:focus{outline:3px solid var(--sombre); outline-offset:0}
+.champ.code{font:700 28px var(--titre); letter-spacing:.4em; text-align:center}
+.actions{display:flex; align-items:center; gap:16px; flex-wrap:wrap; margin-top:12px}
+.actions .btn{margin-top:0}
+.pied{display:flex; justify-content:space-between; align-items:center; font-size:13px; opacity:.85}
+
+/* ─────────── avatars, badge ─────────── */
+.av{display:inline-grid; place-items:center; flex:none; width:44px; height:44px; border-radius:50%; font:800 20px var(--titre)}
+.av.grand{width:84px; height:84px; font-size:38px; margin-bottom:18px; box-shadow:0 0 0 4px var(--encre)}
+.av.petit{width:32px; height:32px; font-size:15px}
+.av.pro{background:var(--vert); color:#FFFFFF}
+.badge-pro{width:18px; height:18px; vertical-align:-3px}
+
+/* ─────────── la couche (panneau du bas) ─────────── */
+.couche{position:fixed; inset:0; z-index:20; display:flex; align-items:flex-end; justify-content:center; background:var(--voile-sombre); opacity:0; pointer-events:none; transition:opacity .35s ease}
+.couche.ouverte{opacity:1; pointer-events:auto}
+.panneau{position:relative; width:100%; max-width:620px; max-height:88vh; max-height:88dvh; overflow-y:auto; background:var(--creme); color:var(--sombre);
+  border-radius:var(--rayon-grand) var(--rayon-grand) 0 0; padding:26px 22px calc(26px + env(safe-area-inset-bottom)); transform:translateY(24px); transition:transform .35s ease}
+.couche.ouverte .panneau{transform:none}
+.panneau h2{font:800 24px/1.2 var(--titre); margin:0 44px 12px 0}
+.panneau .lien, .panneau .lien-discret{color:var(--sombre)}
+.panneau .champ{background:rgba(27,21,48,.07)}
+.panneau :focus-visible{outline-color:var(--sombre)}
+.fermer{position:absolute; top:12px; right:14px; width:44px; height:44px; border:0; background:none; color:var(--sombre); font-size:28px; line-height:1}
+.menu{display:flex; flex-direction:column; align-items:flex-start}
+
+/* ─────────── plein écran (jeu, formule) ─────────── */
+.plein{position:fixed; inset:0; z-index:15; overflow-y:auto; opacity:0; pointer-events:none; transition:opacity .5s ease}
+.plein.ouvert{opacity:1; pointer-events:auto}
+
+/* ─────────── toast ─────────── */
+.toast{position:fixed; left:50%; bottom:calc(92px + env(safe-area-inset-bottom)); transform:translate(-50%, 12px); z-index:30; background:var(--sombre); color:#FFFFFF;
+  border-radius:999px; padding:12px 20px; font:600 15px var(--titre); opacity:0; pointer-events:none; transition:opacity .3s ease, transform .3s ease; max-width:90vw}
+.toast.visible{opacity:1; transform:translate(-50%, 0)}
+
+/* ─────────── cartes génériques ─────────── */
+.carte{border-radius:var(--rayon); padding:14px 16px; background:var(--teinte); color:var(--sombre)}
+.carte p{margin:4px 0 8px}
+.carte .sur{opacity:.7}
+
+@media (max-width:480px){
+  .grand{font-size:28px} .geant{font-size:38px} .marque{font-size:48px}
+}
+@media (min-width:700px){
+  .couche{align-items:center}
+  .panneau{border-radius:var(--rayon-grand)}
+}
+@media (prefers-reduced-motion:reduce){
+  *, .ecran{transition:none !important; animation:none !important}
+}

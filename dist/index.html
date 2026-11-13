@@ -11615,6 +11615,17 @@ ALL.forEach(function(a){
   AGENT_VOICES[a.id]={voiceId:(AGENT_VOICES[a.id]&&AGENT_VOICES[a.id].voiceId)||null, fiche:f.fiche, doublure:f.doublure};
 });
 
+/* Voix choisies par le porteur du projet dans la bibliothèque de Cartesia (choix en cours depuis le 13/11/2026).
+   voiceId : identifiant Cartesia. Tant que VOICE_ENDPOINT est vide, rien ne change : la doublure continue de parler. */
+var VOIX_CHOISIES={
+  mia:  {nom:'Inès', voiceId:'7c58f4a4-a72c-42fa-a503-41b9408820f3', le:'13/11/2026'},
+  naoki:{nom:'Gerard', voiceId:'5deeaea9-c3cf-4288-82ec-22d8f04eb158', le:'13/11/2026'},
+  felix:{nom:'Vincent', voiceId:'80e11491-2d8a-4361-ac61-c4f3e0a4f7e7', le:'13/11/2026'},
+  ava:  {nom:'Solène', voiceId:null, le:'13/11/2026'}, /* identifiant à relever sur Cartesia */
+  leo:  {nom:'Friendly French Man', voiceId:'ab7c61f5-3daa-47dd-a23b-4ac0aac5f5c3', le:'13/11/2026'}
+};
+Object.keys(VOIX_CHOISIES).forEach(function(id){ if(AGENT_VOICES[id]) AGENT_VOICES[id].voiceId=VOIX_CHOISIES[id].voiceId; });
+
 /* ─────────── usage et plafond ─────────── */
 function moisCle(){ var d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'); }
 function voixUsage(){

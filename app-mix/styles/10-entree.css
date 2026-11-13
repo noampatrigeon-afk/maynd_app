@@ -1,0 +1,112 @@
+/* APP MIX — LE PARCOURS D'ENTRÉE (13/11/2026), repris du Tunnel.
+   Une idée par écran, aplats pleins, réponses dans la teinte claire du fond. */
+
+.barre{display:flex; align-items:center; gap:14px; padding:4px 0 8px}
+.b-retour{background:none; border:0; color:var(--encre); font:700 22px/1 var(--titre); padding:8px 4px}
+.progression{position:relative; flex:1; height:6px; border-radius:6px; overflow:hidden}
+.progression::before{content:''; position:absolute; inset:0; background:var(--encre); opacity:.22}
+.progression span{position:absolute; left:0; top:0; bottom:0; background:var(--encre); border-radius:6px; transition:width .6s ease}
+
+.q-titre{font:700 27px/1.22 var(--titre); margin:4px 0 10px}
+.aide{margin:0 0 18px; opacity:.88}
+.mesure{font:600 15px var(--titre); opacity:.85; margin:4px 0 28px}
+.question{flex:1; display:flex; flex-direction:column; padding:28px 0 12px}
+.question > .sur{margin-top:auto}
+.question > :last-child{margin-bottom:auto}
+.options{display:flex; flex-direction:column; gap:10px; margin-top:8px}
+.options.multi{flex-direction:row; flex-wrap:wrap}
+.opt{border:0; border-radius:16px; padding:16px 18px; background:var(--teinte); color:var(--sombre); text-align:left; font:500 17px/1.35 var(--corps); transition:transform .15s ease, box-shadow .15s ease}
+.opt:hover{transform:translateX(3px)}
+.opt.choisi{box-shadow:inset 0 0 0 3px var(--sombre); font-weight:700}
+.options.multi .opt{border-radius:999px; padding:12px 16px}
+.options.multi .opt:hover{transform:none}
+.autre{display:flex; flex-direction:column; gap:8px; margin-top:10px}
+.autre[hidden]{display:none}
+.compte{font:600 14px var(--titre); opacity:.9}
+.compte.vibre{animation:vibre .35s}
+@keyframes vibre{0%,100%{transform:none} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)}}
+.idees{display:flex; flex-wrap:wrap; gap:8px; margin:0 0 12px}
+.idee{border:0; border-radius:999px; padding:10px 14px; background:var(--teinte); color:var(--sombre); font:500 15px var(--corps)}
+
+.echelle{margin-top:18px}
+.echelle .poles, .note .poles{display:flex; justify-content:space-between; gap:16px; font:600 15px/1.3 var(--titre); margin-bottom:14px}
+.echelle .poles span:last-child, .note .poles span:last-child{text-align:right}
+.note .poles{margin:0}
+.points{display:flex; justify-content:space-between; align-items:center; padding:0 2px}
+.point{width:56px; height:56px; border:0; border-radius:50%; background:var(--teinte); display:grid; place-items:center; transition:transform .2s ease}
+.point:nth-child(2), .point:nth-child(4){width:46px; height:46px}
+.point:nth-child(3){width:38px; height:38px}
+.point i{width:16px; height:16px; border-radius:50%; background:var(--sombre); opacity:0; transition:opacity .2s ease}
+.point:hover{transform:scale(1.06)}
+.point.choisi i{opacity:1}
+.chiffres{display:grid; grid-template-columns:repeat(10, 1fr); gap:6px; margin:18px 0 12px}
+.chiffre{aspect-ratio:1; border:0; border-radius:12px; background:var(--teinte); color:var(--sombre); font:700 17px var(--titre)}
+.chiffre.choisi{background:var(--sombre); color:#FFFFFF}
+.boussole{display:flex; flex-direction:column; gap:6px; margin-top:6px}
+.curseur{display:grid; grid-template-columns:9.5em 1fr 2em; align-items:center; gap:12px; background:var(--teinte); color:var(--sombre); border-radius:14px; padding:10px 14px}
+.c-nom{font:600 15px var(--titre)}
+.curseur output{font:700 16px var(--titre); text-align:right}
+input[type=range]{-webkit-appearance:none; appearance:none; width:100%; height:28px; background:transparent; margin:0}
+input[type=range]::-webkit-slider-runnable-track{height:6px; border-radius:6px; background:rgba(27,21,48,.2)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none; width:24px; height:24px; border-radius:50%; background:var(--sombre); margin-top:-9px; border:0}
+input[type=range]::-moz-range-track{height:6px; border-radius:6px; background:rgba(27,21,48,.2)}
+input[type=range]::-moz-range-thumb{width:24px; height:24px; border-radius:50%; background:var(--sombre); border:0}
+input[type=range]:focus-visible{outline:3px solid var(--sombre); outline-offset:2px}
+
+.retenu{list-style:none; padding:0; margin:8px 0 10px; display:flex; flex-direction:column; gap:10px}
+.retenu li{background:var(--teinte); color:var(--sombre); border-radius:16px; padding:14px 16px; font-size:16.5px}
+.jauges{display:flex; flex-direction:column; gap:10px; margin:6px 0 10px; max-width:420px}
+.jauge{display:grid; grid-template-columns:7em 1fr; align-items:center; gap:12px; font:600 15px var(--titre)}
+.jauge b{position:relative; display:block; height:10px; border-radius:10px; overflow:hidden}
+.jauge b::before{content:''; position:absolute; inset:0; background:var(--encre); opacity:.22}
+.jauge i{position:absolute; left:0; top:0; bottom:0; background:var(--encre); border-radius:10px}
+
+/* le profil flouté derrière la création du compte */
+.centre.profil{position:relative}
+.profil-carte{transition:filter .9s ease, opacity .9s ease}
+.voile .profil-carte{filter:blur(14px); opacity:.55; pointer-events:none; user-select:none}
+.compte-voile{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; transition:opacity .7s ease, transform .7s ease}
+.compte-voile.leve{opacity:0; transform:translateY(-16px); pointer-events:none}
+.compte-form{width:100%; background:var(--teinte); color:var(--sombre); border-radius:var(--rayon-grand); padding:22px 20px; display:flex; flex-direction:column}
+.compte-form h2{font:800 24px/1.2 var(--titre); margin:4px 0 8px}
+.compte-form .champ{background:rgba(27,21,48,.07)}
+.compte-form .btn{align-self:stretch; text-align:center}
+.compte-form :focus-visible{outline-color:var(--sombre)}
+
+.cartes{display:flex; flex-direction:column; gap:10px; margin:6px 0 4px}
+.carte-ag{display:flex; gap:14px; align-items:flex-start; background:var(--teinte); color:var(--sombre); border-radius:18px; padding:14px 16px}
+.carte-ag strong{display:block; font:800 17px var(--titre)}
+.carte-ag > div > span{font:600 13px var(--titre); opacity:.7}
+.carte-ag p{margin:4px 0 0; font-size:15.5px}
+.signaux{list-style:none; padding:0; margin:0 0 6px; display:grid; gap:8px}
+.signaux li{background:var(--teinte); color:var(--sombre); border-radius:14px; padding:12px 16px; font-size:15.5px}
+.signaux strong{display:block; font:700 16px var(--titre)}
+
+/* le compte-rendu */
+.ecran.ecran-document{max-width:680px}
+.document{padding:28px 0 12px}
+.cr-etat{min-height:1px; margin:0 0 10px; font:600 14px var(--titre); opacity:.75}
+.cr-liste{display:flex; flex-direction:column; gap:12px; margin:8px 0 14px}
+.cr-carte{background:var(--t); color:var(--sombre); border-radius:18px; border-left:6px solid var(--c); padding:16px 18px 14px}
+.cr-carte header{display:flex; justify-content:space-between; align-items:baseline; gap:12px; margin-bottom:6px}
+.cr-carte h2, .panneau .cr-carte h2{margin:0; font:800 18px/1.25 var(--titre)}
+.cr-carte header .lien-inline{font:700 14px var(--titre); white-space:nowrap}
+.cr-texte p{margin:0 0 8px; font-size:16.5px; line-height:1.6}
+.cr-texte p:last-child{margin:0}
+.cr-note{margin:10px 0 0; font-size:13.5px; opacity:.8}
+.cr-carte .etiquette{font-weight:600; opacity:.8}
+.cr-champ, .panneau .cr-champ{min-height:9em; background:rgba(27,21,48,.07); font-size:16.5px}
+.cr-carte .actions .btn{margin-top:0}
+.document > .btn{margin-top:4px}
+
+@media (max-width:480px){
+  .q-titre{font-size:24px}
+  .chiffres{grid-template-columns:repeat(5, 1fr)}
+  .curseur{grid-template-columns:1fr 2em}
+  .c-nom{grid-row:1; grid-column:1}
+  .curseur output{grid-row:1; grid-column:2}
+  .curseur input{grid-row:2; grid-column:1 / -1}
+  .point{width:50px; height:50px}
+  .point:nth-child(2), .point:nth-child(4){width:42px; height:42px}
+  .point:nth-child(3){width:34px; height:34px}
+}

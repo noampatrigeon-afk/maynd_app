@@ -1,5 +1,7 @@
 # Architecture
 
+> **13/11/2026 :** ce document décrit MAYND (`src/`). L'application cible, **App mix** (`app-mix/`), a une architecture différente et propre : fichiers séparés chargés dans l'ordre, aucune fonction redéfinie, un objet `etat` en portée lexicale, registres `RENDUS`, `ONGLETS` et `ACTIONS`. Voir `app-mix/docs/LISEZMOI.md`.
+
 ## Principe
 
 Application d'une seule page, en JavaScript natif, sans framework et sans étape de compilation.

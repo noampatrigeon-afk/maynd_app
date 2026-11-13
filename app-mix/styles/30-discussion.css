@@ -1,0 +1,51 @@
+/* APP MIX — LA DISCUSSION (13/11/2026)
+   MIA, les accompagnants venus (pastilles en haut), le professionnel référent
+   (fond vert, badge), les cartes : pas, signal, jeu, crise, formule. */
+
+.ecran.interieur.discussion{height:100vh; height:100dvh; min-height:0}
+.ecran.interieur.discussion .page{display:flex; flex-direction:column; padding:0 0 calc(70px + env(safe-area-inset-bottom)); min-height:0}
+.chat-tete{display:flex; align-items:center; gap:10px; padding:12px 16px; border-bottom:1px solid var(--trait); background:var(--creme)}
+.presents{flex:1; display:flex; gap:8px; overflow-x:auto; scrollbar-width:none}
+.presents::-webkit-scrollbar{display:none}
+.present{display:flex; align-items:center; gap:8px; border:0; border-radius:999px; padding:4px 12px 4px 4px; background:transparent; color:var(--sombre); font:700 15px var(--titre); white-space:nowrap}
+.present.actif{background:var(--lavande)}
+.b-menu{width:44px; height:44px; border:0; border-radius:50%; background:none; color:var(--sombre); font-size:26px; line-height:1}
+.fil{flex:1; overflow-y:auto; padding:18px 16px 8px; display:flex; flex-direction:column; gap:12px}
+.msg{display:flex; gap:10px; align-items:flex-end; max-width:88%}
+.msg.moi{align-self:flex-end}
+.bulle{padding:12px 16px; font-size:16.5px; line-height:1.5}
+.bulle p{margin:0 0 8px}
+.bulle p:last-child{margin:0}
+.msg.moi .bulle{background:var(--violet); color:#FFFFFF; border-radius:20px 20px 6px 20px}
+.msg.ag .bulle{background:var(--t); color:var(--sombre); border-radius:20px 20px 20px 6px}
+.msg.pro .bulle{background:var(--vert-clair); color:var(--sombre); border-radius:20px 20px 20px 6px; border-left:4px solid var(--vert)}
+.qui{display:flex; align-items:center; gap:6px; font:700 13px var(--titre); color:var(--sombre); opacity:.7; margin-bottom:2px}
+.msg.pro .qui{opacity:1; color:#00703F}
+.choix{display:flex; flex-wrap:wrap; gap:8px; padding-left:42px}
+.choix-b{border:0; border-radius:999px; padding:10px 16px; background:var(--violet); color:#FFFFFF; font:600 15px var(--titre)}
+.info{align-self:center; margin:2px 0; font:600 13px var(--titre); color:var(--gris); text-align:center}
+.info.erreur{display:flex; gap:10px; align-items:center; background:var(--rose-clair); color:var(--sombre); border-radius:12px; padding:8px 14px}
+.fil .carte{align-self:stretch}
+.carte-signal{background:var(--vert-clair)}
+.carte-crise{background:var(--rose-clair)}
+.carte-cle{background:var(--creme-jaune)}
+.carte-jeu{display:flex; align-items:center; gap:14px; background:var(--t, var(--lavande))}
+.carte-jeu strong{display:block; font:800 16px var(--titre)}
+.carte-jeu .btn{margin:0 0 0 auto; padding:12px 18px; font-size:15px}
+.carte-formule{background:var(--lavande)}
+.tel{display:block; margin:6px 0; padding:10px 14px; border-radius:12px; background:#FFCADB; color:var(--sombre); text-decoration:none}
+.tel strong{display:block; font:700 16px var(--titre)}
+.tel span{font-size:14px}
+.points-ecrit{display:inline-flex; gap:5px; padding:4px 0}
+.points-ecrit i{width:8px; height:8px; border-radius:50%; background:var(--sombre); opacity:.3; animation:souffle 1.4s infinite ease-in-out}
+.points-ecrit i:nth-child(2){animation-delay:.2s}
+.points-ecrit i:nth-child(3){animation-delay:.4s}
+@keyframes souffle{0%,100%{opacity:.25} 50%{opacity:.8}}
+.saisie{display:flex; gap:10px; align-items:flex-end; padding:10px 14px 10px; border-top:1px solid var(--trait); background:var(--creme)}
+.saisie textarea{flex:1; max-height:160px; border:0; border-radius:22px; padding:12px 16px; background:var(--lavande); color:var(--sombre); font:400 16.5px/1.4 var(--corps); resize:none}
+.saisie textarea::placeholder{color:var(--sombre); opacity:.5}
+.b-envoi{flex:none; width:46px; height:46px; border:0; border-radius:50%; background:var(--violet); color:#FFFFFF; font:800 20px var(--titre)}
+.b-envoi:disabled{opacity:.35}
+.b-voix{flex:none; width:36px; height:36px; border:0; border-radius:50%; background:transparent; color:var(--sombre); opacity:.6; display:grid; place-items:center}
+.b-voix svg{width:18px; height:18px}
+.b-voix.playing{opacity:1; color:var(--violet)}

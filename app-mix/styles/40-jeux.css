@@ -1,0 +1,27 @@
+/* APP MIX — LES JEUX (13/11/2026)
+   Plein écran, couleur de l'accompagnant, une question par écran.
+   Écran de réflexion : le bloc monte pendant dix secondes avant les réponses. */
+
+.jeu{min-height:100vh; min-height:100dvh; background:var(--c, var(--violet)); color:var(--e, #FFFFFF); padding:20px 20px calc(32px + env(safe-area-inset-bottom)); display:flex; flex-direction:column; max-width:620px; margin:0 auto}
+.jeu .barre{margin-bottom:8px}
+.jeu .b-retour, .jeu .b-quitter{background:none; border:0; color:inherit; font:700 15px var(--titre); padding:8px 4px}
+.jeu .b-quitter{margin-left:auto}
+.jeu .progression::before, .jeu .progression span{background:currentColor}
+.jeu .corps{flex:1; display:flex; flex-direction:column; justify-content:center}
+.jeu .q-titre{font:700 27px/1.22 var(--titre)}
+.jeu .opt{background:var(--t, var(--lavande))}
+.jeu .btn{background:var(--sombre); color:#FFFFFF}
+.jeu .btn.clair{background:var(--t, var(--lavande)); color:var(--sombre)}
+.jeu .fiche-tete span{color:inherit; opacity:.85}
+.jeu details.carte summary{font:700 16px var(--titre); cursor:pointer}
+.jeu .lien{color:inherit}
+.reflexion{flex:1; display:flex; align-items:flex-end; border-radius:var(--rayon-grand); background:var(--t, var(--lavande)); color:var(--sombre); padding:20px; margin:12px 0; min-height:40vh; position:relative; overflow:hidden}
+.reflexion .q-titre{position:relative}
+.reflexion .monte{position:absolute; left:0; right:0; bottom:0; background:rgba(27,21,48,.08); height:0; animation:monte var(--d, 10s) linear forwards}
+@keyframes monte{to{height:100%}}
+.jeu .fin{display:flex; flex-direction:column; gap:10px}
+.jeu .fin .carte{background:var(--t, var(--lavande))}
+.jeu .recap{list-style:none; padding:0; margin:0 0 8px; display:grid; gap:8px}
+.jeu .recap li{background:var(--t, var(--lavande)); color:var(--sombre); border-radius:14px; padding:12px 16px; font-size:15.5px}
+.jeu .voix-reveil{display:flex; align-items:center; gap:10px; background:var(--t, var(--lavande)); color:var(--sombre); border-radius:14px; padding:12px 16px; font:700 15px var(--titre); border:0; text-align:left}
+@media (prefers-reduced-motion:reduce){ .reflexion .monte{animation:none; height:100%} }
