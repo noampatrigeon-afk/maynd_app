@@ -97,8 +97,10 @@ function entrerDiscussion(){
 function premierMessage(){
   if(etat.cle){ reponse('mia', {premier:true}); return; }
   const p=prenom(), cap=etat.rep.cap;
-  ajouterAuFil({type:'agent', qui:'mia', texte:(p?p+', j':'J')+'’ai lu tout ton parcours.'+(cap?' Ton cap : « '+cite(cap)+' ». On commence par là ?':' Par quoi veux-tu commencer ?'),
-    choix:cap?['On commence par là','Plutôt autre chose']:null});
+  /* Ce message est écrit par l'application, pas par le modèle : il part dans la langue choisie (60-langue.js). */
+  const T=function(s){ return typeof traduire==='function' ? traduire(s) : s; };
+  ajouterAuFil({type:'agent', qui:'mia', texte:T((p?p+', j':'J')+'’ai lu tout ton parcours.')+' '+(cap?T('Ton cap : « '+cite(cap)+' ».')+' '+T('On commence par là ?'):T('Par quoi veux-tu commencer ?')),
+    choix:cap?[T('On commence par là'), T('Plutôt autre chose')]:null});
   ajouterAuFil({type:'cle'});
 }
 function envoyerSaisie(){

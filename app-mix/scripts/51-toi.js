@@ -90,6 +90,7 @@ function interrupteur(action, on, extra){ return '<button class="interrupteur'+(
 ACTIONS.reglages=function(){
   const importable=clePremiereApp();
   let hh='<h2>Réglages</h2>'
+    +(typeof choixLangueHTML==='function' ? choixLangueHTML() : '')
     +'<p class="titre-section">Ton compte</p><div class="bloc">'
     +(compteCree() ? '<p><strong>'+esc(etat.compte.courriel)+'</strong><br><span class="petit">Compte créé le '+esc(dateCourte(etat.compte.cree))+'.</span></p>' : '<p class="petit">Pas encore de compte : il se crée au résultat du parcours.</p>')
     +'<p><strong>Formule : '+(abonne() ? 'MAYND, '+PRIX_MAYND+' € par mois' : 'gratuite')+'</strong><br><span class="petit">'+(abonne() ? pluriel(messagesRestants(), 'message restant', 'messages restants')+' ce mois-ci.' : 'MIA seule, '+QUOTA_GRATUIT_JOUR+' messages par jour.')+'</span></p>'

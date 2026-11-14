@@ -301,6 +301,8 @@ input[type=range]:focus-visible{outline:3px solid var(--sombre); outline-offset:
 .carte-pro .mot{background:rgba(255,255,255,.55); border-radius:14px; padding:10px 14px; font-size:15.5px; margin:6px 0 8px}
 .carte-pro .prochain{font:600 13.5px var(--titre); color:var(--gris)}
 .carte-pro .badge-pro{color:var(--vert)}
+/* 14/11 : dans le rond vert du professionnel, le badge reste blanc (il était vert sur vert, donc invisible). */
+.carte-pro .av.pro .badge-pro{color:#FFFFFF; width:22px; height:22px; vertical-align:0}
 
 /* quota gratuit */
 .quota{font:600 14px var(--titre); color:var(--gris); text-align:center; margin-top:4px}
@@ -2769,7 +2771,7 @@ function pron(id){ return agentFem(id) ? {il:'elle', le:'la', Il:'Elle', Le:'La'
    ══════════════════════════════════════════════════════════════════════════ */
 
 const CLE_ETAT='maynd.mix.v1';
-const VERSION_APP='Version 13/11 15:15';
+const VERSION_APP='Version 14/11 13:30';
 const MODELE_REPONSE='claude-sonnet-5-5';
 const MODELE_LECTURE='claude-haiku-4-5';
 const QUOTA_GRATUIT_JOUR=5;
@@ -3254,7 +3256,7 @@ function carteCR(id, edition){
     ? '<label class="etiquette" for="cr-champ-'+id+'">Écris-le comme c’est vraiment pour toi.</label>'
       +'<textarea class="champ cr-champ" id="cr-champ-'+id+'" rows="7">'+esc(t)+'</textarea>'
       +'<div class="actions">'+bouton('Enregistrer', 'cr-enregistrer', ' data-id="'+id+'"')+'<button class="lien" data-action="cr-annuler" data-id="'+id+'">Annuler</button></div>'
-    : '<div class="cr-texte">'+paragraphes(t)+'</div>'
+    : '<div class="cr-texte'+(!corrige && !etat.cr.mia[id] ? ' cr-local' : '')+'">'+paragraphes(t)+'</div>'
       +(corrige ? '<p class="cr-note">Corrigé par toi · <button class="lien-inline" data-action="cr-retablir" data-id="'+id+'">Revenir au texte d’origine</button></p>' : '');
   return '<section class="cr-carte" data-section="'+id+'" style="--c:'+s.fond+';--t:'+s.teinte+'">'
     +'<header><h2>'+esc(s.titre)+'</h2>'+(edition?'':'<button class="lien-inline" data-action="cr-corriger" data-id="'+id+'">Corriger</button>')+'</header>'+corps+'</section>';
@@ -3297,7 +3299,8 @@ async function lancerCompteRendu(){
   const tour="Consigne pour cette réponse :\nTu écris le compte-rendu détaillé que la personne lit à la fin de son parcours d'accueil. Il doit l'aider à se comprendre : comment elle fonctionne, ce qu'elle fait, ce qui l'intéresse, comment elle réagit selon les situations. "
     +'Écris ces parties, dans cet ordre, chacune précédée de sa balise seule sur sa ligne :\n'
     +ids.map(function(id){ return '[[SECTION:'+id+']] '+SECTION[id].titre+' : '+GUIDE[id]; }).join('\n')
-    +"\nRègles : deuxième personne ; trois à six phrases par partie ; concret, accroché à ses réponses et à ses mots ; relie entre elles des réponses qu'elle n'aurait pas rapprochées ; une lecture se propose comme une hypothèse, jamais comme un verdict ; aucune étiquette, aucun vocabulaire clinique, aucune flatterie, aucune question, aucune autre balise.";
+    +"\nRègles : deuxième personne ; trois à six phrases par partie ; concret, accroché à ses réponses et à ses mots ; relie entre elles des réponses qu'elle n'aurait pas rapprochées ; une lecture se propose comme une hypothèse, jamais comme un verdict ; aucune étiquette, aucun vocabulaire clinique, aucune flatterie, aucune question, aucune autre balise."
+    +(typeof nomLangueModele==='function' && nomLangueModele() ? "\nLangue : écris tout le compte-rendu en "+nomLangueModele()+'.' : '');
   try{
     const res=await appeler(systeme('mia', tour), [{role:'user', content:'(Écris mon compte-rendu.)'}], 4000);
     if(!res.refus){
@@ -3917,8 +3920,10 @@ function entrerDiscussion(){
 function premierMessage(){
   if(etat.cle){ reponse('mia', {premier:true}); return; }
   const p=prenom(), cap=etat.rep.cap;
-  ajouterAuFil({type:'agent', qui:'mia', texte:(p?p+', j':'J')+'’ai lu tout ton parcours.'+(cap?' Ton cap : « '+cite(cap)+' ». On commence par là ?':' Par quoi veux-tu commencer ?'),
-    choix:cap?['On commence par là','Plutôt autre chose']:null});
+  /* Ce message est écrit par l'application, pas par le modèle : il part dans la langue choisie (60-langue.js). */
+  const T=function(s){ return typeof traduire==='function' ? traduire(s) : s; };
+  ajouterAuFil({type:'agent', qui:'mia', texte:T((p?p+', j':'J')+'’ai lu tout ton parcours.')+' '+(cap?T('Ton cap : « '+cite(cap)+' ».')+' '+T('On commence par là ?'):T('Par quoi veux-tu commencer ?')),
+    choix:cap?[T('On commence par là'), T('Plutôt autre chose')]:null});
   ajouterAuFil({type:'cle'});
 }
 function envoyerSaisie(){
@@ -4293,6 +4298,7 @@ function dossierTexte(){
   L.push(fem() ? 'accord : la personne est une femme. Accorde au féminin tout ce qui la désigne (« tu es prête », « tu t’es sentie »).'
                : 'accord : adresse-toi à la personne au masculin (« tu es prêt », « tu t’es senti »).');
   L.push('formule : '+(abonne() ? 'MAYND (les seize accompagnants, la voix, la supervision par son professionnel référent)' : 'gratuite (MIA seule, sans accompagnant ni professionnel référent)'));
+  if(typeof nomLangueModele==='function' && nomLangueModele()) L.push('langue : l’application est en '+nomLangueModele()+'. Tu écris en '+nomLangueModele()+', même si ce dossier est en français.');
   const pr=profil(); L.push('profil MAYND : '+pr.nom+' — '+pr.desc);
   L.push('');
   L.push('Son compte-rendu, partie par partie. Il est écrit pour elle, à la deuxième personne : « tu », c’est elle. Quand une partie est marquée « corrigée par la personne », sa version fait foi sur tout le reste du dossier.');
@@ -5030,6 +5036,7 @@ function interrupteur(action, on, extra){ return '<button class="interrupteur'+(
 ACTIONS.reglages=function(){
   const importable=clePremiereApp();
   let hh='<h2>Réglages</h2>'
+    +(typeof choixLangueHTML==='function' ? choixLangueHTML() : '')
     +'<p class="titre-section">Ton compte</p><div class="bloc">'
     +(compteCree() ? '<p><strong>'+esc(etat.compte.courriel)+'</strong><br><span class="petit">Compte créé le '+esc(dateCourte(etat.compte.cree))+'.</span></p>' : '<p class="petit">Pas encore de compte : il se crée au résultat du parcours.</p>')
     +'<p><strong>Formule : '+(abonne() ? 'MAYND, '+PRIX_MAYND+' € par mois' : 'gratuite')+'</strong><br><span class="petit">'+(abonne() ? pluriel(messagesRestants(), 'message restant', 'messages restants')+' ce mois-ci.' : 'MIA seule, '+QUOTA_GRATUIT_JOUR+' messages par jour.')+'</span></p>'
@@ -5072,6 +5079,1004 @@ ACTIONS.modele=function(b){ etat.modele=b.dataset.m; garder(); ACTIONS.reglages(
 ACTIONS['studio-enregistrer']=function(){ const v=String((document.getElementById('studio-socle')||{}).value||'').trim(); etat.socle=(v && v!==SOCLE) ? v : ''; garder(); toast('Socle enregistré.'); };
 ACTIONS['studio-retablir']=function(){ etat.socle=''; garder(); ACTIONS.reglages(); };
 ACTIONS['demo-signal']=function(b){ if(!abonne()){ toast('Un signal demande la formule MAYND.'); return; } poserSignal(b.dataset.type, 'démonstration', true); fermer(); montrerOnglet('discussion'); };
+
+</script>
+<script>
+/* ══════════════════════════════════════════════════════════════════════════
+   APP MIX — LES LANGUES (13/11/2026)
+   Français, anglais, espagnol. Les textes sont écrits en français dans le
+   code ; à l'affichage, chaque nœud de texte, chaque placeholder et chaque
+   aria-label est traduit par le dictionnaire de la langue choisie
+   (61-anglais.js, 62-espagnol.js), clé = la phrase française. Une phrase
+   absente du dictionnaire reste en français. Quelques tournures composées
+   (« Étape 1 sur 8 », « Bonjour, Léa ») passent par des règles.
+   Jamais réécrit : ce que la personne tape, ce que le modèle répond, le
+   contenu des jeux (en français pour l'instant). Le modèle reçoit la langue
+   dans le dossier (33-lecture.js) et répond dans cette langue.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+const LANGUES={fr:'Français', en:'English', es:'Español'};
+const DICOS={en:{}, es:{}};      /* remplis par 61 et 62 */
+const REGLES={en:[], es:[]};     /* [regex, remplacement] : règles écrites à la main, essayées avant tout découpage */
+const REGLES_FIN={en:[], es:[]}; /* règles sans début fixe (« sommeil (3 sur 10) »), essayées après les gabarits */
+const NOMS_LANGUE_MODELE={en:'anglais', es:'espagnol'};
+function langue(){ return LANGUES[etat.langue] ? etat.langue : 'fr'; }
+function nomLangueModele(){ return NOMS_LANGUE_MODELE[langue()] || ''; }
+
+/* Les paires {masculin|féminin} d'une clé : à l'écran, tx() les a déjà résolues.
+   On indexe donc chaque clé sous ses deux formes, chacune vers la valeur accordée de même. */
+function paire(s, f){ return String(s).replace(/\{([^{}|]*)\|([^{}|]*)\}/g, function(_, m, ff){ return f ? ff : m; }); }
+const INDEX_PAIRES={}, GABARITS={};
+function echapperRegex(s){ return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+function indexPaires(l){
+  if(INDEX_PAIRES[l]) return INDEX_PAIRES[l];
+  const d=DICOS[l], x={}, g=[];
+  Object.keys(d).forEach(function(k){
+    const paires=/\{[^{}|]*\|[^{}|]*\}/.test(k), gabarit=/\{[xn]\}/.test(k);
+    if(paires && !gabarit){ x[paire(k, false)]=paire(d[k], false); x[paire(k, true)]=paire(d[k], true); }
+    /* « Tu dors {x} par nuit. » devient une règle : le morceau capturé est traduit à son tour */
+    if(gabarit){
+      (paires ? [false, true] : [false]).forEach(function(f){
+        const re=new RegExp('^'+echapperRegex(paire(k, f)).replace(/\\\{x\\\}/g, '(.+)').replace(/\\\{n\\\}/g, '(\\d+)')+'$');
+        g.push([re, paire(d[k], f).replace(/\{[xn]\}/g, '$1'), k.length]);
+      });
+    }
+  });
+  /* du plus précis au plus court : « Tu as des fiertés concrètes : « {x} ». » avant « Tu as {x}. » */
+  g.sort(function(a, b){ return b[2]-a[2]; });
+  GABARITS[l]=g;
+  return (INDEX_PAIRES[l]=x);
+}
+function gabarits(l){ indexPaires(l); return GABARITS[l]; }
+/* « la liberté, la sécurité et la famille » : une liste (liste(), 11-texte.js), traduite morceau par morceau,
+   en prenant le « et » qui laisse tous les morceaux traduisibles. */
+const ET_LISTE={en:' and ', es:' y '};
+/* Un morceau de liste se traduit s'il est au dictionnaire, cité entre guillemets (mots de la personne), ou noté sur 10. */
+function morceauTraduit(l, m){ return chercher(l, m)!=null || /^« .+ »$/.test(m) || /^.+ \(\d+ sur 10\)$/.test(m); }
+function traduireListe(l, t){
+  const positions=[]; let i=-1;
+  while((i=t.indexOf(' et ', i+1))>=0) positions.push(i);
+  for(let k=positions.length-1;k>=0;k--){
+    const morceaux=t.slice(0, positions[k]).split(', ').concat([t.slice(positions[k]+4)]);
+    if(!morceaux.every(function(m){ return morceauTraduit(l, m); })) continue;
+    const trad=morceaux.map(function(m){ return traduire(m); });
+    return trad.slice(0, -1).join(', ')+ET_LISTE[l]+trad[trad.length-1];
+  }
+  return null;
+}
+/* Plusieurs phrases dans un même texte (le compte-rendu composé ici). On cherche d'abord le plus long groupe de
+   phrases connu tel quel (une description de profil tient en deux ou trois phrases), puis chaque phrase à son tour. */
+function traduirePhrases(l, t){
+  const ph=t.split(/(?<=[.!?»…])\s+(?=[A-ZÀ-ÝŒ«“¿¡])/);
+  if(ph.length<2) return null;
+  const out=[]; let i=0, change=false;
+  while(i<ph.length){
+    let pris=false;
+    for(let j=ph.length;j>i+1;j--){ const v=exact(l, ph.slice(i, j).join(' ')); if(v!=null){ out.push(v); i=j; pris=true; change=true; break; } }
+    if(!pris){ const v=traduire(ph[i]); if(v!==ph[i]) change=true; out.push(v); i++; }
+  }
+  return change ? out.join(' ') : null;
+}
+function chercher(l, t){
+  const d=DICOS[l]; if(d[t]!=null) return tx(d[t]);
+  const x=indexPaires(l); if(x[t]!=null) return tx(x[t]);
+  /* « plutôt bien » au fil d'une phrase : la clé est écrite avec sa majuscule */
+  const M=majus(t); if(M!==t){ const v=chercher(l, M); if(v!=null) return minus(v); }
+  return null;
+}
+/* Traduit une phrase complète ; renvoie la phrase française sinon.
+   Le texte à l'écran porte les espaces insécables posées par typo() : on compare sans elles,
+   et on remplace le texte entier, en gardant ce qui l'entoure. */
+function traduire(s){
+  const l=langue(); if(l==='fr') return s;
+  const brut=String(s), t=brut.replace(/ /g, ' ').trim();
+  if(!t) return s;
+  const avant=brut.match(/^\s*/)[0], apres=brut.match(/\s*$/)[0];
+  function fini(x){ return avant+x+apres; }
+  const sans=t.replace(/[.:!?]\s*$/, ''), fin=t.slice(sans.length).trim();
+  /* 1. le texte entier : au dictionnaire ou par une règle écrite ; puis sans sa ponctuation finale (« Continuer » et « Continuer. ») */
+  let v=exact(l, t); if(v!=null) return fini(v);
+  if(sans!==t){ v=exact(l, sans); if(v!=null) return fini(v+fin); }
+  /* 2. plusieurs phrases : chacune à son tour (un gabarit ne doit jamais enjamber deux phrases) */
+  v=traduirePhrases(l, t); if(v!=null) return fini(v);
+  /* 3. une seule phrase : les gabarits du dictionnaire, du plus précis au plus court ; puis une liste */
+  v=appliquer(l, gabarits(l), t); if(v!=null) return fini(v);
+  if(sans!==t){ v=appliquer(l, gabarits(l), sans); if(v!=null) return fini(v+fin); }
+  v=appliquer(l, REGLES_FIN[l], t); if(v!=null) return fini(v);
+  if(t.indexOf(' et ')>=0){ v=traduireListe(l, t); if(v!=null) return fini(v); }
+  return s;
+}
+/* Applique la première règle qui correspond ; chaque morceau capturé est lui-même traduit (« Étape suivante : Comment tu réagis »). */
+function appliquer(l, regles, t){
+  for(const r of regles){
+    const m=t.match(r[0]); if(!m) continue;
+    const caps=m.slice(1).map(function(c){ return c==null ? '' : traduire(c); });
+    const out=typeof r[1]==='function' ? r[1].apply(null, [m[0]].concat(caps)) : r[1].replace(/\$(\d)/g, function(_, i){ return caps[i-1]||''; });
+    return tx(out);
+  }
+  return null;
+}
+/* Le dictionnaire, puis les règles écrites à la main : ce qui peut valoir pour un texte de plusieurs phrases. */
+function exact(l, t){ const v=chercher(l, t); return v!=null ? v : appliquer(l, REGLES[l], t); }
+function traduireAttr(el, nom){ const v=el.getAttribute(nom); if(v){ const t=traduire(v); if(t!==v) el.setAttribute(nom, t); } }
+/* Jamais traduit : ce que la personne tape, ce que le modèle écrit (bulles, compte-rendu affiné ou corrigé), les jeux.
+   Le compte-rendu composé par l'application (.cr-local) est traduit. */
+function exclu(el){ return !!(el && el.closest && el.closest('textarea, input, script, style, .no-trad, .bulle, .jeu, .cr-texte:not(.cr-local), .cr-champ')); }
+function traduireNoeud(root){
+  if(langue()==='fr' || !root) return;
+  if(root.nodeType===3){ if(!exclu(root.parentElement)){ const v=traduire(root.nodeValue); if(v!==root.nodeValue) root.nodeValue=v; } return; }
+  if(root.nodeType!==1 || exclu(root)) return;
+  const w=document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null); let n; const l=[];
+  while((n=w.nextNode())) l.push(n);
+  l.forEach(function(t){ if(!exclu(t.parentElement)){ const v=traduire(t.nodeValue); if(v!==t.nodeValue) t.nodeValue=v; } });
+  root.querySelectorAll('[placeholder], [aria-label], [title]').forEach(function(el){ ['placeholder','aria-label','title'].forEach(function(a){ if(el.hasAttribute(a)) traduireAttr(el, a); }); });
+  if(root.hasAttribute && root.hasAttribute('placeholder')) traduireAttr(root, 'placeholder');
+}
+(function(){
+  try{
+    const mo=new MutationObserver(function(muts){
+      if(langue()==='fr') return;
+      muts.forEach(function(m){
+        if(m.type==='characterData') traduireNoeud(m.target);
+        else if(m.type==='attributes') traduireAttr(m.target, m.attributeName);
+        else m.addedNodes.forEach(traduireNoeud);
+      });
+    });
+    mo.observe(document.documentElement, {childList:true, subtree:true, characterData:true, attributes:true, attributeFilter:['placeholder','aria-label']});
+  }catch(_){}
+})();
+function appliquerLangue(){
+  document.documentElement.lang=langue();
+  if(langue()!=='fr') traduireNoeud(document.body);
+}
+function choisirLangue(l){
+  if(!LANGUES[l]) return;
+  etat.langue=l; garder();
+  document.documentElement.lang=l;
+  if(etat.fini) rafraichirOnglet(); else aller(etat.etape);
+}
+ACTIONS.langue=function(b){ choisirLangue(b.dataset.l); fermer(); };
+function choixLangueHTML(){
+  return '<p class="titre-section">Langue · Language · Idioma</p><div class="bloc"><div class="choix-ligne">'
+    +Object.keys(LANGUES).map(function(l){ return '<button class="'+(langue()===l?'on':'')+'" data-action="langue" data-l="'+l+'" lang="'+l+'">'+LANGUES[l]+'</button>'; }).join('')+'</div></div>';
+}
+/* Toujours différé : les dictionnaires (61, 62) se remplissent après ce fichier. */
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', appliquerLangue); else setTimeout(appliquerLangue, 0);
+
+</script>
+<script>
+/* ══════════════════════════════════════════════════════════════════════════
+   APP MIX — ANGLAIS (13/11/2026). Clé : la phrase française. Les paires {m|f}
+   n'existent pas en anglais : une seule forme.
+   ══════════════════════════════════════════════════════════════════════════ */
+Object.assign(DICOS.en, {
+  /* ── le parcours ── */
+  "D'abord, toi":"First, you", "Qui tu es, ce que tu fais, avec qui tu vis.":"Who you are, what you do, who you live with.",
+  "Comment tu t'appelles ?":"What's your name?", "Ton prénom suffit.":"Your first name is enough.", "Ton prénom":"Your first name",
+  "Tu es… ?":"You are…?", "Ça me sert seulement à accorder les mots quand je t'écris.":"I only use it to choose the right words when I write to you.",
+  "Un homme":"A man", "Une femme":"A woman", "Je préfère ne pas répondre":"I'd rather not say",
+  "Quel âge as-tu ?":"How old are you?", "18 à 24 ans":"18 to 24", "25 à 34 ans":"25 to 34", "35 à 49 ans":"35 to 49", "50 à 64 ans":"50 to 64", "65 à 74 ans":"65 to 74", "75 ans ou plus":"75 or older",
+  "Qu'est-ce que tu fais dans la vie ?":"What do you do in life?", "Ce qui te prend le plus de temps.":"Whatever takes most of your time.",
+  "J'étudie ou je suis en formation":"I study or I'm in training", "Je travaille sur le terrain : usine, chantier, commerce, transport…":"I work in the field: factory, site, shop, transport…",
+  "Je travaille dans un bureau":"I work in an office", "J'enseigne, j'aide ou je m'occupe des autres":"I teach, help or care for others", "Je suis à mon compte":"I'm self-employed",
+  "Je cherche un emploi":"I'm looking for a job", "Je m'occupe de ma famille à plein temps":"I look after my family full time", "Je suis à la retraite":"I'm retired", "Le sport, c'est mon métier, ou presque":"Sport is my job, or nearly",
+  "Avec qui vis-tu ?":"Who do you live with?", "{Seul|Seule}":"Alone", "En couple":"With my partner", "En couple, avec des enfants":"With my partner and children", "{Seul|Seule} avec mes enfants":"Alone with my children",
+  "Chez mes parents":"With my parents", "En colocation":"In a shared flat", "Ça change souvent":"It changes often",
+  "Là où tu en es":"Where you are", "Ta période, ce qui pèse, ce qui tient.":"Your season, what weighs, what holds.",
+  "Si tu devais résumer ta période actuelle, tu dirais quoi ?":"If you had to sum up this season of your life, what would you say?",
+  "Ça va plutôt bien":"Things are going quite well", "Ça va, et je veux aller plus loin":"I'm fine, and I want to go further", "Je tiens bon, mais c'est lourd":"I'm holding on, but it's heavy",
+  "Je traverse un moment difficile":"I'm going through a hard time", "Je suis en pleine transition : travail, couple, déménagement…":"I'm in the middle of a change: work, relationship, moving…",
+  "Je me sens {perdu|perdue}, sans trop savoir pourquoi":"I feel lost, without really knowing why", "Je ne sais pas trop":"I'm not sure",
+  "Comment ça va en ce moment, domaine par domaine ?":"How are things right now, area by area?", "1, c'est très bas. 10, c'est au plus haut. Laisse à 5 si tu ne sais pas.":"1 is very low. 10 is the highest. Leave it at 5 if you don't know.",
+  "Sommeil":"Sleep", "Énergie":"Energy", "Moral":"Mood", "Confiance en toi":"Self-confidence", "Travail, études, activité":"Work, studies, activity", "Vie amoureuse":"Love life", "Famille":"Family", "Amis":"Friends", "Argent":"Money", "Rapport au corps":"Relationship with your body", "Sens de ta vie":"Meaning in your life",
+  "Qu'est-ce qui prend le plus de place dans ta tête ces jours-ci ?":"What takes up the most room in your head these days?", "Trois au plus.":"Three at most.",
+  "Me sentir mieux, tout simplement":"Simply feeling better", "Mieux me connaître":"Knowing myself better", "Ma confiance en moi":"My self-confidence", "La voix critique dans ma tête":"The critical voice in my head",
+  "Ma motivation, tenir mes bonnes habitudes":"My motivation, keeping good habits", "M'organiser, gérer mon temps":"Getting organised, managing my time", "Le stress, l'angoisse qui monte":"Stress, anxiety rising",
+  "Mon sommeil":"My sleep", "Une émotion lourde, une perte":"A heavy emotion, a loss", "Le sens de ce que je vis":"The meaning of what I'm living", "Une décision importante à prendre":"An important decision to make",
+  "Mon travail, mes études, ma carrière":"My work, my studies, my career", "Mon couple, ma vie amoureuse":"My relationship, my love life", "Ma famille, mes proches":"My family, the people close to me",
+  "Mon rôle de parent":"My role as a parent", "Me sentir {seul|seule}":"Feeling alone", "Dire les choses, poser mes limites":"Saying things, setting my limits",
+  "Le sport, la préparation mentale, la performance":"Sport, mental preparation, performance", "Ma sexualité, mon intimité":"My sexuality, my intimacy", "L'argent":"Money",
+  "Un comportement qui prend trop de place":"A habit that takes up too much room", "Mon rapport à mon corps":"My relationship with my body",
+  "Depuis combien de temps ça dure ?":"How long has it been going on?", "Moins de 2 semaines":"Less than 2 weeks", "Entre 2 semaines et 3 mois":"Between 2 weeks and 3 months", "Entre 3 mois et 1 an":"Between 3 months and 1 year",
+  "Entre 1 et 5 ans":"Between 1 and 5 years", "Depuis toujours, ou presque":"Forever, or nearly", "Ce n'est pas un problème, c'est une envie d'avancer":"It's not a problem, it's a wish to move forward",
+  "En une phrase, qu'est-ce qui t'amène aujourd'hui ?":"In one sentence, what brings you here today?", "Écris comme ça vient. Tu peux aussi passer.":"Write as it comes. You can also skip.", "Ce qui t'amène…":"What brings you…",
+  "Comment tu fonctionnes":"How you work", "Ta façon d'avancer, de décider, de te recharger.":"The way you move forward, decide, and recharge.",
+  "Après une longue journée, qu'est-ce qui te recharge le plus ?":"After a long day, what recharges you most?", "Touche le point qui te ressemble : plus il est près d'un côté, plus c'est vrai pour toi.":"Tap the dot that looks like you: the closer to one side, the truer it is for you.",
+  "Voir du monde":"Seeing people", "Être {seul|seule}":"Being alone", "Face à un nouveau projet, comment t'y prends-tu ?":"Faced with a new project, how do you go about it?", "Je planifie tout":"I plan everything", "J'avance à l'instinct":"I go with my gut",
+  "Pour une décision importante, sur quoi t'appuies-tu ?":"For an important decision, what do you rely on?", "J'analyse":"I analyse", "Je me fie à mon ressenti":"I trust my feelings",
+  "La nouveauté, qu'est-ce qu'elle te fait ?":"What does novelty do to you?", "Elle me stimule":"It excites me", "Il me faut du temps pour m'adapter":"I need time to adjust",
+  "Quel est ton niveau d'exigence envers toi-même ?":"How demanding are you with yourself?", "Plutôt {indulgent|indulgente}":"Rather easy-going", "Très {exigeant|exigeante}":"Very demanding",
+  "Tes émotions, est-ce qu'elles se voient ?":"Do your emotions show?", "Tout de suite":"Right away", "Je les garde pour moi":"I keep them to myself",
+  "Qu'est-ce qui te fait avancer le plus ?":"What drives you most?", "Atteindre un objectif":"Reaching a goal", "Progresser, apprendre":"Progressing, learning", "Être utile aux autres":"Being useful to others",
+  "Faire plaisir à ceux que j'aime":"Making the people I love happy", "Me sentir libre":"Feeling free", "Me sentir en paix":"Feeling at peace", "Être {reconnu|reconnue}":"Being recognised", "Gagner ma vie, être en sécurité":"Earning a living, being secure", "Le plaisir, tout simplement":"Simply enjoying myself",
+  "À quel moment de la journée es-tu le plus toi-même ?":"What time of day are you most yourself?", "Tôt le matin":"Early morning", "Le matin":"Morning", "L'après-midi":"Afternoon", "Le soir":"Evening", "La nuit":"Night", "Ça change tout le temps":"It changes all the time",
+  "Comment tu réagis":"How you react", "Sous pression, après un échec, dans un désaccord.":"Under pressure, after a setback, in a disagreement.",
+  "Quand la pression monte, que fais-tu le plus souvent ?":"When the pressure rises, what do you do most often?", "J'accélère, j'en fais plus":"I speed up, I do more", "Je fais une liste, je m'organise":"I make a list, I get organised",
+  "J'analyse la situation":"I analyse the situation", "J'en parle à quelqu'un":"I talk to someone", "Je m'énerve vite":"I get annoyed quickly", "Je me replie sur moi":"I withdraw into myself", "Je me fige, je n'arrive plus à rien":"I freeze, I can't do anything",
+  "Je me change les idées : sport, sortie, série…":"I take my mind off it: sport, going out, a series…", "Je remets à plus tard":"I put things off", "Je respire et je prends du recul":"I breathe and step back",
+  "Après un échec, à quoi ressemble ta première pensée ?":"After a setback, what does your first thought look like?", "« Qu'est-ce que je peux en tirer ? »":"\u201cWhat can I learn from this?\u201d", "« Je suis {nul|nulle}. »":"\u201cI'm useless.\u201d",
+  "« Ce n'est pas de ma faute. »":"\u201cIt's not my fault.\u201d", "« On passe à autre chose. »":"\u201cLet's move on.\u201d", "« Je recommence tout de suite. »":"\u201cI'll try again right away.\u201d", "« J'ai besoin d'en parler. »":"\u201cI need to talk about it.\u201d",
+  "« J'ai besoin d'être {seul|seule} un moment. »":"\u201cI need to be alone for a while.\u201d", "« Je le savais, ça ne marche jamais pour moi. »":"\u201cI knew it, it never works for me.\u201d", "Ça dépend vraiment de l'échec":"It really depends on the setback",
+  "Dans un désaccord avec un proche, que fais-tu ?":"In a disagreement with someone close, what do you do?", "Je dis les choses tout de suite":"I say things right away", "J'attends que ça retombe, puis j'en reparle":"I wait for it to settle, then bring it up again",
+  "Je cherche un terrain d'entente":"I look for common ground", "J'évite le sujet":"I avoid the subject", "Je cède pour avoir la paix":"I give in to keep the peace", "Je m'emporte, puis je regrette":"I lose my temper, then regret it", "Je me ferme, je ne dis plus rien":"I shut down, I say nothing more", "Ça dépend avec qui":"It depends who with",
+  "Après une émotion forte, combien de temps te faut-il pour retrouver ton calme ?":"After a strong emotion, how long does it take you to calm down?", "Moins de 10 minutes":"Less than 10 minutes", "Environ 1 heure":"About an hour", "Une demi-journée":"Half a day", "Une journée":"A day", "Plus de 2 jours":"More than 2 days", "Ça dépend de l'émotion":"It depends on the emotion",
+  "Quand on te fait un compliment, comment réagis-tu ?":"When someone pays you a compliment, how do you react?", "Je le prends, ça me fait plaisir":"I take it, it makes me happy", "Ça me donne de l'élan":"It gives me a boost",
+  "Je dis merci, mais je n'y crois pas trop":"I say thank you, but I don't really believe it", "Je le minimise":"I play it down", "Je suis {gêné|gênée}, je change de sujet":"I feel awkward, I change the subject", "Je me méfie un peu":"I'm a bit wary", "Je ne sais pas quoi en faire":"I don't know what to do with it",
+  "Quand ça va mal, vers quoi te tournes-tu en premier ?":"When things go wrong, what do you turn to first?", "Vers un proche : ami, famille":"Someone close: a friend, family", "Vers mon ou ma partenaire":"My partner", "Vers personne, je gère {seul|seule}":"No one, I handle it alone",
+  "Vers une activité : sport, musique, dessin…":"An activity: sport, music, drawing…", "Vers la nature, dehors":"Nature, the outdoors", "Vers ce qui fait du bien sur le moment : manger, fumer, boire…":"Whatever feels good in the moment: eating, smoking, drinking…", "Vers les écrans":"Screens", "Vers la prière, la méditation, la spiritualité":"Prayer, meditation, spirituality", "Je ne sais pas":"I don't know",
+  "Face à un imprévu, comment réagis-tu ?":"Faced with the unexpected, how do you react?", "Ça me déstabilise beaucoup":"It throws me a lot", "Je m'adapte vite":"I adapt quickly",
+  "Ce qui compte pour toi":"What matters to you", "Tes valeurs, ce qui t'apaise, ce que tu veux voir changer.":"Your values, what soothes you, what you want to see change.",
+  "Quelles sont les trois choses qui comptent le plus pour toi ?":"What are the three things that matter most to you?", "La liberté":"Freedom", "La sécurité":"Security", "La famille":"Family", "L'amitié":"Friendship", "L'amour":"Love", "La réussite":"Success", "La créativité":"Creativity", "La justice":"Justice", "Le respect":"Respect", "L'honnêteté":"Honesty",
+  "La santé":"Health", "La sérénité":"Serenity", "Apprendre":"Learning", "Être utile":"Being useful", "L'authenticité":"Authenticity", "L'aventure":"Adventure", "La foi, la spiritualité":"Faith, spirituality", "Le travail bien fait":"A job well done", "La nature":"Nature", "Le plaisir":"Pleasure",
+  "Qu'est-ce qui t'apaise vraiment ?":"What truly soothes you?", "Prendre l'air, la nature":"Fresh air, nature", "La musique":"Music", "Bouger, faire du sport":"Moving, doing sport", "Les gens que j'aime":"The people I love", "Un moment {seul|seule}":"A moment alone", "Créer, bricoler, cuisiner":"Creating, tinkering, cooking",
+  "Lire":"Reading", "Écrire":"Writing", "Dormir, me reposer":"Sleeping, resting", "Un film, une série":"A film, a series", "Prier, méditer":"Praying, meditating", "Respirer, me poser":"Breathing, settling down", "Les animaux":"Animals", "Jouer : jeux vidéo, jeux de société…":"Playing: video games, board games…",
+  "De quoi es-tu {fier|fière}, même si c'est petit ?":"What are you proud of, even if it's small?", "Tu peux passer.":"You can skip.", "Ce dont tu es {fier|fière}…":"What you're proud of…",
+  "Si tout allait mieux dans 6 mois, qu'est-ce qui aurait changé en premier ?":"If everything were better in 6 months, what would have changed first?", "Je dormirais mieux":"I'd sleep better", "J'aurais plus confiance en moi":"I'd be more confident", "Je serais plus {serein|sereine}":"I'd be calmer",
+  "Mes relations iraient mieux":"My relationships would be better", "J'aurais trouvé ma voie":"I'd have found my path", "J'aurais repris la main sur mon temps":"I'd have taken back control of my time", "J'aurais plus d'énergie":"I'd have more energy", "Je me sentirais moins {seul|seule}":"I'd feel less alone",
+  "J'aurais atteint un objectif précis":"I'd have reached a specific goal", "Je serais plus en paix avec mon corps":"I'd be more at peace with my body", "J'aurais moins de pression au travail":"I'd have less pressure at work",
+  "Qu'est-ce que tu ne veux plus vivre ?":"What do you no longer want to go through?", "Ce que tu ne veux plus…":"What you no longer want…",
+  "Ton corps et ton énergie":"Your body and your energy", "Ton sommeil, ton énergie, ton rapport au mouvement.":"Your sleep, your energy, your relationship with movement.",
+  "Combien d'heures dors-tu, une nuit habituelle ?":"How many hours do you sleep on a usual night?", "Moins de 5 h":"Less than 5 h", "5 à 6 h":"5 to 6 h", "6 à 7 h":"6 to 7 h", "7 à 8 h":"7 to 8 h", "8 à 9 h":"8 to 9 h", "Plus de 9 h":"More than 9 h", "Mes horaires changent : travail de nuit, bébé…":"My hours change: night work, a baby…",
+  "Au réveil, comment te sens-tu le plus souvent ?":"When you wake up, how do you usually feel?", "{Reposé|Reposée}":"Rested", "Plutôt en forme":"Fairly good", "Ça dépend des jours":"It depends on the day", "{Fatigué|Fatiguée}":"Tired", "{Épuisé|Épuisée}":"Exhausted", "Je me réveille plusieurs fois la nuit":"I wake up several times a night",
+  "Ton énergie dans la journée, de 1 à 10 ?":"Your energy during the day, from 1 to 10?", "À plat":"Flat", "Pleine forme":"Full of energy",
+  "Bouger, pour toi, c'est quoi ?":"What is moving, for you?", "Un plaisir":"A pleasure", "Mon métier, ou ma passion":"My job, or my passion", "Une obligation":"An obligation", "Quelque chose que j'aimerais faire plus":"Something I'd like to do more", "Difficile en ce moment : temps, fatigue, douleurs…":"Hard right now: time, tiredness, pain…", "Pas pour moi":"Not for me",
+  "Le soir, avec les écrans, comment ça se passe ?":"In the evening, how is it with screens?", "Je décroche facilement":"I switch off easily", "Je fais défiler plus longtemps que prévu":"I scroll longer than planned", "Je m'endors avec":"I fall asleep with them", "Je travaille sur écran tard":"I work on a screen late", "Je joue en ligne":"I play online", "Je n'en utilise presque pas le soir":"I hardly use them in the evening",
+  "Comment tu veux qu'on te parle":"How you want to be spoken to", "Pour que MIA te parle comme il te faut.":"So MIA speaks to you the way you need.",
+  "Le développement personnel, la préparation mentale, tu connais ?":"Personal development, mental preparation: familiar with them?", "Il n'y a pas de bonne réponse. Ça aide MIA à trouver les bons mots.":"There's no right answer. It helps MIA find the right words.",
+  "Pas du tout, c'est nouveau pour moi":"Not at all, it's new to me", "Un peu, j'ai lu ou écouté des choses":"A little, I've read or listened to things", "Oui, je m'y intéresse depuis longtemps":"Yes, I've been interested for a long time",
+  "J'ai déjà été {accompagné|accompagnée} par un professionnel":"I've already been supported by a professional", "Je n'y crois pas trop, mais je veux essayer":"I'm not convinced, but I want to try", "Je me méfie des applications comme celle-ci":"I'm wary of apps like this one",
+  "Comment préfères-tu qu'on te dise les choses ?":"How do you prefer to be told things?", "En douceur":"Gently", "Sans détour":"Straight",
+  "Quelle longueur de réponse te convient ?":"What length of reply suits you?", "Très courtes, l'essentiel":"Very short, the essentials", "Courtes et nettes":"Short and clear", "Moyennes":"Medium", "Développées quand il le faut":"Developed when needed", "Ça dépend du moment":"It depends on the moment",
+  "Qu'est-ce qui t'aide le plus ?":"What helps you most?", "Des questions pour réfléchir":"Questions to think about", "Des pistes concrètes":"Concrete ideas",
+  "L'humour, même quand c'est dur, est-ce que ça t'aide ?":"Does humour help, even when things are hard?", "Oui, ça m'aide beaucoup":"Yes, it helps a lot", "Un peu, avec tact":"A little, with tact", "Seulement quand ça va mieux":"Only when things are better", "Non, pas du tout":"No, not at all",
+  "Quand tu n'as pas fait ce que tu avais prévu, que veux-tu que MIA fasse ?":"When you haven't done what you planned, what do you want MIA to do?", "Qu'elle me relance franchement":"Follow up frankly", "Qu'elle me le rappelle doucement":"Remind me gently",
+  "Qu'elle me demande ce qui a bloqué":"Ask me what got in the way", "Qu'elle me propose un pas plus petit":"Suggest a smaller step", "Qu'elle n'en parle que si j'en parle":"Only mention it if I do",
+  "À quel moment aimerais-tu le plus parler avec MIA ?":"When would you most like to talk with MIA?", "Pendant mes pauses":"During my breaks", "Sur le trajet":"On the way", "Quand ça ne va pas":"When things aren't going well", "N'importe quand":"Any time",
+  "Ton cap":"Your course", "Une seule chose à travailler en premier.":"One thing to work on first.", "Si on ne devait travailler qu'une seule chose ensemble, ce serait laquelle ?":"If we could only work on one thing together, what would it be?", "Choisis une idée ou écris la tienne.":"Pick an idea or write your own.", "Ton cap…":"Your course…",
+  "Pourquoi maintenant ?":"Why now?", "Ce qui fait que c'est le moment…":"What makes this the moment…", "À quoi verras-tu que ça avance ?":"How will you know it's moving forward?", "Un signe concret, même petit. Tu peux passer.":"A concrete sign, even small. You can skip.", "Le signe…":"The sign…",
+  "À quel point es-tu {prêt|prête} à t'y mettre, de 1 à 10 ?":"How ready are you to get started, from 1 to 10?", "Pas encore":"Not yet", "Complètement":"Completely",
+  /* ── profils ── */
+  "Le Moteur":"The Engine", "Tu avances, tu agis, tu règles les choses tout de suite. Ta force, c'est l'action. L'enjeu : ne pas foncer sans te retourner.":"You move, you act, you sort things out right away. Your strength is action. The challenge: not rushing ahead without looking back.",
+  "Le Relieur":"The Connector", "La Relieuse":"The Connector", "Tu passes par l'échange, la parole, le lien. Parler, c'est déjà avancer, pour toi.":"You go through exchange, words, connection. For you, talking is already moving forward.",
+  "L'Ancre":"The Anchor", "Tu as besoin de te poser avant de repartir. Ce n'est pas de la lenteur, c'est de l'ancrage.":"You need to settle before setting off again. It isn't slowness, it's grounding.",
+  "Le Stratège":"The Strategist", "La Stratège":"The Strategist", "Tu analyses, tu creuses, parfois en boucle. Ta force est là, à condition de ne pas t'y enfermer trop longtemps.":"You analyse, you dig, sometimes in loops. That's your strength, as long as you don't get stuck there too long.",
+  "Le Fédérateur":"The Rallier", "La Fédératrice":"The Rallier", "Tu avances, et tu entraînes les autres avec toi. Ton énergie se propage.":"You move forward and carry others with you. Your energy spreads.",
+  "Le Bâtisseur":"The Builder", "La Bâtisseuse":"The Builder", "Tu agis, mais tu prends le temps de poser des bases solides avant d'avancer.":"You act, but you take time to lay solid foundations before moving on.",
+  "Le Tacticien":"The Tactician", "La Tacticienne":"The Tactician", "Tu agis, mais jamais sans avoir réfléchi ton coup avant.":"You act, but never without thinking your move through first.",
+  "Le Pilier":"The Pillar", "Tu es le point d'appui des autres. Stable, disponible, à l'écoute.":"You're the one others lean on. Steady, available, listening.",
+  "Le Médiateur":"The Mediator", "La Médiatrice":"The Mediator", "Tu comprends vite les gens, et tu prends le temps de bien saisir avant de répondre.":"You understand people quickly, and take time to grasp things fully before answering.",
+  "L'Observateur":"The Observer", "L'Observatrice":"The Observer", "Tu prends du recul avant d'agir. Rien ne se décide chez toi dans la précipitation.":"You step back before acting. Nothing gets decided in a rush with you.",
+  "Le Sage":"The Sage", "La Sage":"The Sage", "Tu écoutes, tu te poses, tu réfléchis. Ta limite : passer à l'action.":"You listen, you settle, you think. Your limit: taking action.",
+  "Le Veilleur":"The Watcher", "La Veilleuse":"The Watcher", "Tu avances en autonomie, posément et avec recul. Ta limite : partager davantage.":"You move forward on your own, calmly and with perspective. Your limit: sharing more.",
+  "En bref":"In short", "Tes appuis et tes points de vigilance":"Your strengths and your watch points", "Comment MIA va te parler":"How MIA will speak to you",
+  /* ── les accompagnants ── */
+  "Il t'aide à tenir ce que tu décides, un petit pas après l'autre.":"He helps you stick to what you decide, one small step at a time.", "Il travaille avec toi la voix critique qui parle dans ta tête.":"He works with you on the critical voice in your head.",
+  "Il t'aide à savoir ce qui compte pour toi, et où tu vas.":"He helps you know what matters to you, and where you're going.", "Elle fait de la place à ce que tu ressens, sans te presser.":"She makes room for what you feel, without rushing you.",
+  "Il t'aide à voir clair dans ta relation, de ton côté à toi.":"He helps you see your relationship clearly, from your side.", "Il t'aide à dire les choses et à poser tes limites.":"He helps you say things and set your limits.",
+  "Il s'entraîne à côté de toi, jamais au-dessus.":"He trains alongside you, never above you.", "Il s'occupe de tes nuits, sans pression.":"He takes care of your nights, no pressure.", "Il te ramène au souffle quand le stress monte.":"He brings you back to your breath when stress rises.",
+  "Il t'aide à y voir clair dans ton travail.":"He helps you see your work clearly.", "Il t'accompagne dans ce que tu vis comme parent.":"He supports you in what you live as a parent.", "Elle t'aide à recréer des liens qui comptent.":"She helps you rebuild bonds that matter.",
+  "Elle parle intimité avec toi, clairement, sans jugement.":"She talks intimacy with you, clearly, without judgement.", "Il travaille avec toi ton rapport à l'argent.":"He works with you on your relationship with money.", "Il t'aide à reprendre la main, sans morale ni étiquette.":"He helps you take back control, without lectures or labels.",
+  "Elle t'aide à te sentir mieux avec ton corps, sans jamais le juger.":"She helps you feel better in your body, without ever judging it.",
+  "Tenir une habitude chaque jour":"Keep a habit every day", "Faire baisser le volume de ma voix critique":"Turn down my critical voice", "Savoir ce que je veux vraiment":"Know what I really want", "Faire de la place à ce que je ressens":"Make room for what I feel",
+  "Retrouver de la sérénité dans mon couple":"Find calm again in my relationship", "Oser dire non":"Dare to say no", "Retrouver le plaisir de m'entraîner":"Enjoy training again", "Retrouver des nuits qui reposent":"Get restful nights back", "Calmer le stress quand il monte":"Calm stress when it rises",
+  "Y voir clair dans mon travail":"See my work clearly", "Me sentir plus à l'aise comme parent":"Feel more at ease as a parent", "Recréer des liens proches":"Rebuild close bonds", "Retrouver une intimité apaisée":"Find a peaceful intimacy again", "Ouvrir mes comptes sans angoisse":"Open my accounts without dread",
+  "Reprendre la main sur un comportement":"Take back control of a habit", "Être en paix avec mon corps":"Be at peace with my body",
+  "Co-pilote":"Co-pilot", "Discipline et habitudes":"Discipline and habits", "Confiance et dialogue intérieur":"Confidence and inner dialogue", "Identité et sens":"Identity and meaning", "Émotions et deuil":"Emotions and grief", "Couple et attachement":"Relationships and attachment",
+  "Communication et affirmation":"Communication and assertiveness", "Sport et performance":"Sport and performance", "Anxiété et respiration":"Anxiety and breathing", "Travail et carrière":"Work and career", "Parentalité":"Parenthood", "Lien social et solitude":"Social ties and loneliness",
+  "Sexualité et intimité":"Sexuality and intimacy", "Addictions":"Addictions", "Rencontré":"Met", "Rencontrée":"Met", "Endormi":"Asleep", "Endormie":"Asleep",
+  /* ── l'interface ── */
+  "Pour tous, partout, tout le temps.":"For everyone, everywhere, all the time.", "Un accompagnement guidé, avec MIA, seize accompagnants, et un professionnel référent qui veille.":"Guided support, with MIA, sixteen companions, and a referent professional watching over you.",
+  "Commencer":"Start", "Réglages":"Settings", "Tout est gardé.":"Everything is saved.", "Reprendre":"Resume", "Tout recommencer":"Start over", "Je suis MIA.":"I'm MIA.",
+  "Avant qu’on parle, je vais prendre le temps de te connaître. Vraiment.":"Before we talk, I'll take the time to get to know you. Really.",
+  "Tu peux t'arrêter quand tu veux et fermer la page. Je garde tout, et on reprend exactement là où tu t'es {arrêté|arrêtée}.":"You can stop whenever you want and close the page. I keep everything, and we pick up exactly where you left off.",
+  "On commence":"Let's begin", "C'est parti":"Here we go", "Continuer":"Continue", "Passer":"Skip", "Autre":"Other", "Avec tes mots, si tu veux":"In your own words, if you like", "Entre les deux":"In between", "Ce que je retiens":"What I'm taking from this",
+  "Tu as passé cette étape. On y reviendra si tu veux.":"You skipped this step. We'll come back to it if you like.", "Ton profil MAYND":"Your MAYND profile", "L'action":"Action", "Le lien":"Connection", "Se poser":"Settling", "L'analyse":"Analysis",
+  "Ton résultat est prêt":"Your result is ready", "Gratuit. Ton parcours reste à toi, et tu le retrouves sur tous tes appareils quand MAYND sera en ligne.":"Free. Your journey stays yours, and you'll find it on all your devices once MAYND is online.",
+  "Ton courriel":"Your email", "prenom@exemple.fr":"name@example.com", "Un mot de passe":"A password", "8 caractères au moins":"At least 8 characters", "Voir mon résultat":"See my result", "Un instant…":"One moment…",
+  "En continuant, tu acceptes que MAYND garde tes réponses pour t’accompagner. Tu peux tout effacer quand tu veux.":"By continuing, you agree that MAYND keeps your answers to support you. You can erase everything whenever you want.",
+  "Ce courriel ne semble pas complet.":"This email doesn't look complete.", "8 caractères au moins.":"At least 8 characters.", "Ton compte est créé.":"Your account is created.",
+  "Ton compte-rendu":"Your report", "Lis-le tranquillement. Si quelque chose sonne faux, corrige-le : c’est ta version qui compte, et c’est elle que MIA utilisera.":"Read it at your own pace. If something sounds wrong, correct it: your version is what counts, and it's the one MIA will use.",
+  "Corriger":"Edit", "Enregistrer":"Save", "Annuler":"Cancel", "Corrigé par toi · ":"Edited by you · ", "Revenir au texte d’origine":"Back to the original text", "Écris-le comme c’est vraiment pour toi.":"Write it the way it really is for you.", "C'est bien moi":"That's me",
+  "MIA relit tes réponses et affine ton compte-rendu…":"MIA is rereading your answers and refining your report…", "Compte-rendu affiné par MIA.":"Report refined by MIA.",
+  "Ton équipe":"Your team", "Les seize accompagnants sont là pour toi.":"The sixteen companions are here for you.", "MIA fera venir celui qui t’aidera, au bon moment. D’après ton parcours, les premiers seront sans doute :":"MIA will bring in the one who'll help, at the right time. From your journey, the first will probably be:",
+  "MIA fera venir celui qui t’aidera, au bon moment.":"MIA will bring in the one who'll help, at the right time.", "Elle te parle en premier, toujours.":"She always speaks to you first.",
+  "Ton professionnel référent":"Your referent professional", "Tu n’es pas seulement entre les mains d’une intelligence artificielle.":"You're not only in the hands of an artificial intelligence.",
+  "Un professionnel référent certifié, humain, suit ton parcours MAYND. Il lit ton compte-rendu, signe ta feuille de route en début de mois et ton bilan en fin de mois.":"A certified referent professional, a human, follows your MAYND journey. They read your report, sign your roadmap at the start of the month and your review at the end.",
+  "Aucun rendez-vous à prendre. Il intervient, dans ta discussion, quand un signal le justifie :":"No appointment to book. They step into your conversation when a signal calls for it:",
+  "Stagnation":"Stagnation", "Rien ne bouge depuis un moment.":"Nothing has moved for a while.", "Blocage":"Block", "Tu es {coincé|coincée}, ou ce que tu vis demande plus.":"You're stuck, or what you're going through needs more.", "Désalignement":"Misalignment", "Tes actes s’éloignent de ton cap.":"Your actions drift from your course.", "Progression à consolider":"Progress to consolidate", "Un vrai progrès, à ancrer.":"Real progress, to anchor.",
+  "MIA a lu tout ton parcours et ton compte-rendu. Tu n’as rien à répéter.":"MIA has read your whole journey and your report. You have nothing to repeat.", "Parler avec MIA":"Talk with MIA",
+  "Aujourd’hui":"Today", "Discussion":"Chat", "Toi":"You", "Bonjour":"Hello", "Bonsoir":"Good evening", "Bonne nuit":"Good night", "Comment ça va, là, maintenant ?":"How are you, right now?",
+  "Difficile":"Hard", "Plutôt bas":"Rather low", "En demi-teinte":"So-so", "Plutôt bien":"Rather good", "Au top":"Great", "Ton pas":"Your step", "C’est fait":"Done", "En parler":"Talk about it", "Parler à MIA":"Talk to MIA", "Ton co-pilote, là quand tu veux":"Your co-pilot, there whenever you want",
+  "Professionnel référent certifié":"Certified referent professional", "Inclus dans MAYND":"Included in MAYND", "Un humain qui lit ton parcours, signe ta feuille de route et intervient quand un signal le justifie. Sans rendez-vous.":"A human who reads your journey, signs your roadmap and steps in when a signal calls for it. No appointments.",
+  "Découvrir ma supervision":"Discover my supervision", "Lit ton parcours.":"Reads your journey.", "Il intervient dans ta discussion quand un signal le justifie. Sans rendez-vous.":"They step into your conversation when a signal calls for it. No appointments.", "Ma feuille de route et mon bilan":"My roadmap and my review",
+  "Ton accès":"Your access", "Un code à quatre chiffres, pour que tes échanges restent à toi.":"A four-digit code, so your conversations stay yours.", "Choisir un code":"Choose a code", "Plus tard":"Later", "Ton code d’accès":"Your access code", "Ton accès est sécurisé.":"Your access is secured.",
+  "Un espace à toi, confidentiel.":"A space of your own, confidential.", "Menu":"Menu", "Envoyer":"Send", "Ton message":"Your message", "Mon compte-rendu":"My report", "Mon professionnel référent":"My referent professional", "Faire une pause":"Take a break", "Revenir à la discussion":"Back to the chat",
+  "MIA reprend exactement là où vous en êtes.":"MIA picks up exactly where you are.", "Reviens quand tu veux.":"Come back whenever you want.", "Ton pas en cours":"Your current step", "Bon retour. MIA reprend là où vous en étiez.":"Welcome back. MIA picks up where you were.",
+  "Il te lit et intervient ici, sans rendez-vous, quand c’est utile.":"They read you and step in here, without appointments, when it's useful.", "Tu n’as pas à porter ça sans aide.":"You don't have to carry this without help.",
+  "Si tu penses à te faire du mal, ou si tu es en danger, appelle maintenant. Quelqu’un répond, jour et nuit.":"If you're thinking of hurting yourself, or you're in danger, call now. Someone answers, day and night.",
+  "Prévention du suicide · gratuit, 24 h/24":"Suicide prevention · free, 24/7", "Écoute, 24 h/24, 7 j/7":"Listening, 24/7", "Si le danger est immédiat":"If the danger is immediate",
+  "Ton professionnel référent a été prévenu. Il te lira sans rendez-vous. Pour tout de suite, ces numéros répondent.":"Your referent professional has been alerted. They'll read you without an appointment. For right now, these numbers answer.",
+  "Pour que MIA et les accompagnants te répondent, il faut une clé Anthropic.":"For MIA and the companions to reply, an Anthropic key is needed.", "Ouvrir les réglages":"Open settings", "Réessayer":"Retry",
+  "Quelques questions à choix, une minute. Tu t’arrêtes quand tu veux.":"A few multiple-choice questions, one minute. Stop whenever you want.", "Jouer":"Play", "Découvrir MAYND":"Discover MAYND",
+  "Tes cinq messages gratuits d’aujourd’hui sont utilisés. Ils reviennent demain.":"Your five free messages for today are used up. They come back tomorrow.",
+  "La formule MAYND":"The MAYND plan", "Sans engagement. Tu arrêtes quand tu veux.":"No commitment. Stop whenever you want.", "Les seize accompagnants, que MIA fait venir au bon moment":"The sixteen companions, brought in by MIA at the right time",
+  "Un professionnel référent certifié, humain, qui suit ton parcours et intervient sur signal":"A certified referent professional, a human, who follows your journey and steps in on signal", "La voix de chaque accompagnant":"Each companion's voice", "700 messages par mois":"700 messages a month",
+  "Carte bancaire":"Bank card", "Démonstration : aucun paiement réel n’est effectué.":"Demonstration: no real payment is made.", "Passer à MAYND":"Switch to MAYND", "Rester en gratuit pour l’instant":"Stay on the free plan for now", "Bienvenue dans MAYND.":"Welcome to MAYND.",
+  "Ton espace":"Your space", "Modifier mon cap":"Edit my course", "Ton cap :":"Your course:", "Lui parler":"Talk to them", "Son jeu":"Their game", "Sa voix":"Their voice", "Écouter sa voix":"Listen to their voice", "Finir son jeu réveille sa voix.":"Finishing their game wakes their voice.",
+  "Ce qu’il fait avec toi":"What he does with you", "Ce qu’elle fait avec toi":"What she does with you", "Quand":"When", "La faire venir":"Bring her in", "Le faire venir":"Bring him in",
+  "Ce que MAYND a appris dans vos échanges":"What MAYND has learned from your conversations", "Effacer":"Erase", "Effacé. Cette ligne ne reviendra pas.":"Erased. This line won't come back.", "Si quelque chose sonne faux, corrige-le : c’est ta version qui compte.":"If something sounds wrong, correct it: your version is what counts.",
+  "Ton compte":"Your account", "La clé":"The key", "Clé API Anthropic":"Anthropic API key", "Elle reste sur cet appareil et sert à parler à MIA et aux accompagnants.":"It stays on this device and is used to talk to MIA and the companions.", "Reprendre la clé de MAYND":"Reuse MAYND's key",
+  "La voix":"Voice", "Lire les réponses à voix haute":"Read replies aloud", "Les accompagnants dont tu as réveillé la voix te répondent aussi à l’oral.":"Companions whose voice you've woken also answer out loud.", "Confidentialité":"Privacy",
+  "Tes réponses et tes échanges restent sur cet appareil. Tu peux tout effacer.":"Your answers and conversations stay on this device. You can erase everything.", "Tout effacer et recommencer":"Erase everything and start over", "Confirmer : tout effacer":"Confirm: erase everything",
+  "Démonstration":"Demonstration", "Revenir au gratuit":"Back to free", "Clé enregistrée.":"Key saved.", "Clé retirée.":"Key removed.", "Tu es en formule gratuite.":"You're on the free plan.",
+  "Feuille de route":"Roadmap", "Bilan":"Review", "Signaux":"Signals", "Ses messages":"Their messages", "Il lit ton parcours, ajuste ta feuille de route et t’écrit quand c’est utile. Tu n’as jamais de rendez-vous à prendre.":"They read your journey, adjust your roadmap and write to you when it's useful. You never have an appointment to book.",
+  "En préparation. Elle part à la signature au début du mois.":"In preparation. It goes for signature at the start of the month.", "Le bilan se fait en fin de mois, à partir de ton compte-rendu, de tes pas et de tes échanges. Ta boussole te sera proposée juste avant.":"The review happens at the end of the month, from your report, your steps and your conversations. Your compass will be offered just before.",
+  "Aucun signal pour l’instant. Il intervient en cas de stagnation, de blocage, de désalignement, ou pour consolider une progression.":"No signal for now. They step in for stagnation, a block, misalignment, or to consolidate progress.",
+  "Ton cap est posé.":"Your course is set.", "C’est noté. Un pas de plus.":"Noted. One more step.", "D’accord. On en reparle dans deux jours.":"All right. We'll talk about it again in two days.", "Fermer":"Close", "Revenir en arrière":"Go back"
+});
+REGLES.en.push(
+  [/^Bon retour, (.+)\.$/, 'Welcome back, $1.'], [/^Bon retour\.$/, 'Welcome back.'],
+  [/^On reprend où tu t'étais arrêtée? \?$/, 'Shall we pick up where you left off?'],
+  [/^Tu en étais à la question (\d+) sur (\d+)\. Tout est gardé\.$/, 'You were at question $1 of $2. Everything is saved.'],
+  [/^(\d+) étapes, (\d+) questions, environ (\d+) minutes\. Il n’y a pas de bonne réponse\. Si une question ne te parle pas, « Autre » ou « Je ne sais pas » sont là\.$/, '$1 steps, $2 questions, about $3 minutes. There are no right answers. If a question doesn\'t speak to you, \u201cOther\u201d or \u201cI don\'t know\u201d are there.'],
+  [/^Étape (\d+) sur (\d+)$/, 'Step $1 of $2'], [/^(\d+) questions? · (\d+) min$/, '$1 questions · $2 min'], [/^(.+) · (\d+) sur (\d+)$/, '$1 · $2 of $3'], [/^(\d+) sur (\d+)$/, '$1 of $2'],
+  [/^Plutôt : (.+)$/, 'Rather: $1'], [/^Étape suivante : (.+)$/, 'Next step: $1'],
+  [/^(.+), crée ton compte pour voir ton résultat\.$/, '$1, create your account to see your result.'], [/^Crée ton compte pour voir ton résultat\.$/, 'Create your account to see your result.'],
+  [/^(.+), tout ce que j’ai compris de toi\.$/, '$1, everything I understood about you.'], [/^Tout ce que j’ai compris de toi\.$/, 'Everything I understood about you.'],
+  [/^Tout est prêt(, .+)?\.$/, 'Everything is ready$1.'], [/^Ton cap : « (.+) »\.?$/, 'Your course: \u201c$1\u201d.'], [/^Ton cap : (.+)$/, 'Your course: $1'],
+  [/^Bonjour, (.+)\.$/, 'Hello, $1.'], [/^Bonsoir, (.+)\.$/, 'Good evening, $1.'], [/^Bonne nuit, (.+)\.$/, 'Good night, $1.'],
+  [/^« (.+) »$/, '“$1”'],
+  [/^Noté : (.+)\. MIA en tiendra compte\.$/, 'Noted: $1. MIA will keep it in mind.'],
+  [/^Proposé par (.+) · prévu (.+)$/, 'Suggested by $1 · planned $2'], [/^Ton pas · (.+)$/, 'Your step · $1'],
+  [/^MIA seule · (\d+) messages? restants? aujourd’hui$/, 'MIA only · $1 messages left today'], [/^(\d+) messages? restants? (ce mois-ci|aujourd’hui)\.?$/, '$1 messages left'],
+  [/^Écris à (.+)…$/, 'Write to $1…'], [/^(.+) rejoint la discussion\.$/, '$1 joins the chat.'],
+  [/^Signal transmis à ton professionnel référent : (.+)\.$/, 'Signal sent to your referent professional: $1.'],
+  [/^(.+) fait partie de l’abonnement MAYND\.$/, '$1 is part of the MAYND subscription.'], [/^Le jeu de (.+)$/, '$1\'s game'],
+  [/^(.+), tout MAYND, sans limite\.$/, '$1, all of MAYND, without limits.'], [/^Tout MAYND, sans limite\.$/, 'All of MAYND, without limits.'], [/^Confirmer · (\d+) € par mois$/, 'Confirm · €$1 a month'], [/^\/ mois$/, '/ month'],
+  [/^À plus tard(, .+)?\.$/, 'See you later$1.'], [/^Tu m’as dit que ton moment pour parler, c’est (.+)\. Reviens à ce moment-là, si tu veux\.$/, 'You told me your moment to talk is $1. Come back then, if you like.'],
+  [/^A lu ton parcours (.+)\.$/, 'Read your journey $1.'], [/^Feuille de route de (.+) : en préparation\.$/, 'Roadmap for $1: in preparation.'], [/^Bilan de (.+) : le (.+)\.$/, 'Review for $1: on $2.'],
+  [/^Feuille de route · (.+)$/, 'Roadmap · $1'], [/^Bilan · (.+)$/, 'Review · $1'], [/^Garder le cap : (.+)$/, 'Keep the course: $1'], [/^Avancer avec (.+) sur (.+)\.$/, 'Move forward with $1 on $2.'], [/^Rencontrer (.+), sur (.+)\.$/, 'Meet $1, on $2.'],
+  [/^Compte créé le (.+)\.$/, 'Account created on $1.'], [/^Formule : MAYND, (\d+) € par mois$/, 'Plan: MAYND, €$1 a month'], [/^Formule : gratuite$/, 'Plan: free'], [/^MIA seule, (\d+) messages par jour\.$/, 'MIA only, $1 messages a day.'],
+  [/^Ce que (.+) peut vraiment faire pour toi$/, 'What $1 can really do for you'], [/^(Il|Elle) dort\. MIA (le|la) fait venir quand c’est utile(.*)$/, 'Asleep. MIA brings them in when it\'s useful$3'], [/^, ou tu (le|la) réveilles par son jeu\.$/, ', or you wake them with their game.'],
+  [/^Version (\d\d\/\d\d \d\d:\d\d)$/, 'Version $1'], [/^Un espace à toi, confidentiel\. Version (.+)$/, 'A space of your own, confidential. Version $1'],
+  /* dates (11-texte.js : dateLib, dateCourte, l'en-tête d'Aujourd'hui) */
+  [/^(lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche) (\d+) (janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre)$/, '$1 $2 $3'],
+  [/^(\d+) (janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre)$/, '$2 $1'],
+  [/^(\d+),(\d)$/, '$1.$2'],
+  /* le professionnel référent (34-professionnel.js) */
+  [/^Professionnel référent certifié · (.+)$/, 'Certified referent professional · $1'],
+  [/^· (.+) · il t’a écrit$/, '· $1 · they wrote to you'], [/^· (.+) · il te lit$/, '· $1 · they are reading you'],
+  [/^Signée le (.+) par (.+)\.$/, 'Signed on $1 by $2.'], [/^Relu et signé le (.+)\.$/, 'Reviewed and signed on $1.'],
+  [/^(\d+) pas posés?, (\d+) faits?\.$/, '$1 steps set, $2 done.'],
+  /* le compte-rendu composé par l'application (20-parcours.js) */
+  [/^(.+), ton profil MAYND, c'est (.+)\.$/, '$1, your MAYND profile is $2.'], [/^Ton profil MAYND, c'est (.+)\.$/, 'Your MAYND profile is $1.'],
+  [/^Tes appuis : (.+)$/, 'Your strengths: $1'], [/^Tes points de vigilance : (.+)$/, 'Your watch points: $1'],
+  /* la discussion et la voix */
+  [/^(.+), j’ai lu tout ton parcours\.$/, '$1, I have read your whole journey.'],
+  [/^(.+) n'a pas pu répondre à ce message\. Tu peux le dire autrement \?$/, '$1 couldn\'t answer this message. Can you put it another way?'],
+  [/^La voix de (.+) ne répond pas pour l’instant\.$/, '$1\'s voice isn\'t answering right now.'], [/^La voix de (.+) dort encore\.$/, '$1\'s voice is still asleep.'], [/^La voix de (.+) arrive bientôt\.$/, '$1\'s voice is coming soon.']
+);
+
+REGLES_FIN.en.push([/^([^()]+) \((\d+) sur 10\)$/, '$1 ($2 out of 10)']);
+
+/* ── dates et moments ── */
+Object.assign(DICOS.en, {
+  "lundi":"Monday", "mardi":"Tuesday", "mercredi":"Wednesday", "jeudi":"Thursday", "vendredi":"Friday", "samedi":"Saturday", "dimanche":"Sunday",
+  "janvier":"January", "février":"February", "mars":"March", "avril":"April", "mai":"May", "juin":"June", "juillet":"July", "août":"August", "septembre":"September", "octobre":"October", "novembre":"November", "décembre":"December",
+  "aujourd’hui":"today", "demain":"tomorrow", "hier":"yesterday", "après-demain":"the day after tomorrow", "ce soir":"tonight", "ce matin":"this morning", "cet après-midi":"this afternoon",
+  "cette semaine":"this week", "ce week-end":"this weekend", "la semaine prochaine":"next week", "maintenant":"now", "tout à l'heure":"later today",
+  "le matin":"the morning", "pendant tes pauses":"during your breaks", "sur le trajet":"on the way", "le soir":"the evening", "la nuit":"the night", "quand ça ne va pas":"when things aren't going well", "n'importe quand":"any time"
+});
+
+/* ── le compte-rendu composé par l'application : gabarits ({x} : le morceau capturé, traduit à son tour ; {n} : un nombre) ── */
+Object.assign(DICOS.en, {
+  "Tu as {x}.":"You are {x}.", "Dans la vie : {x}.":"In life: {x}.", "Chez toi : {x}.":"At home: {x}.", "Ta période, en tes mots : « {x} ».":"Your season, in your words: \u201c{x}\u201d.",
+  "Ce qui occupe ta tête : {x}.":"What's on your mind: {x}.", "Ça dure : {x}.":"It has lasted: {x}.", "Dans tes mots : « {x} ».":"In your words: \u201c{x}\u201d.",
+  "Ce qui te fait avancer : {x}.":"What drives you: {x}.", "Ton meilleur moment : {x}.":"Your best moment: {x}.", "Sous pression : {x}.":"Under pressure: {x}.",
+  "Après un échec, ta première pensée : « {x} ».":"After a setback, your first thought: \u201c{x}\u201d.", "Dans un désaccord : {x}.":"In a disagreement: {x}.",
+  "Pour retrouver ton calme après une émotion forte : {x}.":"To calm down after a strong emotion: {x}.", "Quand ça va mal : {x}.":"When things go wrong: {x}.",
+  "Ce qui compte le plus pour toi : {x}.":"What matters most to you: {x}.", "Ce qui t'apaise : {x}.":"What soothes you: {x}.", "Ce dont tu es {fier|fière} : « {x} ».":"What you're proud of: \u201c{x}\u201d.",
+  "Si tout allait mieux dans 6 mois, le premier changement serait : « {x} ».":"If everything were better in 6 months, the first change would be: \u201c{x}\u201d.",
+  "Ce que tu ne veux plus vivre : « {x} ».":"What you no longer want to go through: \u201c{x}\u201d.", "Tu dors {x} par nuit.":"You sleep {x} a night.", "Au réveil : {x}.":"When you wake up: {x}.",
+  "Ton énergie dans la journée : {n} sur 10.":"Your energy during the day: {n} out of 10.", "Bouger : {x}.":"Moving: {x}.", "Ton cap : « {x} ».":"Your course: \u201c{x}\u201d.",
+  "Pourquoi maintenant : « {x} ».":"Why now: \u201c{x}\u201d.", "Tu sauras que ça avance quand : « {x} ».":"You'll know it's moving forward when: \u201c{x}\u201d.",
+  "Tu es {prêt|prête} à t'y mettre à {n} sur 10.":"You're ready to get started at {n} out of 10.",
+  "Ce qui tient le mieux : {x}.":"What holds up best: {x}.", "Ce qui est le plus bas : {x}.":"What's lowest: {x}.", "Sur ta boussole, ce qui tient le mieux : {x}.":"On your compass, what holds up best: {x}.",
+  "En moyenne, ta boussole est à {x} sur 10.":"On average, your compass is at {x} out of 10.", "Ce qui prend le plus de place : {x}.":"What takes up the most room: {x}.",
+  "Tu sais ce qui compte pour toi : {x}.":"You know what matters to you: {x}.", "C'est une boussole solide.":"That's a solid compass.",
+  "Tu es {prêt|prête} à t'y mettre ({n} sur 10) : c'est le meilleur point de départ.":"You're ready to get started ({n} out of 10): that's the best starting point.",
+  "Tu as des fiertés concrètes : « {x} ».":"You have concrete things to be proud of: \u201c{x}\u201d.", "Tu peux t'appuyer sur ce qui tient : {x}.":"You can lean on what holds up: {x}.",
+  "Tu as pris le temps de répondre à {n} questions sur toi : c'est déjà un appui.":"You took the time to answer {n} questions about yourself: that's already a strength.",
+  "Ce qui est le plus bas en ce moment : {x}.":"What's lowest right now: {x}.", "Profil {x}.":"Profile: {x}.", "Cap : « {x} ».":"Course: \u201c{x}\u201d.",
+  "Accompagnants rencontrés : {x}.":"Companions met: {x}.", "Pas encore d’accompagnant rencontré.":"No companion met yet.", "Poser un premier cap avec MIA.":"Set a first course with MIA.",
+  "Tu n'as pas encore répondu à cette partie.":"You haven't answered this part yet."
+});
+
+/* ── le compte-rendu composé par l'application : les phrases des réponses (r, dits), les compléments (c), les croisements ── */
+Object.assign(DICOS.en, {
+  "Tu étudies ou tu es en formation.":"You study or you're in training.", "Tu travailles sur le terrain.":"You work in the field.", "Tu travailles dans un bureau.":"You work in an office.",
+  "Ton métier, c'est de t'occuper des autres.":"Your job is caring for others.", "Tu es à ton compte.":"You're self-employed.", "Tu cherches un emploi.":"You're looking for a job.",
+  "Tu t'occupes de ta famille à plein temps.":"You look after your family full time.", "Tu es à la retraite.":"You're retired.", "Le sport est ton métier, ou presque.":"Sport is your job, or nearly.",
+  "Tu vis {seul|seule}.":"You live alone.", "Tu vis en couple.":"You live with your partner.", "Tu vis en couple, avec des enfants.":"You live with your partner and children.",
+  "Tu vis {seul|seule} avec tes enfants.":"You live alone with your children.", "Tu vis chez tes parents.":"You live with your parents.", "Tu vis en colocation.":"You live in a shared flat.", "Ton foyer change souvent.":"Your home changes often.",
+  "En ce moment, ça va plutôt bien.":"Right now, things are going quite well.", "En ce moment, ça va, et tu veux aller plus loin.":"Right now, you're fine, and you want to go further.",
+  "En ce moment, tu tiens bon, mais c'est lourd.":"Right now, you're holding on, but it's heavy.", "Tu traverses un moment difficile.":"You're going through a hard time.", "Tu es en pleine transition.":"You're in the middle of a change.",
+  "Tu te sens {perdu|perdue}, sans trop savoir pourquoi.":"You feel lost, without really knowing why.", "Tu as du mal à dire où tu en es.":"You find it hard to say where you are.", "C'est une réponse aussi.":"That's an answer too.",
+  "Ça dure depuis moins de 2 semaines.":"It's been going on for less than 2 weeks.", "Ça dure depuis plus de 2 semaines, moins de 3 mois.":"It's been going on for more than 2 weeks, less than 3 months.",
+  "Ça dure depuis plus de 3 mois, moins d'1 an.":"It's been going on for more than 3 months, less than a year.", "Ça dure depuis plus d'1 an, moins de 5 ans.":"It's been going on for more than a year, less than 5 years.",
+  "C'est là depuis toujours, ou presque.":"It's been there forever, or nearly.", "Ce n'est pas un problème : c'est une envie d'avancer.":"It's not a problem: it's a wish to move forward.",
+  "Voir du monde te recharge vraiment.":"Seeing people really recharges you.", "Tu te recharges plutôt avec les autres.":"You mostly recharge with others.", "Tu te recharges autant avec les autres que {seul|seule}.":"You recharge as much with others as alone.",
+  "Tu te recharges plutôt {seul|seule}.":"You mostly recharge alone.", "Tu as besoin d'être {seul|seule} pour te recharger.":"You need to be alone to recharge.",
+  "Tu planifies tout avant d'avancer.":"You plan everything before moving.", "Tu prépares plutôt avant d'avancer.":"You tend to prepare before moving.", "Tu prépares un peu, puis tu avances.":"You prepare a little, then you move.",
+  "Tu avances plutôt à l'instinct.":"You mostly go with your gut.", "Tu avances à l'instinct, sans trop planifier.":"You go with your gut, without much planning.",
+  "Pour décider, tu analyses tout.":"To decide, you analyse everything.", "Pour décider, tu analyses plutôt.":"To decide, you mostly analyse.", "Pour décider, tu mêles analyse et ressenti.":"To decide, you mix analysis and feeling.",
+  "Pour décider, tu te fies plutôt à ton ressenti.":"To decide, you mostly trust your feelings.", "Pour décider, tu suis ton ressenti.":"To decide, you follow your feelings.",
+  "La nouveauté te stimule vraiment.":"Novelty really excites you.", "La nouveauté te stimule plutôt.":"Novelty tends to excite you.", "La nouveauté te va, à petite dose.":"Novelty suits you, in small doses.",
+  "La nouveauté te demande un temps d'adaptation.":"Novelty takes you some time to adjust to.", "La nouveauté te demande beaucoup de temps pour t'adapter.":"Novelty takes you a lot of time to adjust to.",
+  "Tu es {indulgent|indulgente} avec toi-même.":"You're easy on yourself.", "Tu es plutôt {indulgent|indulgente} avec toi-même.":"You're fairly easy on yourself.", "Ton exigence envers toi est mesurée.":"Your demands on yourself are measured.",
+  "Tu es {exigeant|exigeante} avec toi-même.":"You're demanding with yourself.", "Tu es très {exigeant|exigeante} avec toi-même.":"You're very demanding with yourself.",
+  "Tes émotions se voient tout de suite.":"Your emotions show right away.", "Tes émotions se voient plutôt vite.":"Your emotions show fairly quickly.", "Tes émotions se voient parfois.":"Your emotions show sometimes.",
+  "Tu gardes plutôt tes émotions pour toi.":"You mostly keep your emotions to yourself.", "Tu gardes tes émotions pour toi.":"You keep your emotions to yourself.",
+  "Ce qui te fait avancer : faire plaisir à ceux que tu aimes.":"What drives you: making the people you love happy.", "Ce qui te fait avancer : te sentir libre.":"What drives you: feeling free.",
+  "Ce qui te fait avancer : te sentir en paix.":"What drives you: feeling at peace.", "Ce qui te fait avancer : gagner ta vie, être en sécurité.":"What drives you: earning a living, being secure.",
+  "Tu ne sais pas encore bien ce qui te fait avancer.":"You don't quite know yet what drives you.", "Ton meilleur moment change tout le temps.":"Your best moment changes all the time.",
+  "Sous pression, tu accélères et tu en fais plus.":"Under pressure, you speed up and do more.", "Sous pression, tu t'organises.":"Under pressure, you get organised.", "Sous pression, tu analyses la situation.":"Under pressure, you analyse the situation.",
+  "Sous pression, tu en parles à quelqu'un.":"Under pressure, you talk to someone.", "Sous pression, tu t'énerves vite.":"Under pressure, you get annoyed quickly.", "Sous pression, tu te replies sur toi.":"Under pressure, you withdraw into yourself.",
+  "Sous pression, tu te figes.":"Under pressure, you freeze.", "Sous pression, tu te changes les idées.":"Under pressure, you take your mind off it.", "Sous pression, tu remets à plus tard.":"Under pressure, you put things off.",
+  "Sous pression, tu respires et tu prends du recul.":"Under pressure, you breathe and step back.",
+  "Après un échec, ta première pensée : « Qu'est-ce que je peux en tirer ? »":"After a setback, your first thought: \u201cWhat can I learn from this?\u201d",
+  "Après un échec, ta première pensée : « Je suis {nul|nulle}. »":"After a setback, your first thought: \u201cI'm useless.\u201d",
+  "Après un échec, ta première pensée : « Ce n'est pas de ma faute. »":"After a setback, your first thought: \u201cIt's not my fault.\u201d",
+  "Après un échec, ta première pensée : « On passe à autre chose. »":"After a setback, your first thought: \u201cLet's move on.\u201d",
+  "Après un échec, ta première pensée : « Je recommence tout de suite. »":"After a setback, your first thought: \u201cI'll try again right away.\u201d",
+  "Après un échec, ta première pensée : « J'ai besoin d'en parler. »":"After a setback, your first thought: \u201cI need to talk about it.\u201d",
+  "Après un échec, ta première pensée : « J'ai besoin d'être {seul|seule} un moment. »":"After a setback, your first thought: \u201cI need to be alone for a while.\u201d",
+  "Après un échec, ta première pensée : « Je le savais, ça ne marche jamais pour moi. »":"After a setback, your first thought: \u201cI knew it, it never works for me.\u201d",
+  "Ta réaction à un échec dépend vraiment de l'échec.":"Your reaction to a setback really depends on the setback.",
+  "Dans un désaccord, tu dis les choses tout de suite.":"In a disagreement, you say things right away.", "Dans un désaccord, tu attends que ça retombe, puis tu en reparles.":"In a disagreement, you wait for it to settle, then bring it up again.",
+  "Dans un désaccord, tu cherches un terrain d'entente.":"In a disagreement, you look for common ground.", "Dans un désaccord, tu évites le sujet.":"In a disagreement, you avoid the subject.",
+  "Dans un désaccord, tu cèdes pour avoir la paix.":"In a disagreement, you give in to keep the peace.", "Dans un désaccord, tu t'emportes, puis tu regrettes.":"In a disagreement, you lose your temper, then regret it.",
+  "Dans un désaccord, tu te fermes et tu ne dis plus rien.":"In a disagreement, you shut down and say nothing more.", "Dans un désaccord, ta réaction dépend de la personne en face.":"In a disagreement, your reaction depends on who's in front of you.",
+  "Le temps qu'il te faut pour retrouver ton calme dépend de l'émotion.":"How long you take to calm down depends on the emotion.",
+  "Un compliment te fait plaisir, et tu le prends.":"A compliment makes you happy, and you take it.", "Un compliment te donne de l'élan.":"A compliment gives you a boost.",
+  "Quand on te complimente, tu dis merci, mais tu n'y crois pas trop.":"When you're complimented, you say thank you, but you don't really believe it.", "Tu minimises les compliments.":"You play down compliments.",
+  "Un compliment te gêne : tu changes de sujet.":"A compliment makes you awkward: you change the subject.", "Tu te méfies un peu des compliments.":"You're a bit wary of compliments.",
+  "Un compliment te laisse sans savoir quoi en faire.":"A compliment leaves you not knowing what to do with it.",
+  "Quand ça va mal, tu te tournes vers un proche.":"When things go wrong, you turn to someone close.", "Quand ça va mal, tu te tournes vers ton ou ta partenaire.":"When things go wrong, you turn to your partner.",
+  "Quand ça va mal, tu gères {seul|seule}.":"When things go wrong, you handle it alone.", "Quand ça va mal, tu te tournes vers une activité.":"When things go wrong, you turn to an activity.",
+  "Quand ça va mal, tu vas dehors, dans la nature.":"When things go wrong, you go outside, into nature.", "Quand ça va mal, tu cherches ce qui fait du bien sur le moment.":"When things go wrong, you look for what feels good in the moment.",
+  "Quand ça va mal, tu te tournes vers les écrans.":"When things go wrong, you turn to screens.", "Quand ça va mal, tu te tournes vers la prière, la méditation ou la spiritualité.":"When things go wrong, you turn to prayer, meditation or spirituality.",
+  "Quand ça va mal, tu ne sais pas trop vers quoi te tourner.":"When things go wrong, you're not sure what to turn to.",
+  "Un imprévu te déstabilise beaucoup.":"The unexpected throws you a lot.", "Un imprévu te déstabilise plutôt.":"The unexpected tends to throw you.", "Un imprévu te bouscule, puis tu t'adaptes.":"The unexpected shakes you, then you adapt.",
+  "Tu t'adaptes plutôt vite à l'imprévu.":"You adapt fairly quickly to the unexpected.", "Tu t'adaptes très vite à l'imprévu.":"You adapt very quickly to the unexpected.",
+  "Tes horaires de sommeil changent souvent.":"Your sleep hours change often.", "Au réveil, tu te sens {reposé|reposée}.":"When you wake up, you feel rested.", "Au réveil, tu es plutôt en forme.":"When you wake up, you feel fairly good.",
+  "Au réveil, ça dépend des jours.":"When you wake up, it depends on the day.", "Au réveil, tu te sens {fatigué|fatiguée}.":"When you wake up, you feel tired.", "Au réveil, tu te sens {épuisé|épuisée}.":"When you wake up, you feel exhausted.",
+  "Tu te réveilles plusieurs fois la nuit.":"You wake up several times a night.",
+  "Bouger, pour toi, c'est un plaisir.":"Moving, for you, is a pleasure.", "Bouger, c'est ton métier ou ta passion.":"Moving is your job or your passion.", "Bouger, pour toi, c'est une obligation.":"Moving, for you, is an obligation.",
+  "Tu aimerais bouger plus.":"You'd like to move more.", "Bouger est difficile pour toi en ce moment.":"Moving is hard for you right now.", "Bouger, ce n'est pas pour toi.":"Moving isn't for you.",
+  "Le soir, tu décroches facilement des écrans.":"In the evening, you switch off from screens easily.", "Le soir, tu fais défiler plus longtemps que prévu.":"In the evening, you scroll longer than planned.",
+  "Tu t'endors avec les écrans.":"You fall asleep with screens.", "Tu travailles sur écran tard le soir.":"You work on a screen late in the evening.", "Le soir, tu joues en ligne.":"In the evening, you play online.", "Le soir, tu utilises peu les écrans.":"In the evening, you hardly use screens.",
+  "Tout ça est nouveau pour toi : MIA parlera simplement, sans jargon.":"All this is new to you: MIA will speak simply, without jargon.", "Tu as déjà lu ou écouté des choses sur ces sujets.":"You've already read or listened to things on these subjects.",
+  "Tu t'intéresses à ces sujets depuis longtemps : MIA pourra aller plus loin, avec des outils précis.":"You've been interested in these subjects for a long time: MIA can go further, with precise tools.",
+  "Tu as déjà été {accompagné|accompagnée} : tu sais ce que ça demande.":"You've already been supported: you know what it takes.",
+  "Tu n'y crois pas trop, mais tu es là pour essayer : MIA devra faire ses preuves.":"You're not convinced, but you're here to try: MIA will have to prove herself.",
+  "Tu te méfies des applications comme celle-ci.":"You're wary of apps like this one.", "MIA ne te demandera jamais plus que ce que tu veux bien dire.":"MIA will never ask you for more than you're willing to say.",
+  "MIA te dira les choses en douceur.":"MIA will tell you things gently.", "MIA te dira les choses plutôt en douceur.":"MIA will tell you things fairly gently.", "MIA te dira les choses avec tact, sans tourner autour.":"MIA will tell you things with tact, without beating around the bush.",
+  "MIA te dira les choses plutôt sans détour.":"MIA will tell you things fairly straight.", "MIA te dira les choses sans détour.":"MIA will tell you things straight.",
+  "Ses réponses iront à l'essentiel, en une ou deux phrases.":"Her replies will stick to the essentials, in one or two sentences.", "Ses réponses seront courtes et nettes.":"Her replies will be short and clear.",
+  "Ses réponses seront de longueur moyenne.":"Her replies will be medium length.", "Ses réponses se développeront quand il le faut.":"Her replies will go into detail when needed.", "La longueur de ses réponses suivra le moment.":"The length of her replies will follow the moment.",
+  "Elle t'aidera par des questions, pour réfléchir.":"She'll help you with questions, to think things through.", "Elle t'aidera plutôt par des questions.":"She'll mostly help you with questions.", "Elle mêlera questions et pistes concrètes.":"She'll mix questions and concrete ideas.",
+  "Elle te proposera plutôt des pistes concrètes.":"She'll mostly offer you concrete ideas.", "Elle te proposera des pistes concrètes, vite.":"She'll offer you concrete ideas, quickly.",
+  "Elle pourra glisser de l'humour.":"She can slip in some humour.", "Elle gardera l'humour pour les bons moments, avec tact.":"She'll keep humour for the right moments, with tact.", "Elle attendra que ça aille mieux pour l'humour.":"She'll wait until things are better for humour.", "Elle n'utilisera pas d'humour.":"She won't use humour.",
+  "Si tu n'as pas fait ce que tu avais prévu, elle te relancera franchement.":"If you haven't done what you planned, she'll follow up frankly.", "Si tu n'as pas fait ce que tu avais prévu, elle te le rappellera doucement.":"If you haven't done what you planned, she'll remind you gently.",
+  "Si tu n'as pas fait ce que tu avais prévu, elle te demandera ce qui a bloqué.":"If you haven't done what you planned, she'll ask what got in the way.", "Si tu n'as pas fait ce que tu avais prévu, elle te proposera un pas plus petit.":"If you haven't done what you planned, she'll suggest a smaller step.",
+  "Elle ne parlera d'un pas non fait que si tu en parles.":"She'll only mention an undone step if you do.",
+  "Ton moment pour parler avec MIA : le matin.":"Your moment to talk with MIA: the morning.", "Ton moment pour parler avec MIA : pendant tes pauses.":"Your moment to talk with MIA: during your breaks.", "Ton moment pour parler avec MIA : sur le trajet.":"Your moment to talk with MIA: on the way.",
+  "Ton moment pour parler avec MIA : le soir.":"Your moment to talk with MIA: the evening.", "Ton moment pour parler avec MIA : la nuit.":"Your moment to talk with MIA: at night.", "Tu aimerais parler avec MIA quand ça ne va pas.":"You'd like to talk with MIA when things aren't going well.", "Tu parleras avec MIA n'importe quand.":"You'll talk with MIA any time.",
+  /* compléments des choix multiples */
+  "te sentir mieux":"feeling better", "mieux te connaître":"knowing yourself better", "ta confiance en toi":"your self-confidence", "la voix critique dans ta tête":"the critical voice in your head", "ta motivation et tes habitudes":"your motivation and your habits",
+  "ton organisation et ton temps":"your organisation and your time", "le stress qui monte":"stress rising", "ton sommeil":"your sleep", "une émotion lourde ou une perte":"a heavy emotion or a loss", "le sens de ce que tu vis":"the meaning of what you're living",
+  "une décision importante":"an important decision", "ton travail ou tes études":"your work or your studies", "ton couple et ta vie amoureuse":"your relationship and your love life", "ta famille et tes proches":"your family and the people close to you", "ton rôle de parent":"your role as a parent",
+  "te sentir {seul|seule}":"feeling alone", "dire les choses et poser tes limites":"saying things and setting your limits", "la performance et la préparation mentale":"performance and mental preparation", "ta sexualité et ton intimité":"your sexuality and your intimacy", "l'argent":"money",
+  "un comportement qui prend trop de place":"a habit that takes up too much room", "ton rapport à ton corps":"your relationship with your body", "la foi":"faith", "prendre l'air":"fresh air", "bouger":"moving", "les gens que tu aimes":"the people you love",
+  "créer de tes mains":"making things with your hands", "te reposer":"resting", "un film ou une série":"a film or a series", "prier ou méditer":"praying or meditating", "respirer et te poser":"breathing and settling down", "jouer":"playing",
+  /* croisements, appuis et points de vigilance */
+  "Tu avances avec méthode : tu prépares, tu analyses, puis tu décides.":"You move forward methodically: you prepare, you analyse, then you decide.", "Tu fonctionnes à l'instinct, et tu le sais.":"You run on instinct, and you know it.",
+  "Tu demandes beaucoup à toi-même, souvent sans le montrer.":"You ask a lot of yourself, often without showing it.", "Ton exigence envers toi rend tes échecs lourds à porter.":"Your demands on yourself make your setbacks heavy to carry.",
+  "Tu as tendance à te faire {petit|petite}, dans les désaccords comme face aux compliments.":"You tend to make yourself small, in disagreements as with compliments.",
+  "Tes nuits sont courtes et ton réveil est difficile : ton sommeil est sans doute la première chose à regarder.":"Your nights are short and waking up is hard: your sleep is probably the first thing to look at.",
+  "Les écrans du soir prennent sur ton temps de sommeil.":"Evening screens eat into your sleep time.", "Quand ça va mal, tu sais te tourner vers les autres.":"When things go wrong, you know how to turn to others.",
+  "Sous pression, tu gardes la tête froide.":"Under pressure, you keep a cool head.", "Tu t'adaptes vite à l'imprévu.":"You adapt quickly to the unexpected.", "Tu fais de tes échecs des leçons.":"You turn your setbacks into lessons.",
+  "Tu es très {exigeant|exigeante} avec toi-même, et ton dialogue intérieur peut être dur.":"You're very demanding with yourself, and your inner dialogue can be harsh.",
+  "Tu gères souvent {seul|seule} : demander de l'aide pourrait changer beaucoup.":"You often handle things alone: asking for help could change a lot.", "Dans les désaccords, tu as tendance à t'effacer.":"In disagreements, you tend to fade into the background.",
+  "Une émotion forte te reste longtemps.":"A strong emotion stays with you for a long time.", "Ton sommeil ne te recharge pas assez.":"Your sleep doesn't recharge you enough.", "Les écrans du soir grignotent ton repos.":"Evening screens nibble away at your rest.",
+  "Quand la pression monte, tu repousses.":"When the pressure rises, you put things off.", "Tu gardes beaucoup pour toi.":"You keep a lot to yourself.",
+  "Rien ne ressort nettement.":"Nothing stands out clearly.", "MIA restera attentive à ce que tu lui diras.":"MIA will stay attentive to what you tell her."
+});
+
+/* ── les fiches des accompagnants (AGENT_INFO) ── */
+Object.assign(DICOS.en, {
+  "Elle répond toujours en premier, comprend ta situation, et n'appelle un accompagnant que si ça t'apporte vraiment quelque chose.":"She always answers first, understands your situation, and only calls in a companion if it truly brings you something.",
+  "Comprendre ce que tu vis avant de proposer quoi que ce soit":"Understand what you're going through before suggesting anything", "Te répondre directement quand ta question ne demande pas de spécialiste":"Answer you directly when your question doesn't need a specialist",
+  "Faire venir le bon accompagnant au bon moment":"Bring in the right companion at the right time", "Garder le fil de ton parcours d'une fois sur l'autre":"Keep the thread of your journey from one time to the next",
+  "Tu ne sais pas par où commencer":"You don't know where to start", "Ta situation touche plusieurs sujets à la fois":"Your situation touches several subjects at once", "Tu veux simplement parler à quelqu'un":"You simply want to talk to someone",
+  "Il tient le cadre quand la motivation retombe. Direct, jamais complaisant.":"He holds the frame when motivation drops. Direct, never indulgent.",
+  "Poser un cadre simple et tenable":"Set a simple, sustainable frame", "Démonter les excuses sans te juger":"Take excuses apart without judging you", "Découper un objectif flou en gestes concrets":"Break a vague goal into concrete actions", "Te tenir sur la durée, pas seulement les premiers jours":"Keep you going over time, not just the first days",
+  "Tu commences puis tu abandonnes":"You start, then give up", "Tu repousses toujours la même chose":"You keep putting off the same thing", "Tu veux installer une habitude qui tient":"You want to build a habit that lasts",
+  "Il s'occupe de ce que tu te racontes quand personne n'écoute.":"He deals with what you tell yourself when no one is listening.",
+  "Repérer les phrases dures que tu te répètes":"Spot the harsh phrases you repeat to yourself", "Distinguer un fait d'une interprétation":"Tell a fact from an interpretation", "Reconstruire une estime qui ne dépend pas des résultats":"Rebuild a self-esteem that doesn't depend on results", "Préparer les moments où tu doutes":"Prepare for the moments when you doubt",
+  "Tu es plus dur avec toi qu'avec les autres":"You're harder on yourself than on others", "Tu doutes avant chaque décision":"You doubt before every decision", "Une critique te démonte":"A criticism knocks you down",
+  "Il travaille la question du dessous : qui tu es, et vers quoi tu vas.":"He works on the question underneath: who you are, and where you're heading.",
+  "Clarifier ce qui compte vraiment pour toi":"Clarify what really matters to you", "Relier tes choix à tes valeurs":"Connect your choices to your values", "Nommer ce que tu cherches quand tout est flou":"Name what you're looking for when everything is blurry", "T'aider à trancher quand deux directions se valent":"Help you decide when two directions are equal",
+  "Tu avances sans savoir pourquoi":"You move forward without knowing why", "Tu as réussi et ça sonne creux":"You've succeeded and it rings hollow", "Tu es à un tournant":"You're at a turning point",
+  "Elle accueille ce qui te traverse, sans étape à suivre ni calendrier à respecter.":"She welcomes what goes through you, with no steps to follow and no calendar to keep.",
+  "Mettre des mots sur ce que tu ressens":"Put words to what you feel", "Faire de la place à la peine sans la précipiter":"Make room for sorrow without rushing it", "Traverser une perte à ton rythme":"Go through a loss at your own pace", "Reconnaître une émotion avant qu'elle déborde":"Recognise an emotion before it overflows",
+  "Tu as perdu quelqu'un ou quelque chose":"You've lost someone or something", "Tu ne comprends pas ce que tu ressens":"You don't understand what you feel", "Tu gardes tout à l'intérieur":"You keep everything inside",
+  "Il travaille avec toi, sur ta part du lien. Jamais sur le dos de l'autre.":"He works with you, on your side of the bond. Never at the other person's expense.",
+  "Comprendre ta façon de t'attacher":"Understand the way you attach", "Repérer les schémas qui reviennent":"Spot the patterns that keep coming back", "Préparer une conversation difficile":"Prepare a difficult conversation", "Distinguer ce qui t'appartient de ce qui ne t'appartient pas":"Tell what's yours from what isn't",
+  "La même dispute revient sans cesse":"The same argument keeps coming back", "Tu ne sais plus quoi dire":"You don't know what to say anymore", "Tu veux comprendre ta place dans le lien":"You want to understand your place in the bond",
+  "Il t'aide à dire les choses clairement, sans t'écraser ni écraser l'autre.":"He helps you say things clearly, without crushing yourself or the other person.",
+  "Formuler une demande claire":"Phrase a clear request", "Poser une limite sans agressivité":"Set a limit without aggression", "Préparer un échange qui te stresse":"Prepare an exchange that stresses you", "Dire non sans te justifier pendant dix minutes":"Say no without justifying yourself for ten minutes",
+  "Tu n'oses pas demander":"You don't dare ask", "Tu dis oui puis tu regrettes":"You say yes, then regret it", "Tu prépares une conversation tendue":"You're preparing a tense conversation",
+  "Il construit une pratique qui tient dans le temps. Jamais de dépassement à tout prix.":"He builds a practice that lasts over time. Never pushing past limits at any cost.",
+  "Installer une régularité réaliste":"Build a realistic routine", "Préparer la tête autant que le corps":"Prepare the mind as much as the body", "Gérer la baisse de motivation et les coups d'arrêt":"Handle dips in motivation and setbacks", "Revenir après une pause sans culpabilité":"Come back after a break without guilt",
+  "Tu repars de zéro tous les mois":"You start from scratch every month", "La performance tourne à l'obsession":"Performance is turning into an obsession", "Tu veux progresser sans te cramer":"You want to progress without burning out",
+  "Il s'occupe de tes nuits, et de tout ce qui les empêche.":"He takes care of your nights, and of everything that gets in their way.",
+  "Comprendre ce qui coupe ton sommeil":"Understand what cuts your sleep short", "Poser un rituel de fin de journée":"Set an end-of-day ritual", "Calmer le mental qui tourne au coucher":"Calm the racing mind at bedtime", "Retrouver un rythme sur plusieurs semaines":"Find a rhythm again over several weeks",
+  "Tu mets une heure à t'endormir":"It takes you an hour to fall asleep", "Tu te réveilles la nuit":"You wake up at night", "Tu es fatigué dès le réveil":"You're tired from the moment you wake up",
+  "Il fait redescendre la pression, sur le moment comme sur la durée.":"He brings the pressure down, in the moment and over time.",
+  "Des exercices de respiration guidés":"Guided breathing exercises", "Comprendre ce qui déclenche la montée":"Understand what triggers the rise", "Préparer les situations qui t'angoissent":"Prepare for the situations that make you anxious", "Reprendre pied quand ça monte":"Find your footing again when it rises",
+  "Ton coeur s'emballe":"Your heart races", "Tu anticipes le pire":"You expect the worst", "Tu as un moment stressant devant toi":"You have a stressful moment ahead",
+  "Il t'aide à avancer sur ce qui compte, sans y laisser ta santé.":"He helps you move forward on what matters, without losing your health over it.",
+  "Trier l'essentiel de l'urgent":"Sort the essential from the urgent", "Préparer une décision de carrière":"Prepare a career decision", "Repérer les signes d'épuisement":"Spot the signs of exhaustion", "Poser des limites au travail":"Set limits at work",
+  "Tu cours sans avancer":"You run without getting anywhere", "Tu hésites à changer de poste":"You're hesitating to change jobs", "Tu n'arrives plus à décrocher":"You can't switch off anymore",
+  "Il accompagne le fait de devenir parent, et de le rester au quotidien.":"He supports becoming a parent, and staying one day to day.",
+  "Traverser les périodes qui usent":"Get through the periods that wear you down", "Garder un lien avec l'autre parent, même quand c'est tendu":"Keep a bond with the other parent, even when it's tense", "Poser un cadre sans crier":"Set a frame without shouting", "Faire de la place à ce que tu ressens, sans culpabilité":"Make room for what you feel, without guilt",
+  "Tu deviens parent":"You're becoming a parent", "Le quotidien t'épuise":"Daily life exhausts you", "Tu ne t'entends plus avec l'autre parent":"You no longer get on with the other parent",
+  "Elle travaille la place que tu occupes parmi les autres, et celle que tu voudrais.":"She works on the place you hold among others, and the one you'd like.",
+  "Comprendre ce qui t'isole":"Understand what isolates you", "Reprendre contact sans que ce soit un effort énorme":"Get back in touch without it being a huge effort", "Construire des liens plus vrais":"Build truer bonds", "Traverser une période seule sans t'enfoncer":"Get through a lonely period without sinking",
+  "Tu te sens seul même entouré":"You feel alone even when surrounded", "Tu as coupé les ponts":"You've cut ties", "Tu arrives dans un nouvel endroit":"You've arrived somewhere new",
+  "Elle parle d'intimité sans jugement. Le consentement n'est jamais négociable.":"She talks about intimacy without judgement. Consent is never negotiable.",
+  "Mettre des mots sur ce que tu veux et ne veux pas":"Put words to what you want and don't want", "Aborder ce qui te gêne, à ton rythme":"Approach what makes you uncomfortable, at your own pace", "Comprendre ce qui bloque dans l'intimité":"Understand what's blocked in intimacy", "Retrouver du désir sans te forcer":"Find desire again without forcing yourself",
+  "Le sujet est difficile à aborder":"The subject is hard to bring up", "Quelque chose a changé":"Something has changed", "Tu veux comprendre ce que tu ressens":"You want to understand what you feel",
+  "Il travaille ton rapport à l'argent, pas ton relevé de compte.":"He works on your relationship with money, not your bank statement.",
+  "Comprendre d'où vient la peur d'en manquer":"Understand where the fear of not having enough comes from", "Sortir des décisions prises dans la panique":"Get out of decisions made in panic", "Parler d'argent dans le couple ou la famille":"Talk about money as a couple or a family", "Séparer ta valeur de ce que tu gagnes":"Separate your worth from what you earn",
+  "L'argent te stresse en permanence":"Money stresses you constantly", "Tu dépenses pour aller mieux":"You spend to feel better", "Le sujet crée des tensions":"The subject creates tension",
+  "Il travaille les habitudes qui prennent trop de place. Aucune étiquette, jamais.":"He works on the habits that take up too much room. No labels, ever.",
+  "Comprendre à quoi sert l'habitude":"Understand what the habit is for", "Repérer les moments de bascule":"Spot the tipping moments", "Réduire sans tout casser d'un coup":"Cut back without breaking everything at once", "Tenir après un écart, sans repartir de zéro":"Hold on after a slip, without starting from scratch",
+  "Une habitude prend trop de place":"A habit takes up too much room", "Tu as arrêté puis repris":"You stopped, then started again", "Tu veux comprendre avant de décider":"You want to understand before deciding"
+});
+
+/* ── réglages, démonstration, messages de l'application ── */
+Object.assign(DICOS.en, {
+  "Fournisseur":"Provider", "Modèle":"Model", "Prénom du professionnel référent":"Referent professional's first name", "Signer la feuille de route":"Sign the roadmap", "Signer le bilan":"Sign the review",
+  "Poser un signal : progression":"Raise a signal: progress", "Poser un signal : stagnation":"Raise a signal: stagnation", "Studio : le socle commun":"Studio: the shared base", "Le protocole de sécurité n’est pas modifiable.":"The safety protocol cannot be changed.",
+  "Enregistrer le socle":"Save the base", "Revenir au socle d’origine":"Back to the original base",
+  "Réservé aux démonstrations. Dans cette version, les messages du professionnel référent sont rédigés par le modèle sur signal : ils montrent la place qu’aura le vrai professionnel.":"For demonstrations only. In this version, the referent professional's messages are written by the model on signal: they show the place the real professional will have.",
+  "Socle enregistré.":"Base saved.", "Nom enregistré.":"Name saved.", "Nom retiré.":"Name removed.", "Feuille de route signée.":"Roadmap signed.", "Bilan signé.":"Review signed.", "Un signal demande la formule MAYND.":"A signal requires the MAYND plan.",
+  "Un numéro de carte, même factice, pour la démonstration.":"A card number, even a fake one, for the demonstration.", "Quatre chiffres, s’il te plaît.":"Four digits, please.", "Quatre chiffres. Il te sera demandé à l’ouverture de MAYND sur cet appareil.":"Four digits. You'll be asked for it when MAYND opens on this device.",
+  "Code à quatre chiffres":"Four-digit code", "Les voix sont au repos jusqu’au début du mois prochain.":"The voices are resting until the start of next month.", "La réponse est arrivée vide.":"The reply came back empty.",
+  "La clé n'est pas reconnue. Vérifie-la dans les réglages.":"The key isn't recognised. Check it in the settings.", "Trop de demandes en même temps. Réessaie dans 1 minute.":"Too many requests at once. Try again in 1 minute.",
+  "Le service est surchargé. Réessaie dans 1 minute.":"The service is overloaded. Try again in 1 minute.", "La réponse n'est pas passée. Réessaie.":"The reply didn't get through. Try again.", "Pas de connexion. Vérifie ton accès à internet.":"No connection. Check your internet access.",
+  "Écouter":"Listen", "Avancement":"Progress", "Navigation":"Navigation", "Cet accompagnant":"This companion", "Fait":"Done", "Corrigé par toi ·":"Edited by you ·",
+  "J’ai lu tout ton parcours.":"I have read your whole journey.", "Par quoi veux-tu commencer ?":"What would you like to start with?", "On commence par là ?":"Shall we start there?", "On commence par là":"Let's start there", "Plutôt autre chose":"Something else instead",
+  "stagnation":"stagnation", "blocage":"block", "désalignement":"misalignment", "progression à consolider":"progress to consolidate"
+});
+
+</script>
+<script>
+/* ══════════════════════════════════════════════════════════════════════════
+   APP MIX — ESPAGNOL (13/11/2026). Clé : la phrase française. Les paires {m|f}
+   sont conservées : l'espagnol s'accorde comme le français.
+   ══════════════════════════════════════════════════════════════════════════ */
+Object.assign(DICOS.es, {
+  "D'abord, toi":"Primero, tú", "Qui tu es, ce que tu fais, avec qui tu vis.":"Quién eres, qué haces, con quién vives.",
+  "Comment tu t'appelles ?":"¿Cómo te llamas?", "Ton prénom suffit.":"Con tu nombre basta.", "Ton prénom":"Tu nombre",
+  "Tu es… ?":"¿Eres…?", "Ça me sert seulement à accorder les mots quand je t'écris.":"Solo me sirve para concordar las palabras cuando te escribo.",
+  "Un homme":"Un hombre", "Une femme":"Una mujer", "Je préfère ne pas répondre":"Prefiero no responder",
+  "Quel âge as-tu ?":"¿Cuántos años tienes?", "18 à 24 ans":"18 a 24 años", "25 à 34 ans":"25 a 34 años", "35 à 49 ans":"35 a 49 años", "50 à 64 ans":"50 a 64 años", "65 à 74 ans":"65 a 74 años", "75 ans ou plus":"75 años o más",
+  "Qu'est-ce que tu fais dans la vie ?":"¿A qué te dedicas?", "Ce qui te prend le plus de temps.":"Lo que más tiempo te ocupa.",
+  "J'étudie ou je suis en formation":"Estudio o estoy en formación", "Je travaille sur le terrain : usine, chantier, commerce, transport…":"Trabajo a pie de obra: fábrica, construcción, comercio, transporte…",
+  "Je travaille dans un bureau":"Trabajo en una oficina", "J'enseigne, j'aide ou je m'occupe des autres":"Enseño, ayudo o cuido de otros", "Je suis à mon compte":"Trabajo por mi cuenta",
+  "Je cherche un emploi":"Busco trabajo", "Je m'occupe de ma famille à plein temps":"Me ocupo de mi familia a tiempo completo", "Je suis à la retraite":"Estoy {jubilado|jubilada}", "Le sport, c'est mon métier, ou presque":"El deporte es mi trabajo, o casi",
+  "Avec qui vis-tu ?":"¿Con quién vives?", "{Seul|Seule}":"{Solo|Sola}", "En couple":"En pareja", "En couple, avec des enfants":"En pareja, con hijos", "{Seul|Seule} avec mes enfants":"{Solo|Sola} con mis hijos",
+  "Chez mes parents":"Con mis padres", "En colocation":"En un piso compartido", "Ça change souvent":"Cambia a menudo",
+  "Là où tu en es":"Dónde estás", "Ta période, ce qui pèse, ce qui tient.":"Tu momento, lo que pesa, lo que sostiene.",
+  "Si tu devais résumer ta période actuelle, tu dirais quoi ?":"Si tuvieras que resumir tu momento actual, ¿qué dirías?",
+  "Ça va plutôt bien":"Voy bastante bien", "Ça va, et je veux aller plus loin":"Voy bien, y quiero ir más lejos", "Je tiens bon, mais c'est lourd":"Aguanto, pero pesa",
+  "Je traverse un moment difficile":"Paso por un momento difícil", "Je suis en pleine transition : travail, couple, déménagement…":"Estoy en plena transición: trabajo, pareja, mudanza…",
+  "Je me sens {perdu|perdue}, sans trop savoir pourquoi":"Me siento {perdido|perdida}, sin saber muy bien por qué", "Je ne sais pas trop":"No sé muy bien",
+  "Comment ça va en ce moment, domaine par domaine ?":"¿Cómo vas ahora mismo, ámbito por ámbito?", "1, c'est très bas. 10, c'est au plus haut. Laisse à 5 si tu ne sais pas.":"1 es muy bajo. 10 es lo más alto. Déjalo en 5 si no sabes.",
+  "Sommeil":"Sueño", "Énergie":"Energía", "Moral":"Ánimo", "Confiance en toi":"Confianza en ti", "Travail, études, activité":"Trabajo, estudios, actividad", "Vie amoureuse":"Vida amorosa", "Famille":"Familia", "Amis":"Amigos", "Argent":"Dinero", "Rapport au corps":"Relación con tu cuerpo", "Sens de ta vie":"Sentido de tu vida",
+  "Qu'est-ce qui prend le plus de place dans ta tête ces jours-ci ?":"¿Qué ocupa más espacio en tu cabeza estos días?", "Trois au plus.":"Tres como máximo.",
+  "Me sentir mieux, tout simplement":"Sentirme mejor, simplemente", "Mieux me connaître":"Conocerme mejor", "Ma confiance en moi":"Mi confianza en mí", "La voix critique dans ma tête":"La voz crítica en mi cabeza",
+  "Ma motivation, tenir mes bonnes habitudes":"Mi motivación, mantener mis buenos hábitos", "M'organiser, gérer mon temps":"Organizarme, gestionar mi tiempo", "Le stress, l'angoisse qui monte":"El estrés, la angustia que sube",
+  "Mon sommeil":"Mi sueño", "Une émotion lourde, une perte":"Una emoción pesada, una pérdida", "Le sens de ce que je vis":"El sentido de lo que vivo", "Une décision importante à prendre":"Una decisión importante que tomar",
+  "Mon travail, mes études, ma carrière":"Mi trabajo, mis estudios, mi carrera", "Mon couple, ma vie amoureuse":"Mi pareja, mi vida amorosa", "Ma famille, mes proches":"Mi familia, mis seres queridos",
+  "Mon rôle de parent":"Mi papel de madre o padre", "Me sentir {seul|seule}":"Sentirme {solo|sola}", "Dire les choses, poser mes limites":"Decir las cosas, poner mis límites",
+  "Le sport, la préparation mentale, la performance":"El deporte, la preparación mental, el rendimiento", "Ma sexualité, mon intimité":"Mi sexualidad, mi intimidad", "L'argent":"El dinero",
+  "Un comportement qui prend trop de place":"Un hábito que ocupa demasiado espacio", "Mon rapport à mon corps":"Mi relación con mi cuerpo",
+  "Depuis combien de temps ça dure ?":"¿Desde cuándo dura?", "Moins de 2 semaines":"Menos de 2 semanas", "Entre 2 semaines et 3 mois":"Entre 2 semanas y 3 meses", "Entre 3 mois et 1 an":"Entre 3 meses y 1 año",
+  "Entre 1 et 5 ans":"Entre 1 y 5 años", "Depuis toujours, ou presque":"Desde siempre, o casi", "Ce n'est pas un problème, c'est une envie d'avancer":"No es un problema, son ganas de avanzar",
+  "En une phrase, qu'est-ce qui t'amène aujourd'hui ?":"En una frase, ¿qué te trae hoy?", "Écris comme ça vient. Tu peux aussi passer.":"Escribe como salga. También puedes saltarla.", "Ce qui t'amène…":"Lo que te trae…",
+  "Comment tu fonctionnes":"Cómo funcionas", "Ta façon d'avancer, de décider, de te recharger.":"Tu forma de avanzar, de decidir, de recargarte.",
+  "Après une longue journée, qu'est-ce qui te recharge le plus ?":"Después de un día largo, ¿qué te recarga más?", "Touche le point qui te ressemble : plus il est près d'un côté, plus c'est vrai pour toi.":"Toca el punto que se parece a ti: cuanto más cerca de un lado, más cierto es para ti.",
+  "Voir du monde":"Ver gente", "Être {seul|seule}":"Estar {solo|sola}", "Face à un nouveau projet, comment t'y prends-tu ?":"Ante un proyecto nuevo, ¿cómo lo abordas?", "Je planifie tout":"Lo planifico todo", "J'avance à l'instinct":"Avanzo por instinto",
+  "Pour une décision importante, sur quoi t'appuies-tu ?":"Para una decisión importante, ¿en qué te apoyas?", "J'analyse":"Analizo", "Je me fie à mon ressenti":"Confío en lo que siento",
+  "La nouveauté, qu'est-ce qu'elle te fait ?":"La novedad, ¿qué te produce?", "Elle me stimule":"Me estimula", "Il me faut du temps pour m'adapter":"Necesito tiempo para adaptarme",
+  "Quel est ton niveau d'exigence envers toi-même ?":"¿Cuánto te exiges a ti {mismo|misma}?", "Plutôt {indulgent|indulgente}":"Más bien {indulgente|indulgente}", "Très {exigeant|exigeante}":"Muy {exigente|exigente}",
+  "Tes émotions, est-ce qu'elles se voient ?":"Tus emociones, ¿se notan?", "Tout de suite":"Enseguida", "Je les garde pour moi":"Me las guardo",
+  "Qu'est-ce qui te fait avancer le plus ?":"¿Qué te hace avanzar más?", "Atteindre un objectif":"Alcanzar un objetivo", "Progresser, apprendre":"Progresar, aprender", "Être utile aux autres":"Ser útil a los demás",
+  "Faire plaisir à ceux que j'aime":"Hacer felices a quienes quiero", "Me sentir libre":"Sentirme libre", "Me sentir en paix":"Sentirme en paz", "Être {reconnu|reconnue}":"Ser {reconocido|reconocida}", "Gagner ma vie, être en sécurité":"Ganarme la vida, estar {seguro|segura}", "Le plaisir, tout simplement":"El placer, simplemente",
+  "À quel moment de la journée es-tu le plus toi-même ?":"¿En qué momento del día eres más tú?", "Tôt le matin":"Temprano por la mañana", "Le matin":"Por la mañana", "L'après-midi":"Por la tarde", "Le soir":"Al anochecer", "La nuit":"De noche", "Ça change tout le temps":"Cambia todo el tiempo",
+  "Comment tu réagis":"Cómo reaccionas", "Sous pression, après un échec, dans un désaccord.":"Bajo presión, tras un fracaso, en un desacuerdo.",
+  "Quand la pression monte, que fais-tu le plus souvent ?":"Cuando sube la presión, ¿qué haces más a menudo?", "J'accélère, j'en fais plus":"Acelero, hago más", "Je fais une liste, je m'organise":"Hago una lista, me organizo",
+  "J'analyse la situation":"Analizo la situación", "J'en parle à quelqu'un":"Se lo cuento a alguien", "Je m'énerve vite":"Me enfado rápido", "Je me replie sur moi":"Me encierro en mí", "Je me fige, je n'arrive plus à rien":"Me bloqueo, no consigo hacer nada",
+  "Je me change les idées : sport, sortie, série…":"Me despejo: deporte, salir, una serie…", "Je remets à plus tard":"Lo dejo para después", "Je respire et je prends du recul":"Respiro y tomo distancia",
+  "Après un échec, à quoi ressemble ta première pensée ?":"Tras un fracaso, ¿cómo es tu primer pensamiento?", "« Qu'est-ce que je peux en tirer ? »":"«¿Qué puedo sacar de esto?»", "« Je suis {nul|nulle}. »":"«Soy un desastre.»",
+  "« Ce n'est pas de ma faute. »":"«No es culpa mía.»", "« On passe à autre chose. »":"«Pasemos a otra cosa.»", "« Je recommence tout de suite. »":"«Vuelvo a intentarlo ahora mismo.»", "« J'ai besoin d'en parler. »":"«Necesito hablarlo.»",
+  "« J'ai besoin d'être {seul|seule} un moment. »":"«Necesito estar {solo|sola} un momento.»", "« Je le savais, ça ne marche jamais pour moi. »":"«Lo sabía, a mí nunca me sale.»", "Ça dépend vraiment de l'échec":"Depende mucho del fracaso",
+  "Dans un désaccord avec un proche, que fais-tu ?":"En un desacuerdo con alguien cercano, ¿qué haces?", "Je dis les choses tout de suite":"Digo las cosas enseguida", "J'attends que ça retombe, puis j'en reparle":"Espero a que se calme y luego lo hablo",
+  "Je cherche un terrain d'entente":"Busco un punto en común", "J'évite le sujet":"Evito el tema", "Je cède pour avoir la paix":"Cedo para tener paz", "Je m'emporte, puis je regrette":"Me altero y luego me arrepiento", "Je me ferme, je ne dis plus rien":"Me cierro, no digo nada más", "Ça dépend avec qui":"Depende de con quién",
+  "Après une émotion forte, combien de temps te faut-il pour retrouver ton calme ?":"Tras una emoción fuerte, ¿cuánto tardas en recuperar la calma?", "Moins de 10 minutes":"Menos de 10 minutos", "Environ 1 heure":"Alrededor de 1 hora", "Une demi-journée":"Medio día", "Une journée":"Un día", "Plus de 2 jours":"Más de 2 días", "Ça dépend de l'émotion":"Depende de la emoción",
+  "Quand on te fait un compliment, comment réagis-tu ?":"Cuando te hacen un cumplido, ¿cómo reaccionas?", "Je le prends, ça me fait plaisir":"Lo acepto, me alegra", "Ça me donne de l'élan":"Me da impulso",
+  "Je dis merci, mais je n'y crois pas trop":"Doy las gracias, pero no me lo creo mucho", "Je le minimise":"Le quito importancia", "Je suis {gêné|gênée}, je change de sujet":"Me da apuro, cambio de tema", "Je me méfie un peu":"Desconfío un poco", "Je ne sais pas quoi en faire":"No sé qué hacer con él",
+  "Quand ça va mal, vers quoi te tournes-tu en premier ?":"Cuando va mal, ¿a qué recurres primero?", "Vers un proche : ami, famille":"A alguien cercano: un amigo, la familia", "Vers mon ou ma partenaire":"A mi pareja", "Vers personne, je gère {seul|seule}":"A nadie, lo gestiono {solo|sola}",
+  "Vers une activité : sport, musique, dessin…":"A una actividad: deporte, música, dibujo…", "Vers la nature, dehors":"A la naturaleza, al aire libre", "Vers ce qui fait du bien sur le moment : manger, fumer, boire…":"A lo que sienta bien en el momento: comer, fumar, beber…", "Vers les écrans":"A las pantallas", "Vers la prière, la méditation, la spiritualité":"A la oración, la meditación, la espiritualidad", "Je ne sais pas":"No lo sé",
+  "Face à un imprévu, comment réagis-tu ?":"Ante un imprevisto, ¿cómo reaccionas?", "Ça me déstabilise beaucoup":"Me desestabiliza mucho", "Je m'adapte vite":"Me adapto rápido",
+  "Ce qui compte pour toi":"Lo que cuenta para ti", "Tes valeurs, ce qui t'apaise, ce que tu veux voir changer.":"Tus valores, lo que te calma, lo que quieres ver cambiar.",
+  "Quelles sont les trois choses qui comptent le plus pour toi ?":"¿Cuáles son las tres cosas que más cuentan para ti?", "La liberté":"La libertad", "La sécurité":"La seguridad", "La famille":"La familia", "L'amitié":"La amistad", "L'amour":"El amor", "La réussite":"El éxito", "La créativité":"La creatividad", "La justice":"La justicia", "Le respect":"El respeto", "L'honnêteté":"La honestidad",
+  "La santé":"La salud", "La sérénité":"La serenidad", "Apprendre":"Aprender", "Être utile":"Ser útil", "L'authenticité":"La autenticidad", "L'aventure":"La aventura", "La foi, la spiritualité":"La fe, la espiritualidad", "Le travail bien fait":"El trabajo bien hecho", "La nature":"La naturaleza", "Le plaisir":"El placer",
+  "Qu'est-ce qui t'apaise vraiment ?":"¿Qué te calma de verdad?", "Prendre l'air, la nature":"Tomar el aire, la naturaleza", "La musique":"La música", "Bouger, faire du sport":"Moverme, hacer deporte", "Les gens que j'aime":"La gente que quiero", "Un moment {seul|seule}":"Un momento a solas", "Créer, bricoler, cuisiner":"Crear, hacer bricolaje, cocinar",
+  "Lire":"Leer", "Écrire":"Escribir", "Dormir, me reposer":"Dormir, descansar", "Un film, une série":"Una película, una serie", "Prier, méditer":"Rezar, meditar", "Respirer, me poser":"Respirar, parar", "Les animaux":"Los animales", "Jouer : jeux vidéo, jeux de société…":"Jugar: videojuegos, juegos de mesa…",
+  "De quoi es-tu {fier|fière}, même si c'est petit ?":"¿De qué estás {orgulloso|orgullosa}, aunque sea pequeño?", "Tu peux passer.":"Puedes saltarla.", "Ce dont tu es {fier|fière}…":"De lo que estás {orgulloso|orgullosa}…",
+  "Si tout allait mieux dans 6 mois, qu'est-ce qui aurait changé en premier ?":"Si todo fuera mejor dentro de 6 meses, ¿qué habría cambiado primero?", "Je dormirais mieux":"Dormiría mejor", "J'aurais plus confiance en moi":"Tendría más confianza en mí", "Je serais plus {serein|sereine}":"Estaría más {sereno|serena}",
+  "Mes relations iraient mieux":"Mis relaciones irían mejor", "J'aurais trouvé ma voie":"Habría encontrado mi camino", "J'aurais repris la main sur mon temps":"Habría recuperado el control de mi tiempo", "J'aurais plus d'énergie":"Tendría más energía", "Je me sentirais moins {seul|seule}":"Me sentiría menos {solo|sola}",
+  "J'aurais atteint un objectif précis":"Habría alcanzado un objetivo concreto", "Je serais plus en paix avec mon corps":"Estaría más en paz con mi cuerpo", "J'aurais moins de pression au travail":"Tendría menos presión en el trabajo",
+  "Qu'est-ce que tu ne veux plus vivre ?":"¿Qué no quieres volver a vivir?", "Ce que tu ne veux plus…":"Lo que no quieres más…",
+  "Ton corps et ton énergie":"Tu cuerpo y tu energía", "Ton sommeil, ton énergie, ton rapport au mouvement.":"Tu sueño, tu energía, tu relación con el movimiento.",
+  "Combien d'heures dors-tu, une nuit habituelle ?":"¿Cuántas horas duermes una noche normal?", "Moins de 5 h":"Menos de 5 h", "5 à 6 h":"5 a 6 h", "6 à 7 h":"6 a 7 h", "7 à 8 h":"7 a 8 h", "8 à 9 h":"8 a 9 h", "Plus de 9 h":"Más de 9 h", "Mes horaires changent : travail de nuit, bébé…":"Mis horarios cambian: trabajo nocturno, bebé…",
+  "Au réveil, comment te sens-tu le plus souvent ?":"Al despertar, ¿cómo te sientes la mayoría de las veces?", "{Reposé|Reposée}":"{Descansado|Descansada}", "Plutôt en forme":"Bastante bien", "Ça dépend des jours":"Depende del día", "{Fatigué|Fatiguée}":"{Cansado|Cansada}", "{Épuisé|Épuisée}":"{Agotado|Agotada}", "Je me réveille plusieurs fois la nuit":"Me despierto varias veces por la noche",
+  "Ton énergie dans la journée, de 1 à 10 ?":"Tu energía durante el día, ¿del 1 al 10?", "À plat":"Sin fuerzas", "Pleine forme":"En plena forma",
+  "Bouger, pour toi, c'est quoi ?":"Moverte, para ti, ¿qué es?", "Un plaisir":"Un placer", "Mon métier, ou ma passion":"Mi trabajo, o mi pasión", "Une obligation":"Una obligación", "Quelque chose que j'aimerais faire plus":"Algo que me gustaría hacer más", "Difficile en ce moment : temps, fatigue, douleurs…":"Difícil ahora mismo: tiempo, cansancio, dolores…", "Pas pour moi":"No es para mí",
+  "Le soir, avec les écrans, comment ça se passe ?":"Por la noche, con las pantallas, ¿cómo va?", "Je décroche facilement":"Desconecto fácilmente", "Je fais défiler plus longtemps que prévu":"Sigo deslizando más de lo previsto", "Je m'endors avec":"Me duermo con ellas", "Je travaille sur écran tard":"Trabajo con pantalla hasta tarde", "Je joue en ligne":"Juego en línea", "Je n'en utilise presque pas le soir":"Casi no las uso por la noche",
+  "Comment tu veux qu'on te parle":"Cómo quieres que te hablen", "Pour que MIA te parle comme il te faut.":"Para que MIA te hable como necesitas.",
+  "Le développement personnel, la préparation mentale, tu connais ?":"El desarrollo personal, la preparación mental, ¿los conoces?", "Il n'y a pas de bonne réponse. Ça aide MIA à trouver les bons mots.":"No hay respuesta correcta. Ayuda a MIA a encontrar las palabras justas.",
+  "Pas du tout, c'est nouveau pour moi":"Para nada, es nuevo para mí", "Un peu, j'ai lu ou écouté des choses":"Un poco, he leído o escuchado cosas", "Oui, je m'y intéresse depuis longtemps":"Sí, me interesa desde hace tiempo",
+  "J'ai déjà été {accompagné|accompagnée} par un professionnel":"Ya me ha {acompañado|acompañado} un profesional", "Je n'y crois pas trop, mais je veux essayer":"No me convence mucho, pero quiero probar", "Je me méfie des applications comme celle-ci":"Desconfío de las aplicaciones como esta",
+  "Comment préfères-tu qu'on te dise les choses ?":"¿Cómo prefieres que te digan las cosas?", "En douceur":"Con suavidad", "Sans détour":"Sin rodeos",
+  "Quelle longueur de réponse te convient ?":"¿Qué longitud de respuesta te conviene?", "Très courtes, l'essentiel":"Muy cortas, lo esencial", "Courtes et nettes":"Cortas y claras", "Moyennes":"Medianas", "Développées quand il le faut":"Desarrolladas cuando haga falta", "Ça dépend du moment":"Depende del momento",
+  "Qu'est-ce qui t'aide le plus ?":"¿Qué te ayuda más?", "Des questions pour réfléchir":"Preguntas para reflexionar", "Des pistes concrètes":"Pistas concretas",
+  "L'humour, même quand c'est dur, est-ce que ça t'aide ?":"El humor, incluso cuando es duro, ¿te ayuda?", "Oui, ça m'aide beaucoup":"Sí, me ayuda mucho", "Un peu, avec tact":"Un poco, con tacto", "Seulement quand ça va mieux":"Solo cuando voy mejor", "Non, pas du tout":"No, para nada",
+  "Quand tu n'as pas fait ce que tu avais prévu, que veux-tu que MIA fasse ?":"Cuando no has hecho lo que tenías previsto, ¿qué quieres que haga MIA?", "Qu'elle me relance franchement":"Que me lo recuerde con franqueza", "Qu'elle me le rappelle doucement":"Que me lo recuerde con suavidad",
+  "Qu'elle me demande ce qui a bloqué":"Que me pregunte qué me bloqueó", "Qu'elle me propose un pas plus petit":"Que me proponga un paso más pequeño", "Qu'elle n'en parle que si j'en parle":"Que solo lo mencione si yo lo menciono",
+  "À quel moment aimerais-tu le plus parler avec MIA ?":"¿En qué momento te gustaría más hablar con MIA?", "Pendant mes pauses":"En mis pausas", "Sur le trajet":"De camino", "Quand ça ne va pas":"Cuando no voy bien", "N'importe quand":"En cualquier momento",
+  "Ton cap":"Tu rumbo", "Une seule chose à travailler en premier.":"Una sola cosa que trabajar primero.", "Si on ne devait travailler qu'une seule chose ensemble, ce serait laquelle ?":"Si solo pudiéramos trabajar una cosa juntos, ¿cuál sería?", "Choisis une idée ou écris la tienne.":"Elige una idea o escribe la tuya.", "Ton cap…":"Tu rumbo…",
+  "Pourquoi maintenant ?":"¿Por qué ahora?", "Ce qui fait que c'est le moment…":"Lo que hace que sea el momento…", "À quoi verras-tu que ça avance ?":"¿En qué notarás que avanza?", "Un signe concret, même petit. Tu peux passer.":"Una señal concreta, aunque sea pequeña. Puedes saltarla.", "Le signe…":"La señal…",
+  "À quel point es-tu {prêt|prête} à t'y mettre, de 1 à 10 ?":"¿Hasta qué punto estás {listo|lista} para empezar, del 1 al 10?", "Pas encore":"Todavía no", "Complètement":"Completamente",
+  "Le Moteur":"El Motor", "Tu avances, tu agis, tu règles les choses tout de suite. Ta force, c'est l'action. L'enjeu : ne pas foncer sans te retourner.":"Avanzas, actúas, resuelves las cosas enseguida. Tu fuerza es la acción. El reto: no lanzarte sin mirar atrás.",
+  "Le Relieur":"El Conector", "La Relieuse":"La Conectora", "Tu passes par l'échange, la parole, le lien. Parler, c'est déjà avancer, pour toi.":"Pasas por el intercambio, la palabra, el vínculo. Hablar ya es avanzar, para ti.",
+  "L'Ancre":"El Ancla", "Tu as besoin de te poser avant de repartir. Ce n'est pas de la lenteur, c'est de l'ancrage.":"Necesitas parar antes de volver a arrancar. No es lentitud, es arraigo.",
+  "Le Stratège":"El Estratega", "La Stratège":"La Estratega", "Tu analyses, tu creuses, parfois en boucle. Ta force est là, à condition de ne pas t'y enfermer trop longtemps.":"Analizas, profundizas, a veces en bucle. Ahí está tu fuerza, siempre que no te encierres demasiado tiempo.",
+  "Le Fédérateur":"El Aglutinador", "La Fédératrice":"La Aglutinadora", "Tu avances, et tu entraînes les autres avec toi. Ton énergie se propage.":"Avanzas y arrastras a los demás contigo. Tu energía se contagia.",
+  "Le Bâtisseur":"El Constructor", "La Bâtisseuse":"La Constructora", "Tu agis, mais tu prends le temps de poser des bases solides avant d'avancer.":"Actúas, pero te tomas el tiempo de poner bases sólidas antes de avanzar.",
+  "Le Tacticien":"El Táctico", "La Tacticienne":"La Táctica", "Tu agis, mais jamais sans avoir réfléchi ton coup avant.":"Actúas, pero nunca sin haber pensado antes tu jugada.",
+  "Le Pilier":"El Pilar", "Tu es le point d'appui des autres. Stable, disponible, à l'écoute.":"Eres el punto de apoyo de los demás. Estable, disponible, a la escucha.",
+  "Le Médiateur":"El Mediador", "La Médiatrice":"La Mediadora", "Tu comprends vite les gens, et tu prends le temps de bien saisir avant de répondre.":"Entiendes rápido a la gente, y te tomas el tiempo de captar bien antes de responder.",
+  "L'Observateur":"El Observador", "L'Observatrice":"La Observadora", "Tu prends du recul avant d'agir. Rien ne se décide chez toi dans la précipitation.":"Tomas distancia antes de actuar. En ti nada se decide con prisas.",
+  "Le Sage":"El Sabio", "La Sage":"La Sabia", "Tu écoutes, tu te poses, tu réfléchis. Ta limite : passer à l'action.":"Escuchas, paras, reflexionas. Tu límite: pasar a la acción.",
+  "Le Veilleur":"El Vigía", "La Veilleuse":"La Vigía", "Tu avances en autonomie, posément et avec recul. Ta limite : partager davantage.":"Avanzas con autonomía, con calma y con perspectiva. Tu límite: compartir más.",
+  "En bref":"En resumen", "Tes appuis et tes points de vigilance":"Tus apoyos y tus puntos de atención", "Comment MIA va te parler":"Cómo te va a hablar MIA",
+  "Il t'aide à tenir ce que tu décides, un petit pas après l'autre.":"Te ayuda a mantener lo que decides, un pequeño paso tras otro.", "Il travaille avec toi la voix critique qui parle dans ta tête.":"Trabaja contigo la voz crítica que habla en tu cabeza.",
+  "Il t'aide à savoir ce qui compte pour toi, et où tu vas.":"Te ayuda a saber qué cuenta para ti, y adónde vas.", "Elle fait de la place à ce que tu ressens, sans te presser.":"Hace sitio a lo que sientes, sin meterte prisa.",
+  "Il t'aide à voir clair dans ta relation, de ton côté à toi.":"Te ayuda a ver claro en tu relación, desde tu lado.", "Il t'aide à dire les choses et à poser tes limites.":"Te ayuda a decir las cosas y a poner tus límites.",
+  "Il s'entraîne à côté de toi, jamais au-dessus.":"Entrena a tu lado, nunca por encima.", "Il s'occupe de tes nuits, sans pression.":"Se ocupa de tus noches, sin presión.", "Il te ramène au souffle quand le stress monte.":"Te devuelve a la respiración cuando sube el estrés.",
+  "Il t'aide à y voir clair dans ton travail.":"Te ayuda a ver claro en tu trabajo.", "Il t'accompagne dans ce que tu vis comme parent.":"Te acompaña en lo que vives como madre o padre.", "Elle t'aide à recréer des liens qui comptent.":"Te ayuda a recrear vínculos que cuentan.",
+  "Elle parle intimité avec toi, clairement, sans jugement.":"Habla de intimidad contigo, con claridad, sin juzgar.", "Il travaille avec toi ton rapport à l'argent.":"Trabaja contigo tu relación con el dinero.", "Il t'aide à reprendre la main, sans morale ni étiquette.":"Te ayuda a retomar el control, sin sermones ni etiquetas.",
+  "Elle t'aide à te sentir mieux avec ton corps, sans jamais le juger.":"Te ayuda a sentirte mejor con tu cuerpo, sin juzgarlo nunca.",
+  "Tenir une habitude chaque jour":"Mantener un hábito cada día", "Faire baisser le volume de ma voix critique":"Bajar el volumen de mi voz crítica", "Savoir ce que je veux vraiment":"Saber qué quiero de verdad", "Faire de la place à ce que je ressens":"Hacer sitio a lo que siento",
+  "Retrouver de la sérénité dans mon couple":"Recuperar la serenidad en mi pareja", "Oser dire non":"Atreverme a decir no", "Retrouver le plaisir de m'entraîner":"Recuperar el placer de entrenar", "Retrouver des nuits qui reposent":"Recuperar noches que descansen", "Calmer le stress quand il monte":"Calmar el estrés cuando sube",
+  "Y voir clair dans mon travail":"Ver claro en mi trabajo", "Me sentir plus à l'aise comme parent":"Sentirme más a gusto como madre o padre", "Recréer des liens proches":"Recrear vínculos cercanos", "Retrouver une intimité apaisée":"Recuperar una intimidad en paz", "Ouvrir mes comptes sans angoisse":"Abrir mis cuentas sin angustia",
+  "Reprendre la main sur un comportement":"Retomar el control de un hábito", "Être en paix avec mon corps":"Estar en paz con mi cuerpo",
+  "Co-pilote":"Copiloto", "Discipline et habitudes":"Disciplina y hábitos", "Confiance et dialogue intérieur":"Confianza y diálogo interior", "Identité et sens":"Identidad y sentido", "Émotions et deuil":"Emociones y duelo", "Couple et attachement":"Pareja y apego",
+  "Communication et affirmation":"Comunicación y asertividad", "Sport et performance":"Deporte y rendimiento", "Anxiété et respiration":"Ansiedad y respiración", "Travail et carrière":"Trabajo y carrera", "Parentalité":"Maternidad y paternidad", "Lien social et solitude":"Vínculo social y soledad",
+  "Sexualité et intimité":"Sexualidad e intimidad", "Addictions":"Adicciones", "Rencontré":"Conocido", "Rencontrée":"Conocida", "Endormi":"Dormido", "Endormie":"Dormida",
+  "Pour tous, partout, tout le temps.":"Para todos, en todas partes, todo el tiempo.", "Un accompagnement guidé, avec MIA, seize accompagnants, et un professionnel référent qui veille.":"Un acompañamiento guiado, con MIA, dieciséis acompañantes y un profesional de referencia que vela por ti.",
+  "Commencer":"Empezar", "Réglages":"Ajustes", "Tout est gardé.":"Todo queda guardado.", "Reprendre":"Continuar", "Tout recommencer":"Empezar de cero", "Je suis MIA.":"Soy MIA.",
+  "Avant qu’on parle, je vais prendre le temps de te connaître. Vraiment.":"Antes de hablar, voy a tomarme el tiempo de conocerte. De verdad.",
+  "Tu peux t'arrêter quand tu veux et fermer la page. Je garde tout, et on reprend exactement là où tu t'es {arrêté|arrêtée}.":"Puedes parar cuando quieras y cerrar la página. Lo guardo todo, y retomamos exactamente donde lo dejaste.",
+  "On commence":"Empezamos", "C'est parti":"Vamos", "Continuer":"Continuar", "Passer":"Saltar", "Autre":"Otro", "Avec tes mots, si tu veux":"Con tus palabras, si quieres", "Entre les deux":"Entre los dos", "Ce que je retiens":"Lo que me quedo",
+  "Tu as passé cette étape. On y reviendra si tu veux.":"Has saltado esta etapa. Volveremos si quieres.", "Ton profil MAYND":"Tu perfil MAYND", "L'action":"La acción", "Le lien":"El vínculo", "Se poser":"Parar", "L'analyse":"El análisis",
+  "Ton résultat est prêt":"Tu resultado está listo", "Gratuit. Ton parcours reste à toi, et tu le retrouves sur tous tes appareils quand MAYND sera en ligne.":"Gratis. Tu recorrido es tuyo, y lo encontrarás en todos tus dispositivos cuando MAYND esté en línea.",
+  "Ton courriel":"Tu correo", "prenom@exemple.fr":"nombre@ejemplo.es", "Un mot de passe":"Una contraseña", "8 caractères au moins":"8 caracteres como mínimo", "Voir mon résultat":"Ver mi resultado", "Un instant…":"Un momento…",
+  "En continuant, tu acceptes que MAYND garde tes réponses pour t’accompagner. Tu peux tout effacer quand tu veux.":"Al continuar, aceptas que MAYND guarde tus respuestas para acompañarte. Puedes borrarlo todo cuando quieras.",
+  "Ce courriel ne semble pas complet.":"Este correo no parece completo.", "8 caractères au moins.":"8 caracteres como mínimo.", "Ton compte est créé.":"Tu cuenta está creada.",
+  "Ton compte-rendu":"Tu informe", "Lis-le tranquillement. Si quelque chose sonne faux, corrige-le : c’est ta version qui compte, et c’est elle que MIA utilisera.":"Léelo con calma. Si algo suena falso, corrígelo: tu versión es la que cuenta, y es la que usará MIA.",
+  "Corriger":"Corregir", "Enregistrer":"Guardar", "Annuler":"Cancelar", "Corrigé par toi · ":"Corregido por ti · ", "Revenir au texte d’origine":"Volver al texto original", "Écris-le comme c’est vraiment pour toi.":"Escríbelo como es de verdad para ti.", "C'est bien moi":"Así soy yo",
+  "MIA relit tes réponses et affine ton compte-rendu…":"MIA relee tus respuestas y afina tu informe…", "Compte-rendu affiné par MIA.":"Informe afinado por MIA.",
+  "Ton équipe":"Tu equipo", "Les seize accompagnants sont là pour toi.":"Los dieciséis acompañantes están aquí para ti.", "MIA fera venir celui qui t’aidera, au bon moment. D’après ton parcours, les premiers seront sans doute :":"MIA traerá al que te ayude, en el momento justo. Según tu recorrido, los primeros serán seguramente:",
+  "MIA fera venir celui qui t’aidera, au bon moment.":"MIA traerá al que te ayude, en el momento justo.", "Elle te parle en premier, toujours.":"Te habla primero, siempre.",
+  "Ton professionnel référent":"Tu profesional de referencia", "Tu n’es pas seulement entre les mains d’une intelligence artificielle.":"No estás solo en manos de una inteligencia artificial.",
+  "Un professionnel référent certifié, humain, suit ton parcours MAYND. Il lit ton compte-rendu, signe ta feuille de route en début de mois et ton bilan en fin de mois.":"Un profesional de referencia certificado, humano, sigue tu recorrido MAYND. Lee tu informe, firma tu hoja de ruta a principios de mes y tu balance a final de mes.",
+  "Aucun rendez-vous à prendre. Il intervient, dans ta discussion, quand un signal le justifie :":"Sin citas que pedir. Interviene, en tu conversación, cuando una señal lo justifica:",
+  "Stagnation":"Estancamiento", "Rien ne bouge depuis un moment.":"Nada se mueve desde hace un tiempo.", "Blocage":"Bloqueo", "Tu es {coincé|coincée}, ou ce que tu vis demande plus.":"Estás {atascado|atascada}, o lo que vives pide más.", "Désalignement":"Desalineación", "Tes actes s’éloignent de ton cap.":"Tus actos se alejan de tu rumbo.", "Progression à consolider":"Progreso por consolidar", "Un vrai progrès, à ancrer.":"Un progreso real, por afianzar.",
+  "MIA a lu tout ton parcours et ton compte-rendu. Tu n’as rien à répéter.":"MIA ha leído todo tu recorrido y tu informe. No tienes que repetir nada.", "Parler avec MIA":"Hablar con MIA",
+  "Aujourd’hui":"Hoy", "Discussion":"Conversación", "Toi":"Tú", "Bonjour":"Buenos días", "Bonsoir":"Buenas tardes", "Bonne nuit":"Buenas noches", "Comment ça va, là, maintenant ?":"¿Cómo estás, ahora mismo?",
+  "Difficile":"Difícil", "Plutôt bas":"Más bien bajo", "En demi-teinte":"Regular", "Plutôt bien":"Bastante bien", "Au top":"Genial", "Ton pas":"Tu paso", "C’est fait":"Hecho", "En parler":"Hablarlo", "Parler à MIA":"Hablar con MIA", "Ton co-pilote, là quand tu veux":"Tu copiloto, cuando quieras",
+  "Professionnel référent certifié":"Profesional de referencia certificado", "Inclus dans MAYND":"Incluido en MAYND", "Un humain qui lit ton parcours, signe ta feuille de route et intervient quand un signal le justifie. Sans rendez-vous.":"Un humano que lee tu recorrido, firma tu hoja de ruta e interviene cuando una señal lo justifica. Sin citas.",
+  "Découvrir ma supervision":"Descubrir mi supervisión", "Lit ton parcours.":"Lee tu recorrido.", "Il intervient dans ta discussion quand un signal le justifie. Sans rendez-vous.":"Interviene en tu conversación cuando una señal lo justifica. Sin citas.", "Ma feuille de route et mon bilan":"Mi hoja de ruta y mi balance",
+  "Ton accès":"Tu acceso", "Un code à quatre chiffres, pour que tes échanges restent à toi.":"Un código de cuatro cifras, para que tus conversaciones sigan siendo tuyas.", "Choisir un code":"Elegir un código", "Plus tard":"Más tarde", "Ton code d’accès":"Tu código de acceso", "Ton accès est sécurisé.":"Tu acceso está protegido.",
+  "Un espace à toi, confidentiel.":"Un espacio tuyo, confidencial.", "Menu":"Menú", "Envoyer":"Enviar", "Ton message":"Tu mensaje", "Mon compte-rendu":"Mi informe", "Mon professionnel référent":"Mi profesional de referencia", "Faire une pause":"Hacer una pausa", "Revenir à la discussion":"Volver a la conversación",
+  "MIA reprend exactement là où vous en êtes.":"MIA retoma exactamente donde estáis.", "Reviens quand tu veux.":"Vuelve cuando quieras.", "Ton pas en cours":"Tu paso en curso", "Bon retour. MIA reprend là où vous en étiez.":"Bienvenido de nuevo. MIA retoma donde lo dejasteis.",
+  "Il te lit et intervient ici, sans rendez-vous, quand c’est utile.":"Te lee e interviene aquí, sin citas, cuando es útil.", "Tu n’as pas à porter ça sans aide.":"No tienes que cargar con esto sin ayuda.",
+  "Si tu penses à te faire du mal, ou si tu es en danger, appelle maintenant. Quelqu’un répond, jour et nuit.":"Si piensas en hacerte daño, o estás en peligro, llama ahora. Alguien responde, día y noche.",
+  "Prévention du suicide · gratuit, 24 h/24":"Prevención del suicidio · gratuito, 24 h", "Écoute, 24 h/24, 7 j/7":"Escucha, 24 h, 7 días", "Si le danger est immédiat":"Si el peligro es inmediato",
+  "Ton professionnel référent a été prévenu. Il te lira sans rendez-vous. Pour tout de suite, ces numéros répondent.":"Tu profesional de referencia ha sido avisado. Te leerá sin cita. Para ahora mismo, estos números responden.",
+  "Pour que MIA et les accompagnants te répondent, il faut une clé Anthropic.":"Para que MIA y los acompañantes te respondan, hace falta una clave Anthropic.", "Ouvrir les réglages":"Abrir los ajustes", "Réessayer":"Reintentar",
+  "Quelques questions à choix, une minute. Tu t’arrêtes quand tu veux.":"Unas preguntas de opción, un minuto. Paras cuando quieras.", "Jouer":"Jugar", "Découvrir MAYND":"Descubrir MAYND",
+  "Tes cinq messages gratuits d’aujourd’hui sont utilisés. Ils reviennent demain.":"Tus cinco mensajes gratuitos de hoy están usados. Vuelven mañana.",
+  "La formule MAYND":"El plan MAYND", "Sans engagement. Tu arrêtes quand tu veux.":"Sin compromiso. Lo dejas cuando quieras.", "Les seize accompagnants, que MIA fait venir au bon moment":"Los dieciséis acompañantes, que MIA trae en el momento justo",
+  "Un professionnel référent certifié, humain, qui suit ton parcours et intervient sur signal":"Un profesional de referencia certificado, humano, que sigue tu recorrido e interviene con las señales", "La voix de chaque accompagnant":"La voz de cada acompañante", "700 messages par mois":"700 mensajes al mes",
+  "Carte bancaire":"Tarjeta bancaria", "Démonstration : aucun paiement réel n’est effectué.":"Demostración: no se realiza ningún pago real.", "Passer à MAYND":"Pasar a MAYND", "Rester en gratuit pour l’instant":"Seguir en gratuito por ahora", "Bienvenue dans MAYND.":"Bienvenido a MAYND.",
+  "Ton espace":"Tu espacio", "Modifier mon cap":"Cambiar mi rumbo", "Ton cap :":"Tu rumbo:", "Lui parler":"Hablarle", "Son jeu":"Su juego", "Sa voix":"Su voz", "Écouter sa voix":"Escuchar su voz", "Finir son jeu réveille sa voix.":"Terminar su juego despierta su voz.",
+  "Ce qu’il fait avec toi":"Lo que hace contigo", "Ce qu’elle fait avec toi":"Lo que hace contigo", "Quand":"Cuándo", "La faire venir":"Traerla", "Le faire venir":"Traerlo",
+  "Ce que MAYND a appris dans vos échanges":"Lo que MAYND ha aprendido en vuestras conversaciones", "Effacer":"Borrar", "Effacé. Cette ligne ne reviendra pas.":"Borrado. Esta línea no volverá.", "Si quelque chose sonne faux, corrige-le : c’est ta version qui compte.":"Si algo suena falso, corrígelo: tu versión es la que cuenta.",
+  "Ton compte":"Tu cuenta", "La clé":"La clave", "Clé API Anthropic":"Clave API Anthropic", "Elle reste sur cet appareil et sert à parler à MIA et aux accompagnants.":"Se queda en este dispositivo y sirve para hablar con MIA y los acompañantes.", "Reprendre la clé de MAYND":"Reutilizar la clave de MAYND",
+  "La voix":"La voz", "Lire les réponses à voix haute":"Leer las respuestas en voz alta", "Les accompagnants dont tu as réveillé la voix te répondent aussi à l’oral.":"Los acompañantes cuya voz has despertado también te responden en voz alta.", "Confidentialité":"Privacidad",
+  "Tes réponses et tes échanges restent sur cet appareil. Tu peux tout effacer.":"Tus respuestas y tus conversaciones se quedan en este dispositivo. Puedes borrarlo todo.", "Tout effacer et recommencer":"Borrarlo todo y empezar de cero", "Confirmer : tout effacer":"Confirmar: borrarlo todo",
+  "Démonstration":"Demostración", "Revenir au gratuit":"Volver a gratuito", "Clé enregistrée.":"Clave guardada.", "Clé retirée.":"Clave retirada.", "Tu es en formule gratuite.":"Estás en el plan gratuito.",
+  "Feuille de route":"Hoja de ruta", "Bilan":"Balance", "Signaux":"Señales", "Ses messages":"Sus mensajes", "Il lit ton parcours, ajuste ta feuille de route et t’écrit quand c’est utile. Tu n’as jamais de rendez-vous à prendre.":"Lee tu recorrido, ajusta tu hoja de ruta y te escribe cuando es útil. Nunca tienes que pedir cita.",
+  "En préparation. Elle part à la signature au début du mois.":"En preparación. Va a la firma a principios de mes.", "Le bilan se fait en fin de mois, à partir de ton compte-rendu, de tes pas et de tes échanges. Ta boussole te sera proposée juste avant.":"El balance se hace a final de mes, a partir de tu informe, tus pasos y tus conversaciones. Tu brújula se te propondrá justo antes.",
+  "Aucun signal pour l’instant. Il intervient en cas de stagnation, de blocage, de désalignement, ou pour consolider une progression.":"Ninguna señal por ahora. Interviene en caso de estancamiento, bloqueo, desalineación, o para consolidar un progreso.",
+  "Ton cap est posé.":"Tu rumbo está fijado.", "C’est noté. Un pas de plus.":"Anotado. Un paso más.", "D’accord. On en reparle dans deux jours.":"De acuerdo. Lo hablamos dentro de dos días.", "Fermer":"Cerrar", "Revenir en arrière":"Volver atrás"
+});
+REGLES.es.push(
+  [/^Bon retour, (.+)\.$/, 'Bienvenido de nuevo, $1.'], [/^Bon retour\.$/, 'Bienvenido de nuevo.'],
+  [/^On reprend où tu t'étais arrêtée? \?$/, '¿Retomamos donde lo dejaste?'],
+  [/^Tu en étais à la question (\d+) sur (\d+)\. Tout est gardé\.$/, 'Ibas por la pregunta $1 de $2. Todo queda guardado.'],
+  [/^(\d+) étapes, (\d+) questions, environ (\d+) minutes\. Il n’y a pas de bonne réponse\. Si une question ne te parle pas, « Autre » ou « Je ne sais pas » sont là\.$/, '$1 etapas, $2 preguntas, unos $3 minutos. No hay respuesta correcta. Si una pregunta no te dice nada, ahí están «Otro» o «No lo sé».'],
+  [/^Étape (\d+) sur (\d+)$/, 'Etapa $1 de $2'], [/^(\d+) questions? · (\d+) min$/, '$1 preguntas · $2 min'], [/^(.+) · (\d+) sur (\d+)$/, '$1 · $2 de $3'], [/^(\d+) sur (\d+)$/, '$1 de $2'],
+  [/^Plutôt : (.+)$/, 'Más bien: $1'], [/^Étape suivante : (.+)$/, 'Siguiente etapa: $1'],
+  [/^(.+), crée ton compte pour voir ton résultat\.$/, '$1, crea tu cuenta para ver tu resultado.'], [/^Crée ton compte pour voir ton résultat\.$/, 'Crea tu cuenta para ver tu resultado.'],
+  [/^(.+), tout ce que j’ai compris de toi\.$/, '$1, todo lo que he entendido de ti.'], [/^Tout ce que j’ai compris de toi\.$/, 'Todo lo que he entendido de ti.'],
+  [/^Tout est prêt(, .+)?\.$/, 'Todo está listo$1.'], [/^Ton cap : « (.+) »\.?$/, 'Tu rumbo: «$1».'], [/^Ton cap : (.+)$/, 'Tu rumbo: $1'],
+  [/^Bonjour, (.+)\.$/, 'Buenos días, $1.'], [/^Bonsoir, (.+)\.$/, 'Buenas tardes, $1.'], [/^Bonne nuit, (.+)\.$/, 'Buenas noches, $1.'],
+  [/^« (.+) »$/, '«$1»'],
+  [/^Noté : (.+)\. MIA en tiendra compte\.$/, 'Anotado: $1. MIA lo tendrá en cuenta.'],
+  [/^Proposé par (.+) · prévu (.+)$/, 'Propuesto por $1 · previsto $2'], [/^Ton pas · (.+)$/, 'Tu paso · $1'],
+  [/^MIA seule · (\d+) messages? restants? aujourd’hui$/, 'Solo MIA · $1 mensajes restantes hoy'], [/^(\d+) messages? restants? (ce mois-ci|aujourd’hui)\.?$/, '$1 mensajes restantes'],
+  [/^Écris à (.+)…$/, 'Escribe a $1…'], [/^(.+) rejoint la discussion\.$/, '$1 se une a la conversación.'],
+  [/^Signal transmis à ton professionnel référent : (.+)\.$/, 'Señal enviada a tu profesional de referencia: $1.'],
+  [/^(.+) fait partie de l’abonnement MAYND\.$/, '$1 forma parte de la suscripción MAYND.'], [/^Le jeu de (.+)$/, 'El juego de $1'],
+  [/^(.+), tout MAYND, sans limite\.$/, '$1, todo MAYND, sin límite.'], [/^Tout MAYND, sans limite\.$/, 'Todo MAYND, sin límite.'], [/^Confirmer · (\d+) € par mois$/, 'Confirmar · $1 € al mes'], [/^\/ mois$/, '/ mes'],
+  [/^À plus tard(, .+)?\.$/, 'Hasta luego$1.'], [/^Tu m’as dit que ton moment pour parler, c’est (.+)\. Reviens à ce moment-là, si tu veux\.$/, 'Me dijiste que tu momento para hablar es $1. Vuelve entonces, si quieres.'],
+  [/^A lu ton parcours (.+)\.$/, 'Ha leído tu recorrido $1.'], [/^Feuille de route de (.+) : en préparation\.$/, 'Hoja de ruta de $1: en preparación.'], [/^Bilan de (.+) : le (.+)\.$/, 'Balance de $1: el $2.'],
+  [/^Feuille de route · (.+)$/, 'Hoja de ruta · $1'], [/^Bilan · (.+)$/, 'Balance · $1'], [/^Garder le cap : (.+)$/, 'Mantener el rumbo: $1'], [/^Avancer avec (.+) sur (.+)\.$/, 'Avanzar con $1 en $2.'], [/^Rencontrer (.+), sur (.+)\.$/, 'Conocer a $1, en $2.'],
+  [/^Compte créé le (.+)\.$/, 'Cuenta creada el $1.'], [/^Formule : MAYND, (\d+) € par mois$/, 'Plan: MAYND, $1 € al mes'], [/^Formule : gratuite$/, 'Plan: gratuito'], [/^MIA seule, (\d+) messages par jour\.$/, 'Solo MIA, $1 mensajes al día.'],
+  [/^Ce que (.+) peut vraiment faire pour toi$/, 'Lo que $1 puede hacer de verdad por ti'], [/^(Il|Elle) dort\. MIA (le|la) fait venir quand c’est utile(.*)$/, 'Duerme. MIA le trae cuando es útil$3'], [/^, ou tu (le|la) réveilles par son jeu\.$/, ', o le despiertas con su juego.'],
+  [/^Un espace à toi, confidentiel\. Version (.+)$/, 'Un espacio tuyo, confidencial. Versión $1'],
+  /* dates (11-texte.js : dateLib, dateCourte, l'en-tête d'Aujourd'hui) */
+  [/^(lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche) (\d+) (janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre)$/, '$1 $2 de $3'],
+  [/^(\d+) (janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre)$/, '$1 de $2'],
+  /* le professionnel référent (34-professionnel.js) */
+  [/^Professionnel référent certifié · (.+)$/, 'Profesional de referencia certificado · $1'],
+  [/^· (.+) · il t’a écrit$/, '· $1 · te ha escrito'], [/^· (.+) · il te lit$/, '· $1 · te está leyendo'],
+  [/^Signée le (.+) par (.+)\.$/, 'Firmada el $1 por $2.'], [/^Relu et signé le (.+)\.$/, 'Releído y firmado el $1.'],
+  [/^(\d+) pas posés?, (\d+) faits?\.$/, '$1 pasos propuestos, $2 hechos.'],
+  /* le compte-rendu composé par l'application (20-parcours.js) */
+  [/^(.+), ton profil MAYND, c'est (.+)\.$/, '$1, tu perfil MAYND es $2.'], [/^Ton profil MAYND, c'est (.+)\.$/, 'Tu perfil MAYND es $1.'],
+  [/^Tes appuis : (.+)$/, 'Tus apoyos: $1'], [/^Tes points de vigilance : (.+)$/, 'Tus puntos de atención: $1'],
+  /* la discussion et la voix */
+  [/^(.+), j’ai lu tout ton parcours\.$/, '$1, he leído todo tu recorrido.'],
+  [/^(.+) n'a pas pu répondre à ce message\. Tu peux le dire autrement \?$/, '$1 no ha podido responder a este mensaje. ¿Puedes decirlo de otra forma?'],
+  [/^La voix de (.+) ne répond pas pour l’instant\.$/, 'La voz de $1 no responde por ahora.'], [/^La voix de (.+) dort encore\.$/, 'La voz de $1 aún duerme.'], [/^La voix de (.+) arrive bientôt\.$/, 'La voz de $1 llega pronto.']
+);
+
+REGLES_FIN.es.push([/^([^()]+) \((\d+) sur 10\)$/, '$1 ($2 sobre 10)']);
+
+/* ── dates et moments ── */
+Object.assign(DICOS.es, {
+  "lundi":"lunes", "mardi":"martes", "mercredi":"miércoles", "jeudi":"jueves", "vendredi":"viernes", "samedi":"sábado", "dimanche":"domingo",
+  "janvier":"enero", "février":"febrero", "mars":"marzo", "avril":"abril", "mai":"mayo", "juin":"junio", "juillet":"julio", "août":"agosto", "septembre":"septiembre", "octobre":"octubre", "novembre":"noviembre", "décembre":"diciembre",
+  "aujourd’hui":"hoy", "demain":"mañana", "hier":"ayer", "après-demain":"pasado mañana", "ce soir":"esta noche", "ce matin":"esta mañana", "cet après-midi":"esta tarde",
+  "cette semaine":"esta semana", "ce week-end":"este fin de semana", "la semaine prochaine":"la semana que viene", "maintenant":"ahora", "tout à l'heure":"más tarde",
+  "le matin":"por la mañana", "pendant tes pauses":"en tus pausas", "sur le trajet":"de camino", "le soir":"al anochecer", "la nuit":"de noche", "quand ça ne va pas":"cuando no vas bien", "n'importe quand":"en cualquier momento"
+});
+
+/* ── le compte-rendu composé par l'application : gabarits ({x} : le morceau capturé, traduit à son tour ; {n} : un nombre) ── */
+Object.assign(DICOS.es, {
+  "Tu as {x}.":"Tienes {x}.", "Dans la vie : {x}.":"En la vida: {x}.", "Chez toi : {x}.":"En casa: {x}.", "Ta période, en tes mots : « {x} ».":"Tu momento, en tus palabras: «{x}».",
+  "Ce qui occupe ta tête : {x}.":"Lo que ocupa tu cabeza: {x}.", "Ça dure : {x}.":"Dura: {x}.", "Dans tes mots : « {x} ».":"En tus palabras: «{x}».",
+  "Ce qui te fait avancer : {x}.":"Lo que te hace avanzar: {x}.", "Ton meilleur moment : {x}.":"Tu mejor momento: {x}.", "Sous pression : {x}.":"Bajo presión: {x}.",
+  "Après un échec, ta première pensée : « {x} ».":"Tras un fracaso, tu primer pensamiento: «{x}».", "Dans un désaccord : {x}.":"En un desacuerdo: {x}.",
+  "Pour retrouver ton calme après une émotion forte : {x}.":"Para recuperar la calma tras una emoción fuerte: {x}.", "Quand ça va mal : {x}.":"Cuando va mal: {x}.",
+  "Ce qui compte le plus pour toi : {x}.":"Lo que más cuenta para ti: {x}.", "Ce qui t'apaise : {x}.":"Lo que te calma: {x}.", "Ce dont tu es {fier|fière} : « {x} ».":"De lo que estás {orgulloso|orgullosa}: «{x}».",
+  "Si tout allait mieux dans 6 mois, le premier changement serait : « {x} ».":"Si todo fuera mejor dentro de 6 meses, el primer cambio sería: «{x}».",
+  "Ce que tu ne veux plus vivre : « {x} ».":"Lo que no quieres volver a vivir: «{x}».", "Tu dors {x} par nuit.":"Duermes {x} por noche.", "Au réveil : {x}.":"Al despertar: {x}.",
+  "Ton énergie dans la journée : {n} sur 10.":"Tu energía durante el día: {n} sobre 10.", "Bouger : {x}.":"Moverte: {x}.", "Ton cap : « {x} ».":"Tu rumbo: «{x}».",
+  "Pourquoi maintenant : « {x} ».":"Por qué ahora: «{x}».", "Tu sauras que ça avance quand : « {x} ».":"Sabrás que avanza cuando: «{x}».",
+  "Tu es {prêt|prête} à t'y mettre à {n} sur 10.":"Estás {listo|lista} para empezar a {n} sobre 10.",
+  "Ce qui tient le mieux : {x}.":"Lo que mejor se sostiene: {x}.", "Ce qui est le plus bas : {x}.":"Lo más bajo: {x}.", "Sur ta boussole, ce qui tient le mieux : {x}.":"En tu brújula, lo que mejor se sostiene: {x}.",
+  "En moyenne, ta boussole est à {x} sur 10.":"De media, tu brújula está en {x} sobre 10.", "Ce qui prend le plus de place : {x}.":"Lo que más espacio ocupa: {x}.",
+  "Tu sais ce qui compte pour toi : {x}.":"Sabes lo que cuenta para ti: {x}.", "C'est une boussole solide.":"Es una brújula sólida.",
+  "Tu es {prêt|prête} à t'y mettre ({n} sur 10) : c'est le meilleur point de départ.":"Estás {listo|lista} para empezar ({n} sobre 10): es el mejor punto de partida.",
+  "Tu as des fiertés concrètes : « {x} ».":"Tienes orgullos concretos: «{x}».", "Tu peux t'appuyer sur ce qui tient : {x}.":"Puedes apoyarte en lo que se sostiene: {x}.",
+  "Tu as pris le temps de répondre à {n} questions sur toi : c'est déjà un appui.":"Te has tomado el tiempo de responder {n} preguntas sobre ti: eso ya es un apoyo.",
+  "Ce qui est le plus bas en ce moment : {x}.":"Lo más bajo ahora mismo: {x}.", "Profil {x}.":"Perfil: {x}.", "Cap : « {x} ».":"Rumbo: «{x}».",
+  "Accompagnants rencontrés : {x}.":"Acompañantes conocidos: {x}.", "Pas encore d’accompagnant rencontré.":"Aún no has conocido a ningún acompañante.", "Poser un premier cap avec MIA.":"Fijar un primer rumbo con MIA.",
+  "Tu n'as pas encore répondu à cette partie.":"Aún no has respondido a esta parte."
+});
+
+/* ── le compte-rendu composé par l'application : les phrases des réponses (r, dits), les compléments (c), les croisements ── */
+Object.assign(DICOS.es, {
+  "Tu étudies ou tu es en formation.":"Estudias o estás en formación.", "Tu travailles sur le terrain.":"Trabajas a pie de obra.", "Tu travailles dans un bureau.":"Trabajas en una oficina.",
+  "Ton métier, c'est de t'occuper des autres.":"Tu trabajo es cuidar de otros.", "Tu es à ton compte.":"Trabajas por tu cuenta.", "Tu cherches un emploi.":"Buscas trabajo.",
+  "Tu t'occupes de ta famille à plein temps.":"Te ocupas de tu familia a tiempo completo.", "Tu es à la retraite.":"Estás {jubilado|jubilada}.", "Le sport est ton métier, ou presque.":"El deporte es tu trabajo, o casi.",
+  "Tu vis {seul|seule}.":"Vives {solo|sola}.", "Tu vis en couple.":"Vives en pareja.", "Tu vis en couple, avec des enfants.":"Vives en pareja, con hijos.",
+  "Tu vis {seul|seule} avec tes enfants.":"Vives {solo|sola} con tus hijos.", "Tu vis chez tes parents.":"Vives con tus padres.", "Tu vis en colocation.":"Vives en un piso compartido.", "Ton foyer change souvent.":"Tu hogar cambia a menudo.",
+  "En ce moment, ça va plutôt bien.":"Ahora mismo, vas bastante bien.", "En ce moment, ça va, et tu veux aller plus loin.":"Ahora mismo vas bien, y quieres ir más lejos.",
+  "En ce moment, tu tiens bon, mais c'est lourd.":"Ahora mismo aguantas, pero pesa.", "Tu traverses un moment difficile.":"Pasas por un momento difícil.", "Tu es en pleine transition.":"Estás en plena transición.",
+  "Tu te sens {perdu|perdue}, sans trop savoir pourquoi.":"Te sientes {perdido|perdida}, sin saber muy bien por qué.", "Tu as du mal à dire où tu en es.":"Te cuesta decir dónde estás.", "C'est une réponse aussi.":"También es una respuesta.",
+  "Ça dure depuis moins de 2 semaines.":"Dura desde hace menos de 2 semanas.", "Ça dure depuis plus de 2 semaines, moins de 3 mois.":"Dura desde hace más de 2 semanas, menos de 3 meses.",
+  "Ça dure depuis plus de 3 mois, moins d'1 an.":"Dura desde hace más de 3 meses, menos de 1 año.", "Ça dure depuis plus d'1 an, moins de 5 ans.":"Dura desde hace más de 1 año, menos de 5 años.",
+  "C'est là depuis toujours, ou presque.":"Está ahí desde siempre, o casi.", "Ce n'est pas un problème : c'est une envie d'avancer.":"No es un problema: son ganas de avanzar.",
+  "Voir du monde te recharge vraiment.":"Ver gente te recarga de verdad.", "Tu te recharges plutôt avec les autres.":"Te recargas más bien con los demás.", "Tu te recharges autant avec les autres que {seul|seule}.":"Te recargas tanto con los demás como {solo|sola}.",
+  "Tu te recharges plutôt {seul|seule}.":"Te recargas más bien {solo|sola}.", "Tu as besoin d'être {seul|seule} pour te recharger.":"Necesitas estar {solo|sola} para recargarte.",
+  "Tu planifies tout avant d'avancer.":"Lo planificas todo antes de avanzar.", "Tu prépares plutôt avant d'avancer.":"Más bien preparas antes de avanzar.", "Tu prépares un peu, puis tu avances.":"Preparas un poco y luego avanzas.",
+  "Tu avances plutôt à l'instinct.":"Avanzas más bien por instinto.", "Tu avances à l'instinct, sans trop planifier.":"Avanzas por instinto, sin planificar mucho.",
+  "Pour décider, tu analyses tout.":"Para decidir, lo analizas todo.", "Pour décider, tu analyses plutôt.":"Para decidir, más bien analizas.", "Pour décider, tu mêles analyse et ressenti.":"Para decidir, mezclas análisis e intuición.",
+  "Pour décider, tu te fies plutôt à ton ressenti.":"Para decidir, confías más bien en lo que sientes.", "Pour décider, tu suis ton ressenti.":"Para decidir, sigues lo que sientes.",
+  "La nouveauté te stimule vraiment.":"La novedad te estimula de verdad.", "La nouveauté te stimule plutôt.":"La novedad más bien te estimula.", "La nouveauté te va, à petite dose.":"La novedad te va bien, en pequeñas dosis.",
+  "La nouveauté te demande un temps d'adaptation.":"La novedad te pide un tiempo de adaptación.", "La nouveauté te demande beaucoup de temps pour t'adapter.":"La novedad te pide mucho tiempo para adaptarte.",
+  "Tu es {indulgent|indulgente} avec toi-même.":"Eres indulgente contigo {mismo|misma}.", "Tu es plutôt {indulgent|indulgente} avec toi-même.":"Eres más bien indulgente contigo {mismo|misma}.", "Ton exigence envers toi est mesurée.":"Tu exigencia contigo es mesurada.",
+  "Tu es {exigeant|exigeante} avec toi-même.":"Eres exigente contigo {mismo|misma}.", "Tu es très {exigeant|exigeante} avec toi-même.":"Eres muy exigente contigo {mismo|misma}.",
+  "Tes émotions se voient tout de suite.":"Tus emociones se ven enseguida.", "Tes émotions se voient plutôt vite.":"Tus emociones se ven bastante rápido.", "Tes émotions se voient parfois.":"Tus emociones se ven a veces.",
+  "Tu gardes plutôt tes émotions pour toi.":"Más bien te guardas las emociones.", "Tu gardes tes émotions pour toi.":"Te guardas las emociones.",
+  "Ce qui te fait avancer : faire plaisir à ceux que tu aimes.":"Lo que te hace avanzar: hacer feliz a quienes quieres.", "Ce qui te fait avancer : te sentir libre.":"Lo que te hace avanzar: sentirte libre.",
+  "Ce qui te fait avancer : te sentir en paix.":"Lo que te hace avanzar: sentirte en paz.", "Ce qui te fait avancer : gagner ta vie, être en sécurité.":"Lo que te hace avanzar: ganarte la vida, estar {seguro|segura}.",
+  "Tu ne sais pas encore bien ce qui te fait avancer.":"Aún no sabes bien qué te hace avanzar.", "Ton meilleur moment change tout le temps.":"Tu mejor momento cambia todo el tiempo.",
+  "Sous pression, tu accélères et tu en fais plus.":"Bajo presión, aceleras y haces más.", "Sous pression, tu t'organises.":"Bajo presión, te organizas.", "Sous pression, tu analyses la situation.":"Bajo presión, analizas la situación.",
+  "Sous pression, tu en parles à quelqu'un.":"Bajo presión, hablas con alguien.", "Sous pression, tu t'énerves vite.":"Bajo presión, te enfadas rápido.", "Sous pression, tu te replies sur toi.":"Bajo presión, te replegas en ti.",
+  "Sous pression, tu te figes.":"Bajo presión, te quedas {paralizado|paralizada}.", "Sous pression, tu te changes les idées.":"Bajo presión, te distraes.", "Sous pression, tu remets à plus tard.":"Bajo presión, lo dejas para después.",
+  "Sous pression, tu respires et tu prends du recul.":"Bajo presión, respiras y tomas distancia.",
+  "Après un échec, ta première pensée : « Qu'est-ce que je peux en tirer ? »":"Tras un fracaso, tu primer pensamiento: «¿Qué puedo sacar de esto?»",
+  "Après un échec, ta première pensée : « Je suis {nul|nulle}. »":"Tras un fracaso, tu primer pensamiento: «Soy un desastre.»",
+  "Après un échec, ta première pensée : « Ce n'est pas de ma faute. »":"Tras un fracaso, tu primer pensamiento: «No es culpa mía.»",
+  "Après un échec, ta première pensée : « On passe à autre chose. »":"Tras un fracaso, tu primer pensamiento: «Pasemos a otra cosa.»",
+  "Après un échec, ta première pensée : « Je recommence tout de suite. »":"Tras un fracaso, tu primer pensamiento: «Lo intento de nuevo enseguida.»",
+  "Après un échec, ta première pensée : « J'ai besoin d'en parler. »":"Tras un fracaso, tu primer pensamiento: «Necesito hablarlo.»",
+  "Après un échec, ta première pensée : « J'ai besoin d'être {seul|seule} un moment. »":"Tras un fracaso, tu primer pensamiento: «Necesito estar {solo|sola} un momento.»",
+  "Après un échec, ta première pensée : « Je le savais, ça ne marche jamais pour moi. »":"Tras un fracaso, tu primer pensamiento: «Lo sabía, nunca me funciona.»",
+  "Ta réaction à un échec dépend vraiment de l'échec.":"Tu reacción ante un fracaso depende mucho del fracaso.",
+  "Dans un désaccord, tu dis les choses tout de suite.":"En un desacuerdo, dices las cosas enseguida.", "Dans un désaccord, tu attends que ça retombe, puis tu en reparles.":"En un desacuerdo, esperas a que se calme y luego lo hablas.",
+  "Dans un désaccord, tu cherches un terrain d'entente.":"En un desacuerdo, buscas un punto en común.", "Dans un désaccord, tu évites le sujet.":"En un desacuerdo, evitas el tema.",
+  "Dans un désaccord, tu cèdes pour avoir la paix.":"En un desacuerdo, cedes para tener paz.", "Dans un désaccord, tu t'emportes, puis tu regrettes.":"En un desacuerdo, te enfadas y luego te arrepientes.",
+  "Dans un désaccord, tu te fermes et tu ne dis plus rien.":"En un desacuerdo, te cierras y no dices nada más.", "Dans un désaccord, ta réaction dépend de la personne en face.":"En un desacuerdo, tu reacción depende de quién tengas delante.",
+  "Le temps qu'il te faut pour retrouver ton calme dépend de l'émotion.":"El tiempo que necesitas para recuperar la calma depende de la emoción.",
+  "Un compliment te fait plaisir, et tu le prends.":"Un cumplido te alegra, y lo aceptas.", "Un compliment te donne de l'élan.":"Un cumplido te da impulso.",
+  "Quand on te complimente, tu dis merci, mais tu n'y crois pas trop.":"Cuando te hacen un cumplido, das las gracias, pero no te lo crees mucho.", "Tu minimises les compliments.":"Les quitas importancia a los cumplidos.",
+  "Un compliment te gêne : tu changes de sujet.":"Un cumplido te incomoda: cambias de tema.", "Tu te méfies un peu des compliments.":"Desconfías un poco de los cumplidos.",
+  "Un compliment te laisse sans savoir quoi en faire.":"Un cumplido te deja sin saber qué hacer con él.",
+  "Quand ça va mal, tu te tournes vers un proche.":"Cuando va mal, recurres a alguien cercano.", "Quand ça va mal, tu te tournes vers ton ou ta partenaire.":"Cuando va mal, recurres a tu pareja.",
+  "Quand ça va mal, tu gères {seul|seule}.":"Cuando va mal, lo gestionas {solo|sola}.", "Quand ça va mal, tu te tournes vers une activité.":"Cuando va mal, recurres a una actividad.",
+  "Quand ça va mal, tu vas dehors, dans la nature.":"Cuando va mal, sales fuera, a la naturaleza.", "Quand ça va mal, tu cherches ce qui fait du bien sur le moment.":"Cuando va mal, buscas lo que sienta bien en el momento.",
+  "Quand ça va mal, tu te tournes vers les écrans.":"Cuando va mal, recurres a las pantallas.", "Quand ça va mal, tu te tournes vers la prière, la méditation ou la spiritualité.":"Cuando va mal, recurres a la oración, la meditación o la espiritualidad.",
+  "Quand ça va mal, tu ne sais pas trop vers quoi te tourner.":"Cuando va mal, no sabes muy bien a qué recurrir.",
+  "Un imprévu te déstabilise beaucoup.":"Un imprevisto te desestabiliza mucho.", "Un imprévu te déstabilise plutôt.":"Un imprevisto más bien te desestabiliza.", "Un imprévu te bouscule, puis tu t'adaptes.":"Un imprevisto te sacude, y luego te adaptas.",
+  "Tu t'adaptes plutôt vite à l'imprévu.":"Te adaptas bastante rápido a los imprevistos.", "Tu t'adaptes très vite à l'imprévu.":"Te adaptas muy rápido a los imprevistos.",
+  "Tes horaires de sommeil changent souvent.":"Tus horarios de sueño cambian a menudo.", "Au réveil, tu te sens {reposé|reposée}.":"Al despertar, te sientes {descansado|descansada}.", "Au réveil, tu es plutôt en forme.":"Al despertar, estás bastante bien.",
+  "Au réveil, ça dépend des jours.":"Al despertar, depende del día.", "Au réveil, tu te sens {fatigué|fatiguée}.":"Al despertar, te sientes {cansado|cansada}.", "Au réveil, tu te sens {épuisé|épuisée}.":"Al despertar, te sientes {agotado|agotada}.",
+  "Tu te réveilles plusieurs fois la nuit.":"Te despiertas varias veces por la noche.",
+  "Bouger, pour toi, c'est un plaisir.":"Moverte, para ti, es un placer.", "Bouger, c'est ton métier ou ta passion.":"Moverte es tu trabajo o tu pasión.", "Bouger, pour toi, c'est une obligation.":"Moverte, para ti, es una obligación.",
+  "Tu aimerais bouger plus.":"Te gustaría moverte más.", "Bouger est difficile pour toi en ce moment.":"Moverte te resulta difícil ahora mismo.", "Bouger, ce n'est pas pour toi.":"Moverte no es para ti.",
+  "Le soir, tu décroches facilement des écrans.":"Por la noche, te desenganchas fácilmente de las pantallas.", "Le soir, tu fais défiler plus longtemps que prévu.":"Por la noche, sigues deslizando más tiempo del previsto.",
+  "Tu t'endors avec les écrans.":"Te duermes con las pantallas.", "Tu travailles sur écran tard le soir.":"Trabajas con pantallas hasta tarde por la noche.", "Le soir, tu joues en ligne.":"Por la noche, juegas en línea.", "Le soir, tu utilises peu les écrans.":"Por la noche, usas poco las pantallas.",
+  "Tout ça est nouveau pour toi : MIA parlera simplement, sans jargon.":"Todo esto es nuevo para ti: MIA hablará con sencillez, sin jerga.", "Tu as déjà lu ou écouté des choses sur ces sujets.":"Ya has leído o escuchado cosas sobre estos temas.",
+  "Tu t'intéresses à ces sujets depuis longtemps : MIA pourra aller plus loin, avec des outils précis.":"Te interesan estos temas desde hace tiempo: MIA podrá ir más lejos, con herramientas precisas.",
+  "Tu as déjà été {accompagné|accompagnée} : tu sais ce que ça demande.":"Ya te ha acompañado un profesional: sabes lo que exige.",
+  "Tu n'y crois pas trop, mais tu es là pour essayer : MIA devra faire ses preuves.":"No te lo crees mucho, pero estás aquí para probar: MIA tendrá que demostrarlo.",
+  "Tu te méfies des applications comme celle-ci.":"Desconfías de las aplicaciones como esta.", "MIA ne te demandera jamais plus que ce que tu veux bien dire.":"MIA nunca te pedirá más de lo que quieras contar.",
+  "MIA te dira les choses en douceur.":"MIA te dirá las cosas con suavidad.", "MIA te dira les choses plutôt en douceur.":"MIA te dirá las cosas más bien con suavidad.", "MIA te dira les choses avec tact, sans tourner autour.":"MIA te dirá las cosas con tacto, sin rodeos.",
+  "MIA te dira les choses plutôt sans détour.":"MIA te dirá las cosas más bien sin rodeos.", "MIA te dira les choses sans détour.":"MIA te dirá las cosas sin rodeos.",
+  "Ses réponses iront à l'essentiel, en une ou deux phrases.":"Sus respuestas irán a lo esencial, en una o dos frases.", "Ses réponses seront courtes et nettes.":"Sus respuestas serán cortas y claras.",
+  "Ses réponses seront de longueur moyenne.":"Sus respuestas serán de longitud media.", "Ses réponses se développeront quand il le faut.":"Sus respuestas se extenderán cuando haga falta.", "La longueur de ses réponses suivra le moment.":"La longitud de sus respuestas seguirá el momento.",
+  "Elle t'aidera par des questions, pour réfléchir.":"Te ayudará con preguntas, para reflexionar.", "Elle t'aidera plutôt par des questions.":"Te ayudará más bien con preguntas.", "Elle mêlera questions et pistes concrètes.":"Mezclará preguntas y pistas concretas.",
+  "Elle te proposera plutôt des pistes concrètes.":"Te propondrá más bien pistas concretas.", "Elle te proposera des pistes concrètes, vite.":"Te propondrá pistas concretas, rápido.",
+  "Elle pourra glisser de l'humour.":"Podrá colar algo de humor.", "Elle gardera l'humour pour les bons moments, avec tact.":"Guardará el humor para los buenos momentos, con tacto.", "Elle attendra que ça aille mieux pour l'humour.":"Esperará a que vaya mejor para el humor.", "Elle n'utilisera pas d'humour.":"No usará el humor.",
+  "Si tu n'as pas fait ce que tu avais prévu, elle te relancera franchement.":"Si no has hecho lo que tenías previsto, te lo recordará con franqueza.", "Si tu n'as pas fait ce que tu avais prévu, elle te le rappellera doucement.":"Si no has hecho lo que tenías previsto, te lo recordará con suavidad.",
+  "Si tu n'as pas fait ce que tu avais prévu, elle te demandera ce qui a bloqué.":"Si no has hecho lo que tenías previsto, te preguntará qué te bloqueó.", "Si tu n'as pas fait ce que tu avais prévu, elle te proposera un pas plus petit.":"Si no has hecho lo que tenías previsto, te propondrá un paso más pequeño.",
+  "Elle ne parlera d'un pas non fait que si tu en parles.":"Solo hablará de un paso no hecho si tú lo mencionas.",
+  "Ton moment pour parler avec MIA : le matin.":"Tu momento para hablar con MIA: por la mañana.", "Ton moment pour parler avec MIA : pendant tes pauses.":"Tu momento para hablar con MIA: en tus pausas.", "Ton moment pour parler avec MIA : sur le trajet.":"Tu momento para hablar con MIA: de camino.",
+  "Ton moment pour parler avec MIA : le soir.":"Tu momento para hablar con MIA: al anochecer.", "Ton moment pour parler avec MIA : la nuit.":"Tu momento para hablar con MIA: de noche.", "Tu aimerais parler avec MIA quand ça ne va pas.":"Te gustaría hablar con MIA cuando no vas bien.", "Tu parleras avec MIA n'importe quand.":"Hablarás con MIA en cualquier momento.",
+  /* compléments des choix multiples */
+  "te sentir mieux":"sentirte mejor", "mieux te connaître":"conocerte mejor", "ta confiance en toi":"tu confianza en ti", "la voix critique dans ta tête":"la voz crítica en tu cabeza", "ta motivation et tes habitudes":"tu motivación y tus hábitos",
+  "ton organisation et ton temps":"tu organización y tu tiempo", "le stress qui monte":"el estrés que sube", "ton sommeil":"tu sueño", "une émotion lourde ou une perte":"una emoción pesada o una pérdida", "le sens de ce que tu vis":"el sentido de lo que vives",
+  "une décision importante":"una decisión importante", "ton travail ou tes études":"tu trabajo o tus estudios", "ton couple et ta vie amoureuse":"tu pareja y tu vida amorosa", "ta famille et tes proches":"tu familia y tus seres queridos", "ton rôle de parent":"tu papel de madre o padre",
+  "te sentir {seul|seule}":"sentirte {solo|sola}", "dire les choses et poser tes limites":"decir las cosas y poner tus límites", "la performance et la préparation mentale":"el rendimiento y la preparación mental", "ta sexualité et ton intimité":"tu sexualidad y tu intimidad", "l'argent":"el dinero",
+  "un comportement qui prend trop de place":"un hábito que ocupa demasiado espacio", "ton rapport à ton corps":"tu relación con tu cuerpo", "la foi":"la fe", "prendre l'air":"tomar el aire", "bouger":"moverte", "les gens que tu aimes":"la gente que quieres",
+  "créer de tes mains":"crear con tus manos", "te reposer":"descansar", "un film ou une série":"una película o una serie", "prier ou méditer":"rezar o meditar", "respirer et te poser":"respirar y pararte", "jouer":"jugar",
+  /* croisements, appuis et points de vigilance */
+  "Tu avances avec méthode : tu prépares, tu analyses, puis tu décides.":"Avanzas con método: preparas, analizas y luego decides.", "Tu fonctionnes à l'instinct, et tu le sais.":"Funcionas por instinto, y lo sabes.",
+  "Tu demandes beaucoup à toi-même, souvent sans le montrer.":"Te exiges mucho, a menudo sin mostrarlo.", "Ton exigence envers toi rend tes échecs lourds à porter.":"Tu exigencia contigo hace que tus fracasos pesen mucho.",
+  "Tu as tendance à te faire {petit|petite}, dans les désaccords comme face aux compliments.":"Tiendes a hacerte {pequeño|pequeña}, tanto en los desacuerdos como ante los cumplidos.",
+  "Tes nuits sont courtes et ton réveil est difficile : ton sommeil est sans doute la première chose à regarder.":"Tus noches son cortas y despertar te cuesta: tu sueño es seguramente lo primero que mirar.",
+  "Les écrans du soir prennent sur ton temps de sommeil.":"Las pantallas de la noche le quitan tiempo a tu sueño.", "Quand ça va mal, tu sais te tourner vers les autres.":"Cuando va mal, sabes recurrir a los demás.",
+  "Sous pression, tu gardes la tête froide.":"Bajo presión, mantienes la cabeza fría.", "Tu t'adaptes vite à l'imprévu.":"Te adaptas rápido a los imprevistos.", "Tu fais de tes échecs des leçons.":"Conviertes tus fracasos en lecciones.",
+  "Tu es très {exigeant|exigeante} avec toi-même, et ton dialogue intérieur peut être dur.":"Eres muy exigente contigo {mismo|misma}, y tu diálogo interior puede ser duro.",
+  "Tu gères souvent {seul|seule} : demander de l'aide pourrait changer beaucoup.":"A menudo lo gestionas {solo|sola}: pedir ayuda podría cambiar mucho.", "Dans les désaccords, tu as tendance à t'effacer.":"En los desacuerdos, tiendes a borrarte.",
+  "Une émotion forte te reste longtemps.":"Una emoción fuerte se te queda mucho tiempo.", "Ton sommeil ne te recharge pas assez.":"Tu sueño no te recarga lo suficiente.", "Les écrans du soir grignotent ton repos.":"Las pantallas de la noche se comen tu descanso.",
+  "Quand la pression monte, tu repousses.":"Cuando sube la presión, lo aplazas.", "Tu gardes beaucoup pour toi.":"Te guardas mucho para ti.",
+  "Rien ne ressort nettement.":"Nada destaca con claridad.", "MIA restera attentive à ce que tu lui diras.":"MIA estará atenta a lo que le cuentes."
+});
+
+/* ── les fiches des accompagnants (AGENT_INFO) ── */
+Object.assign(DICOS.es, {
+  "Elle répond toujours en premier, comprend ta situation, et n'appelle un accompagnant que si ça t'apporte vraiment quelque chose.":"Siempre responde primero, entiende tu situación y solo llama a un acompañante si de verdad te aporta algo.",
+  "Comprendre ce que tu vis avant de proposer quoi que ce soit":"Entender lo que vives antes de proponer nada", "Te répondre directement quand ta question ne demande pas de spécialiste":"Responderte directamente cuando tu pregunta no necesita un especialista",
+  "Faire venir le bon accompagnant au bon moment":"Traer al acompañante adecuado en el momento justo", "Garder le fil de ton parcours d'une fois sur l'autre":"Mantener el hilo de tu recorrido de una vez a otra",
+  "Tu ne sais pas par où commencer":"No sabes por dónde empezar", "Ta situation touche plusieurs sujets à la fois":"Tu situación toca varios temas a la vez", "Tu veux simplement parler à quelqu'un":"Simplemente quieres hablar con alguien",
+  "Il tient le cadre quand la motivation retombe. Direct, jamais complaisant.":"Mantiene el marco cuando la motivación cae. Directo, nunca complaciente.",
+  "Poser un cadre simple et tenable":"Poner un marco sencillo y sostenible", "Démonter les excuses sans te juger":"Desmontar las excusas sin juzgarte", "Découper un objectif flou en gestes concrets":"Dividir un objetivo difuso en gestos concretos", "Te tenir sur la durée, pas seulement les premiers jours":"Sostenerte en el tiempo, no solo los primeros días",
+  "Tu commences puis tu abandonnes":"Empiezas y luego abandonas", "Tu repousses toujours la même chose":"Aplazas siempre lo mismo", "Tu veux installer une habitude qui tient":"Quieres instalar un hábito que dure",
+  "Il s'occupe de ce que tu te racontes quand personne n'écoute.":"Se ocupa de lo que te cuentas cuando nadie escucha.",
+  "Repérer les phrases dures que tu te répètes":"Detectar las frases duras que te repites", "Distinguer un fait d'une interprétation":"Distinguir un hecho de una interpretación", "Reconstruire une estime qui ne dépend pas des résultats":"Reconstruir una autoestima que no dependa de los resultados", "Préparer les moments où tu doutes":"Preparar los momentos en que dudas",
+  "Tu es plus dur avec toi qu'avec les autres":"Eres más duro contigo que con los demás", "Tu doutes avant chaque décision":"Dudas antes de cada decisión", "Une critique te démonte":"Una crítica te hunde",
+  "Il travaille la question du dessous : qui tu es, et vers quoi tu vas.":"Trabaja la pregunta de fondo: quién eres y hacia dónde vas.",
+  "Clarifier ce qui compte vraiment pour toi":"Aclarar lo que de verdad cuenta para ti", "Relier tes choix à tes valeurs":"Unir tus decisiones a tus valores", "Nommer ce que tu cherches quand tout est flou":"Nombrar lo que buscas cuando todo es difuso", "T'aider à trancher quand deux directions se valent":"Ayudarte a decidir cuando dos direcciones valen lo mismo",
+  "Tu avances sans savoir pourquoi":"Avanzas sin saber por qué", "Tu as réussi et ça sonne creux":"Has tenido éxito y suena hueco", "Tu es à un tournant":"Estás en un punto de inflexión",
+  "Elle accueille ce qui te traverse, sans étape à suivre ni calendrier à respecter.":"Acoge lo que te atraviesa, sin etapas que seguir ni calendario que cumplir.",
+  "Mettre des mots sur ce que tu ressens":"Poner palabras a lo que sientes", "Faire de la place à la peine sans la précipiter":"Hacer sitio a la pena sin precipitarla", "Traverser une perte à ton rythme":"Atravesar una pérdida a tu ritmo", "Reconnaître une émotion avant qu'elle déborde":"Reconocer una emoción antes de que desborde",
+  "Tu as perdu quelqu'un ou quelque chose":"Has perdido a alguien o algo", "Tu ne comprends pas ce que tu ressens":"No entiendes lo que sientes", "Tu gardes tout à l'intérieur":"Te lo guardas todo dentro",
+  "Il travaille avec toi, sur ta part du lien. Jamais sur le dos de l'autre.":"Trabaja contigo, en tu parte del vínculo. Nunca a costa de la otra persona.",
+  "Comprendre ta façon de t'attacher":"Entender tu forma de vincularte", "Repérer les schémas qui reviennent":"Detectar los patrones que se repiten", "Préparer une conversation difficile":"Preparar una conversación difícil", "Distinguer ce qui t'appartient de ce qui ne t'appartient pas":"Distinguir lo que es tuyo de lo que no lo es",
+  "La même dispute revient sans cesse":"La misma discusión vuelve sin parar", "Tu ne sais plus quoi dire":"Ya no sabes qué decir", "Tu veux comprendre ta place dans le lien":"Quieres entender tu lugar en el vínculo",
+  "Il t'aide à dire les choses clairement, sans t'écraser ni écraser l'autre.":"Te ayuda a decir las cosas con claridad, sin aplastarte ni aplastar a la otra persona.",
+  "Formuler une demande claire":"Formular una petición clara", "Poser une limite sans agressivité":"Poner un límite sin agresividad", "Préparer un échange qui te stresse":"Preparar una conversación que te estresa", "Dire non sans te justifier pendant dix minutes":"Decir no sin justificarte durante diez minutos",
+  "Tu n'oses pas demander":"No te atreves a pedir", "Tu dis oui puis tu regrettes":"Dices sí y luego te arrepientes", "Tu prépares une conversation tendue":"Preparas una conversación tensa",
+  "Il construit une pratique qui tient dans le temps. Jamais de dépassement à tout prix.":"Construye una práctica que dura en el tiempo. Nunca superarse a cualquier precio.",
+  "Installer une régularité réaliste":"Instalar una regularidad realista", "Préparer la tête autant que le corps":"Preparar la cabeza tanto como el cuerpo", "Gérer la baisse de motivation et les coups d'arrêt":"Gestionar la bajada de motivación y los frenazos", "Revenir après une pause sans culpabilité":"Volver después de una pausa sin culpa",
+  "Tu repars de zéro tous les mois":"Vuelves a empezar de cero cada mes", "La performance tourne à l'obsession":"El rendimiento se vuelve obsesión", "Tu veux progresser sans te cramer":"Quieres progresar sin quemarte",
+  "Il s'occupe de tes nuits, et de tout ce qui les empêche.":"Se ocupa de tus noches, y de todo lo que las impide.",
+  "Comprendre ce qui coupe ton sommeil":"Entender lo que corta tu sueño", "Poser un rituel de fin de journée":"Poner un ritual de fin de día", "Calmer le mental qui tourne au coucher":"Calmar la mente que da vueltas al acostarte", "Retrouver un rythme sur plusieurs semaines":"Recuperar un ritmo a lo largo de varias semanas",
+  "Tu mets une heure à t'endormir":"Tardas una hora en dormirte", "Tu te réveilles la nuit":"Te despiertas por la noche", "Tu es fatigué dès le réveil":"Estás cansado desde que despiertas",
+  "Il fait redescendre la pression, sur le moment comme sur la durée.":"Hace bajar la presión, en el momento y a lo largo del tiempo.",
+  "Des exercices de respiration guidés":"Ejercicios de respiración guiados", "Comprendre ce qui déclenche la montée":"Entender lo que desencadena la subida", "Préparer les situations qui t'angoissent":"Preparar las situaciones que te angustian", "Reprendre pied quand ça monte":"Recuperar pie cuando sube",
+  "Ton coeur s'emballe":"Tu corazón se dispara", "Tu anticipes le pire":"Anticipas lo peor", "Tu as un moment stressant devant toi":"Tienes un momento estresante por delante",
+  "Il t'aide à avancer sur ce qui compte, sans y laisser ta santé.":"Te ayuda a avanzar en lo que cuenta, sin dejarte la salud.",
+  "Trier l'essentiel de l'urgent":"Separar lo esencial de lo urgente", "Préparer une décision de carrière":"Preparar una decisión de carrera", "Repérer les signes d'épuisement":"Detectar las señales de agotamiento", "Poser des limites au travail":"Poner límites en el trabajo",
+  "Tu cours sans avancer":"Corres sin avanzar", "Tu hésites à changer de poste":"Dudas si cambiar de puesto", "Tu n'arrives plus à décrocher":"Ya no consigues desconectar",
+  "Il accompagne le fait de devenir parent, et de le rester au quotidien.":"Acompaña el hecho de convertirse en madre o padre, y de seguir siéndolo cada día.",
+  "Traverser les périodes qui usent":"Atravesar las etapas que desgastan", "Garder un lien avec l'autre parent, même quand c'est tendu":"Mantener el vínculo con el otro progenitor, incluso cuando hay tensión", "Poser un cadre sans crier":"Poner un marco sin gritar", "Faire de la place à ce que tu ressens, sans culpabilité":"Hacer sitio a lo que sientes, sin culpa",
+  "Tu deviens parent":"Vas a ser madre o padre", "Le quotidien t'épuise":"El día a día te agota", "Tu ne t'entends plus avec l'autre parent":"Ya no te entiendes con el otro progenitor",
+  "Elle travaille la place que tu occupes parmi les autres, et celle que tu voudrais.":"Trabaja el lugar que ocupas entre los demás, y el que querrías.",
+  "Comprendre ce qui t'isole":"Entender lo que te aísla", "Reprendre contact sans que ce soit un effort énorme":"Retomar el contacto sin que sea un esfuerzo enorme", "Construire des liens plus vrais":"Construir vínculos más verdaderos", "Traverser une période seule sans t'enfoncer":"Atravesar una etapa de soledad sin hundirte",
+  "Tu te sens seul même entouré":"Te sientes solo incluso rodeado de gente", "Tu as coupé les ponts":"Has cortado lazos", "Tu arrives dans un nouvel endroit":"Llegas a un lugar nuevo",
+  "Elle parle d'intimité sans jugement. Le consentement n'est jamais négociable.":"Habla de intimidad sin juzgar. El consentimiento nunca es negociable.",
+  "Mettre des mots sur ce que tu veux et ne veux pas":"Poner palabras a lo que quieres y no quieres", "Aborder ce qui te gêne, à ton rythme":"Abordar lo que te incomoda, a tu ritmo", "Comprendre ce qui bloque dans l'intimité":"Entender lo que bloquea en la intimidad", "Retrouver du désir sans te forcer":"Recuperar el deseo sin forzarte",
+  "Le sujet est difficile à aborder":"El tema es difícil de abordar", "Quelque chose a changé":"Algo ha cambiado", "Tu veux comprendre ce que tu ressens":"Quieres entender lo que sientes",
+  "Il travaille ton rapport à l'argent, pas ton relevé de compte.":"Trabaja tu relación con el dinero, no tu extracto bancario.",
+  "Comprendre d'où vient la peur d'en manquer":"Entender de dónde viene el miedo a que falte", "Sortir des décisions prises dans la panique":"Salir de las decisiones tomadas con pánico", "Parler d'argent dans le couple ou la famille":"Hablar de dinero en la pareja o la familia", "Séparer ta valeur de ce que tu gagnes":"Separar tu valor de lo que ganas",
+  "L'argent te stresse en permanence":"El dinero te estresa constantemente", "Tu dépenses pour aller mieux":"Gastas para sentirte mejor", "Le sujet crée des tensions":"El tema crea tensiones",
+  "Il travaille les habitudes qui prennent trop de place. Aucune étiquette, jamais.":"Trabaja los hábitos que ocupan demasiado espacio. Ninguna etiqueta, nunca.",
+  "Comprendre à quoi sert l'habitude":"Entender para qué sirve el hábito", "Repérer les moments de bascule":"Detectar los momentos de inflexión", "Réduire sans tout casser d'un coup":"Reducir sin romperlo todo de golpe", "Tenir après un écart, sans repartir de zéro":"Aguantar después de un desliz, sin volver a empezar de cero",
+  "Une habitude prend trop de place":"Un hábito ocupa demasiado espacio", "Tu as arrêté puis repris":"Lo dejaste y volviste a empezar", "Tu veux comprendre avant de décider":"Quieres entender antes de decidir"
+});
+
+/* ── réglages, démonstration, messages de l'application ── */
+Object.assign(DICOS.es, {
+  "Fournisseur":"Proveedor", "Modèle":"Modelo", "Prénom du professionnel référent":"Nombre del profesional de referencia", "Signer la feuille de route":"Firmar la hoja de ruta", "Signer le bilan":"Firmar el balance",
+  "Poser un signal : progression":"Lanzar una señal: progreso", "Poser un signal : stagnation":"Lanzar una señal: estancamiento", "Studio : le socle commun":"Estudio: la base común", "Le protocole de sécurité n’est pas modifiable.":"El protocolo de seguridad no se puede modificar.",
+  "Enregistrer le socle":"Guardar la base", "Revenir au socle d’origine":"Volver a la base original",
+  "Réservé aux démonstrations. Dans cette version, les messages du professionnel référent sont rédigés par le modèle sur signal : ils montrent la place qu’aura le vrai professionnel.":"Reservado a las demostraciones. En esta versión, los mensajes del profesional de referencia los redacta el modelo ante una señal: muestran el lugar que tendrá el verdadero profesional.",
+  "Socle enregistré.":"Base guardada.", "Nom enregistré.":"Nombre guardado.", "Nom retiré.":"Nombre eliminado.", "Feuille de route signée.":"Hoja de ruta firmada.", "Bilan signé.":"Balance firmado.", "Un signal demande la formule MAYND.":"Una señal requiere el plan MAYND.",
+  "Un numéro de carte, même factice, pour la démonstration.":"Un número de tarjeta, aunque sea ficticio, para la demostración.", "Quatre chiffres, s’il te plaît.":"Cuatro cifras, por favor.", "Quatre chiffres. Il te sera demandé à l’ouverture de MAYND sur cet appareil.":"Cuatro cifras. Se te pedirá al abrir MAYND en este dispositivo.",
+  "Code à quatre chiffres":"Código de cuatro cifras", "Les voix sont au repos jusqu’au début du mois prochain.":"Las voces descansan hasta principios del mes que viene.", "La réponse est arrivée vide.":"La respuesta llegó vacía.",
+  "La clé n'est pas reconnue. Vérifie-la dans les réglages.":"La clave no se reconoce. Compruébala en los ajustes.", "Trop de demandes en même temps. Réessaie dans 1 minute.":"Demasiadas solicitudes a la vez. Vuelve a intentarlo en 1 minuto.",
+  "Le service est surchargé. Réessaie dans 1 minute.":"El servicio está saturado. Vuelve a intentarlo en 1 minuto.", "La réponse n'est pas passée. Réessaie.":"La respuesta no ha llegado. Vuelve a intentarlo.", "Pas de connexion. Vérifie ton accès à internet.":"Sin conexión. Comprueba tu acceso a internet.",
+  "Écouter":"Escuchar", "Avancement":"Avance", "Navigation":"Navegación", "Cet accompagnant":"Este acompañante", "Fait":"Hecho", "Corrigé par toi ·":"Corregido por ti ·",
+  "J’ai lu tout ton parcours.":"He leído todo tu recorrido.", "Par quoi veux-tu commencer ?":"¿Por dónde quieres empezar?", "On commence par là ?":"¿Empezamos por ahí?", "On commence par là":"Empezamos por ahí", "Plutôt autre chose":"Mejor otra cosa",
+  "stagnation":"estancamiento", "blocage":"bloqueo", "désalignement":"desalineación", "progression à consolider":"progreso por consolidar"
+});
 
 </script>
 </body>

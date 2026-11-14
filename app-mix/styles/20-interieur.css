@@ -60,6 +60,8 @@
 .carte-pro .mot{background:rgba(255,255,255,.55); border-radius:14px; padding:10px 14px; font-size:15.5px; margin:6px 0 8px}
 .carte-pro .prochain{font:600 13.5px var(--titre); color:var(--gris)}
 .carte-pro .badge-pro{color:var(--vert)}
+/* 14/11 : dans le rond vert du professionnel, le badge reste blanc (il était vert sur vert, donc invisible). */
+.carte-pro .av.pro .badge-pro{color:#FFFFFF; width:22px; height:22px; vertical-align:0}
 
 /* quota gratuit */
 .quota{font:600 14px var(--titre); color:var(--gris); text-align:center; margin-top:4px}

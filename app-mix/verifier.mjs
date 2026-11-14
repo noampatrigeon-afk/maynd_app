@@ -55,7 +55,8 @@ function brut(){
 }
 function visible(){ return brut().replace(/ /g, ' '); }
 const textes = [], espacesOrdinaires = [];
-function noter(){ const b = brut(); const m = b.match(/.{0,20} [?!:;»]/g); if(m) espacesOrdinaires.push(...m); textes.push(visible()); }
+/* Les règles d'écriture (plus bas) ne jugent que le français : les écrans traduits ne sont pas notés. */
+function noter(){ if(d.documentElement.lang !== 'fr') return; const b = brut(); const m = b.match(/.{0,20} [?!:;»]/g); if(m) espacesOrdinaires.push(...m); textes.push(visible()); }
 function saisir(champ, valeur){ champ.value = valeur; champ.dispatchEvent(new w.Event('input', { bubbles: true })); }
 function carte(id){ return d.querySelector('.cr-carte[data-section="' + id + '"]'); }
 function texteCarte(id){ const c = carte(id); return c ? c.textContent.replace(/ /g, ' ') : ''; }
@@ -332,6 +333,52 @@ w.close();
 dom = faireDom(stockage); w = dom.window; d = w.document; await pause(60);
 ok(d.querySelector('.nav') && /Léa/.test(visible()), 'au retour, l\'application s\'ouvre sur l\'intérieur, avec le prénom');
 ok(w.localStorage.getItem('maynd.state.v7') === null && w.localStorage.getItem('maynd.guide.v1') === null, 'MAYND et le Tunnel ne sont pas touchés');
+
+/* ── les langues ── */
+clic('.nav-b[data-nom="toi"]'); await pause(40);
+clic('[data-action="reglages"]'); await etape();
+ok(/English/.test(visible()) && /Español/.test(visible()), 'les réglages proposent les trois langues');
+clic('[data-action="langue"][data-l="en"]'); await pause(60); noter();
+const nav = () => [...d.querySelectorAll('.nav-b span')].map(s => s.textContent).join(' · ');
+const etats = () => [...d.querySelectorAll('.pastille-etat')].map(s => s.textContent);
+ok(d.documentElement.lang === 'en' && /Your team/.test(visible()) && /Your MAYND profile/.test(visible()) && nav() === 'Today · Chat · You', 'Toi passe en anglais : équipe, profil, navigation : ' + nav());
+ok(/The Engine/.test(visible()) && /Sleep/.test(visible()) && etats().includes('Met') && etats().includes('Asleep') && !etats().includes('Endormi'), 'profil, domaines et états des accompagnants traduits');
+ok(!/Ton |Rencontré|Endormi/.test(visible()), 'plus de français sur Toi');
+/* le compte-rendu composé par l'application est traduit ; la partie corrigée par la personne reste telle quelle */
+clic('[data-action="cr-ouvrir"]'); await etape();
+ok(/Léa, your MAYND profile is The Engine\./.test(visible()) && /What matters most to you: freedom, security and family\./.test(visible()), 'le compte-rendu composé ici passe en anglais, listes comprises');
+ok(/Your strengths: /.test(visible()) && /Your watch points: /.test(visible()) && /\(7 out of 10\)/.test(visible()) && /What's lowest: sleep \(3 out of 10\)\./.test(visible()), 'appuis, points de vigilance et notes sur 10 traduits');
+ok(/Sous pression, je cours avant de réfléchir\./.test(visible()) && /Edited by you/.test(visible()), 'la partie corrigée par la personne n\'est jamais traduite');
+clic('#panneau [data-action="fermer"]'); await etape();
+clic('.nav-b[data-nom="aujourdhui"]'); await pause(40); noter();
+ok(/Hello, Léa\.|Good evening, Léa\.|Good night, Léa\./.test(visible()) && /How are you, right now\?/.test(visible()) && /Talk to MIA/.test(visible()) && /Certified referent professional/.test(visible()), 'Aujourd\'hui en anglais, prénom gardé');
+ok(!/Comment ça va|Parler à MIA|Ton professionnel/.test(visible()), 'plus de français sur Aujourd\'hui');
+ok(/^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday) \d+ (January|February|March|April|May|June|July|August|September|October|November|December)$/.test(d.querySelector('.date').textContent), 'la date du jour en anglais : ' + d.querySelector('.date').textContent);
+ok(/Certified referent professional · Read your journey today\./.test(visible()) && /Roadmap for (January|February|March|April|May|June|July|August|September|October|November|December): in preparation\./.test(visible()), 'la carte du professionnel en anglais, dates comprises');
+clic('.nav-b[data-nom="discussion"]'); await pause(40);
+ok(/je vous relis dans l'heure/.test(fil()) && /Write to Miro…/.test(d.getElementById('message').placeholder), 'le fil garde ses messages, la saisie est traduite');
+scenario.push('Of course. One small step tonight.', LECTURE);
+d.getElementById('message').value = 'Can we keep going in English?';
+clic('[data-action="envoyer"]'); await pause(120);
+ok(/l’application est en anglais/.test(sonnet().pop().corps.system[1].text), 'le modèle sait que l\'application est en anglais');
+clic('.nav-b[data-nom="toi"]'); await pause(40);
+clic('[data-action="reglages"]'); await etape();
+clic('[data-action="langue"][data-l="es"]'); await pause(60); noter();
+ok(d.documentElement.lang === 'es' && /Tu equipo/.test(visible()) && /El Motor/.test(visible()) && nav() === 'Hoy · Conversación · Tú', 'Toi passe en espagnol : équipe, profil, navigation : ' + nav());
+ok(etats().includes('Conocido') && etats().includes('Dormida') && etats().includes('Dormido'), 'en espagnol, les états des accompagnants s\'accordent (Miro rencontré, Ava endormie)');
+/* le parcours d'entrée, en espagnol, depuis un état neuf */
+const domEs = faireDom({ 'maynd.mix.v1': JSON.stringify(Object.assign(JSON.parse(w.localStorage.getItem('maynd.mix.v1')), { fini:false, etape:0, rep:{}, langue:'es' })) });
+const dEs = domEs.window.document; await pause(60);
+ok(/Para todos, en todas partes, todo el tiempo\./.test(dEs.getElementById('ecran').textContent) && /Empezar/.test(dEs.getElementById('ecran').textContent), 'le seuil en espagnol');
+dEs.querySelector('[data-action="commencer"]').click(); await etape();
+ok(/Soy MIA\./.test(dEs.getElementById('ecran').textContent) && /8 etapas, 46 preguntas/.test(dEs.getElementById('ecran').textContent.replace(/ /g, ' ')), 'MIA se présente en espagnol, avec les bons nombres');
+dEs.querySelector('[data-action="suivant"]').click(); await etape();
+ok(/Etapa 1 de 8/.test(dEs.getElementById('ecran').textContent.replace(/ /g, ' ')) && /Primero, tú/.test(dEs.getElementById('ecran').textContent), 'la première étape en espagnol');
+dEs.querySelector('[data-action="suivant"]').click(); await etape();
+ok(/¿Cómo te llamas\?/.test(dEs.getElementById('ecran').textContent) && dEs.getElementById('champ').placeholder === 'Tu nombre', 'question et placeholder en espagnol');
+domEs.window.close();
+clic('[data-action="langue"][data-l="fr"]'); await pause(60);
+ok(d.documentElement.lang === 'fr' && /Ton équipe/.test(visible()), 'retour au français');
 
 /* ── règles d'écriture ── */
 const affiche = textes.join('\n') + '\n' + visible();

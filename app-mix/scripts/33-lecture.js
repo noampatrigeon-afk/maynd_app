@@ -197,6 +197,7 @@ function dossierTexte(){
   L.push(fem() ? 'accord : la personne est une femme. Accorde au féminin tout ce qui la désigne (« tu es prête », « tu t’es sentie »).'
                : 'accord : adresse-toi à la personne au masculin (« tu es prêt », « tu t’es senti »).');
   L.push('formule : '+(abonne() ? 'MAYND (les seize accompagnants, la voix, la supervision par son professionnel référent)' : 'gratuite (MIA seule, sans accompagnant ni professionnel référent)'));
+  if(typeof nomLangueModele==='function' && nomLangueModele()) L.push('langue : l’application est en '+nomLangueModele()+'. Tu écris en '+nomLangueModele()+', même si ce dossier est en français.');
   const pr=profil(); L.push('profil MAYND : '+pr.nom+' — '+pr.desc);
   L.push('');
   L.push('Son compte-rendu, partie par partie. Il est écrit pour elle, à la deuxième personne : « tu », c’est elle. Quand une partie est marquée « corrigée par la personne », sa version fait foi sur tout le reste du dossier.');

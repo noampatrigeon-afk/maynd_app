@@ -9,7 +9,7 @@
    ══════════════════════════════════════════════════════════════════════════ */
 
 const CLE_ETAT='maynd.mix.v1';
-const VERSION_APP='Version 13/11 15:15';
+const VERSION_APP='Version 14/11 13:30';
 const MODELE_REPONSE='claude-sonnet-5-5';
 const MODELE_LECTURE='claude-haiku-4-5';
 const QUOTA_GRATUIT_JOUR=5;

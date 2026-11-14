@@ -194,7 +194,7 @@ function carteCR(id, edition){
     ? '<label class="etiquette" for="cr-champ-'+id+'">Écris-le comme c’est vraiment pour toi.</label>'
       +'<textarea class="champ cr-champ" id="cr-champ-'+id+'" rows="7">'+esc(t)+'</textarea>'
       +'<div class="actions">'+bouton('Enregistrer', 'cr-enregistrer', ' data-id="'+id+'"')+'<button class="lien" data-action="cr-annuler" data-id="'+id+'">Annuler</button></div>'
-    : '<div class="cr-texte">'+paragraphes(t)+'</div>'
+    : '<div class="cr-texte'+(!corrige && !etat.cr.mia[id] ? ' cr-local' : '')+'">'+paragraphes(t)+'</div>'
       +(corrige ? '<p class="cr-note">Corrigé par toi · <button class="lien-inline" data-action="cr-retablir" data-id="'+id+'">Revenir au texte d’origine</button></p>' : '');
   return '<section class="cr-carte" data-section="'+id+'" style="--c:'+s.fond+';--t:'+s.teinte+'">'
     +'<header><h2>'+esc(s.titre)+'</h2>'+(edition?'':'<button class="lien-inline" data-action="cr-corriger" data-id="'+id+'">Corriger</button>')+'</header>'+corps+'</section>';
@@ -237,7 +237,8 @@ async function lancerCompteRendu(){
   const tour="Consigne pour cette réponse :\nTu écris le compte-rendu détaillé que la personne lit à la fin de son parcours d'accueil. Il doit l'aider à se comprendre : comment elle fonctionne, ce qu'elle fait, ce qui l'intéresse, comment elle réagit selon les situations. "
     +'Écris ces parties, dans cet ordre, chacune précédée de sa balise seule sur sa ligne :\n'
     +ids.map(function(id){ return '[[SECTION:'+id+']] '+SECTION[id].titre+' : '+GUIDE[id]; }).join('\n')
-    +"\nRègles : deuxième personne ; trois à six phrases par partie ; concret, accroché à ses réponses et à ses mots ; relie entre elles des réponses qu'elle n'aurait pas rapprochées ; une lecture se propose comme une hypothèse, jamais comme un verdict ; aucune étiquette, aucun vocabulaire clinique, aucune flatterie, aucune question, aucune autre balise.";
+    +"\nRègles : deuxième personne ; trois à six phrases par partie ; concret, accroché à ses réponses et à ses mots ; relie entre elles des réponses qu'elle n'aurait pas rapprochées ; une lecture se propose comme une hypothèse, jamais comme un verdict ; aucune étiquette, aucun vocabulaire clinique, aucune flatterie, aucune question, aucune autre balise."
+    +(typeof nomLangueModele==='function' && nomLangueModele() ? "\nLangue : écris tout le compte-rendu en "+nomLangueModele()+'.' : '');
   try{
     const res=await appeler(systeme('mia', tour), [{role:'user', content:'(Écris mon compte-rendu.)'}], 4000);
     if(!res.refus){

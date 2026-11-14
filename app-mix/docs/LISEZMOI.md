@@ -35,6 +35,15 @@ Pour repartir de zéro : Réglages, puis « Tout effacer et recommencer ».
 - **Le professionnel référent** intervient sur l'un des quatre signaux : stagnation, blocage, désalignement, progression à consolider. Un signal « blocage » le fait écrire sans attendre. Jamais de rendez-vous.
 - **Les jeux** : un par accompagnant, plus le point de mesure de MIA (après trois jeux). Finir un jeu réveille la voix de l'accompagnant. Le jeu de Nora s'arrête quand le mal-être est fort et durable.
 
+## Les langues
+
+Français, anglais, espagnol, au choix dans les Réglages (dès le premier écran). Le code est écrit en français ; à l'affichage, chaque texte est traduit par le dictionnaire de la langue choisie (`60-langue.js` : le moteur ; `61-anglais.js`, `62-espagnol.js` : les dictionnaires, clé = la phrase française). Un texte absent du dictionnaire reste en français : pour traduire une nouvelle phrase, ajouter sa ligne dans les deux dictionnaires.
+
+- Traduit : l'interface, les 46 questions et leurs réponses, les fiches des accompagnants, le compte-rendu composé par l'application, les dates, les réglages.
+- Jamais traduit : ce que la personne écrit, ce que le modèle écrit (réponses, compte-rendu affiné, messages du professionnel), une partie du compte-rendu corrigée par la personne, et les jeux (en français pour l'instant).
+- Le modèle reçoit la langue dans le dossier de la personne et répond dans cette langue ; le compte-rendu affiné par MIA est écrit dans cette langue aussi.
+- Les paires {masculin|féminin} sont conservées en espagnol, qui s'accorde comme le français ; l'anglais n'a qu'une forme.
+
 ## Les fichiers
 
 ```
@@ -47,6 +56,7 @@ scripts/
   30 à 34           sécurité, modèle, discussion, dossier et lecture, professionnel
   40, 41            jeux, voix
   50, 51            Aujourd'hui, Toi
+  60 à 62           les langues : moteur, anglais, espagnol
 assembler.mjs       produit app-mix/dist/index.html en un seul fichier
 verifier.mjs        la vérification de bout en bout
 docs/serveur.md     le contrat du serveur à venir
@@ -68,7 +78,7 @@ La vérification parcourt les 46 questions, le compte, le compte-rendu, la discu
 ## Ce qui reste ouvert
 
 - **Le vrai modèle** n'a pas été essayé ici : il faut la clé.
-- **Les traductions** anglaise et espagnole (phase 9 du plan) ne sont pas faites : l'application est en français.
+- **Les traductions** anglaise et espagnole sont faites pour l'interface, les 46 questions, les fiches des accompagnants et le compte-rendu composé par l'application (voir « Les langues » plus haut). Restent en français : les dix-sept jeux, et tout ce que le modèle écrit tant qu'aucune clé n'est posée. Les traductions n'ont pas été relues par une personne de langue maternelle.
 - **Le serveur** : tout vit sur l'appareil. Voir `docs/serveur.md`.
 - **La mise en ligne** : décider si App mix remplace `dist/` sur GitHub Pages, ou va à une seconde adresse.
 - **Les consignes du modèle** sont des copies de celles de MAYND au 13/11/2026 : si elles changent là-bas, les reporter ici.
